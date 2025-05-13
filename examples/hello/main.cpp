@@ -6,7 +6,32 @@
 
 int main() {
     try {
+        // Подключение к базе данных
+        // auto driver = quick::ultra::DriverFactory::create("mysql");
+        // driver->connect("host=localhost;user=root;password=secret;database=testdb");
+
+        // Создание таблицы на основе класса
+        // orm::Session session(driver);
+        // session.create_table<User>();
+
+        // Сохранение объекта в БД
+        // User user;
+        // user.name = "Alice";
+        // user.email = "alice@example.com";
+        // session.save(user);
+
+        // Загрузка объекта из БД по ID
+        // User loaded_user = session.load<User>(1); // SELECT * FROM users WHERE id=1
+        // std::cout << loaded_user.name << std::endl;
+
+        // Выборка по условию
+        // auto users = session.query<User>()
+        //              .where("email LIKE '%example.com'")
+        //              .limit(10)
+        //              .execute();
+
         sql::mysql::MySQL_Driver *driver;
+        
         sql::Connection *con;
 
         driver = sql::mysql::get_mysql_driver_instance();
@@ -16,6 +41,8 @@ int main() {
         stmt->execute("CREATE DATABASE IF NOT EXISTS test_database");
 
         con->setSchema("test_database");
+
+        
 
         stmt->execute(
             "CREATE TABLE IF NOT EXISTS users ("
