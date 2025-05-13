@@ -38,10 +38,9 @@ bool MySQLDriver::connect(const std::string& connection_string) {
         sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
         connection_.reset(driver->connect(host, user, password));
 
-        if (database.empty()) {
-            std::cerr << "No database specified in connection string" << std::endl;
-            return false;
-        }
+        std::unique_ptr<sql::Statement> stmt(connection_->createStatement());
+
+        stmt->execute("CREATE DATABASE IF NOT EXISTS " + database);
 
         connection_->setSchema(database);
 
@@ -52,7 +51,6 @@ bool MySQLDriver::connect(const std::string& connection_string) {
         return false;
     }
 }
-
 void MySQLDriver::disconnect() {
     connection_.reset(); 
 }

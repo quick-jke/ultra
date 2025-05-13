@@ -3,8 +3,11 @@
 #include "idriver.hpp"
 #include "mysql_result_set.hpp"
 #include <memory>
+
 #include <mysql_driver.h>
 #include <mysql_connection.h>
+#include <cppconn/statement.h>
+#include <cppconn/resultset.h>
 
 namespace quick {
 namespace ultra {
