@@ -30,7 +30,6 @@ public:
 private:
     std::string name_;
     std::string type_;
-    // VAR type_;
     std::set<OPTION> options_;
 };
 

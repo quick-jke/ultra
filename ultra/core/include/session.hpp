@@ -16,6 +16,8 @@ public:
 
 private:
     std::shared_ptr<IDriver> driver_;
+    HeaderScanner scanner_;
+    SQLBuilder sqlbuilder_;
 };
 
 

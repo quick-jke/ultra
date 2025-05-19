@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <set>
 #include <optional>
+#include <memory>
 
 #include "table.hpp"
 

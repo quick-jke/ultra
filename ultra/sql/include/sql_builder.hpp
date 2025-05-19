@@ -9,6 +9,8 @@
 #include <sstream>
 #include <optional>
 
+#include <memory>
+
 class SQLBuilder{
 public:
     SQLBuilder();
@@ -16,9 +18,20 @@ public:
     std::string createTables(std::set<Table> tables);
 
 
+   
+    //
+    
+    std::string sqlCreateTable(Table table);
+    std::vector<std::string> getSqlByEntities(std::set<Table> tables);
+
+
 private:
     std::optional<std::string> getNormalizeField(Field field, const std::string& tableName);
     std::set<std::string> foreign_keys_;
+
+    //
+
+    std::vector<std::string> sqls_;
 };
 
 #endif
