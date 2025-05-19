@@ -6,7 +6,7 @@
 int main() {
     // Подключение к базе данных
     auto driver = quick::ultra::DriverFactory::create("mysql");
-    driver->connect("host=localhost;user=root;password=RootPass123!;database=testdb");
+    driver->connect("host=localhost;user=root;password=RootPass123!;database=hello");
 
     //Создание таблицы на основе entity из models
     quick::ultra::Session session(driver);

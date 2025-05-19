@@ -3,9 +3,7 @@
 
 #include <iostream>
 #include "table.hpp"
-#include "sql.hpp"
 #include <set>
-
 #include <map>
 #include <queue>
 #include <sstream>

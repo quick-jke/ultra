@@ -12,14 +12,10 @@ namespace ultra{
 class Session{
 public:
     Session(std::shared_ptr<IDriver> driver);
-
     void create_tables();
-
-
 
 private:
     std::shared_ptr<IDriver> driver_;
-
 };
 
 
