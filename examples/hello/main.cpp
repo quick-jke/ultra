@@ -1,18 +1,21 @@
 #include <iostream>
 
 #include "driver_factory.hpp"
+#include "session.hpp"
 
 int main() {
     // Подключение к базе данных
     auto driver = quick::ultra::DriverFactory::create("mysql");
-    driver->connect("host=localhost;user=root;password=root;database=testdb");
+    driver->connect("host=localhost;user=root;password=RootPass123!;database=testdb");
+
+    //Создание таблицы на основе entity из models
+    quick::ultra::Session session(driver);
+    session.create_tables();
 
     
 //new
 /*
-    Создание таблицы на основе класса
-    quick::ultra::Session session(driver);
-    session.create_table<User>();
+    
 
     Сохранение объекта в БД
     User user;
