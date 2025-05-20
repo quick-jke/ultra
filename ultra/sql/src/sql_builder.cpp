@@ -9,9 +9,7 @@ bool isDependency(std::set<OPTION> options){
             !options.count(OPTION::ONE_TO_MANY) && !options.count(OPTION::ONE_TO_ONE));
 }
 
-std::string normalizeType(std::string type){
-    return type;
-}
+
 
 std::optional<std::string> normalizeField(Field field){
     std::stringstream oss;
@@ -19,7 +17,7 @@ std::optional<std::string> normalizeField(Field field){
         if(field.getOptions().count(OPTION::ID)){
             oss << "\t" << field.getName() << " INT PRIMARY KEY AUTO_INCREMENT";
         }else{
-            oss << "\t" << field.getName() << " " << normalizeType(field.getType());
+            oss << "\t" << field.getName() << " " << varToString(field.getType());
         }
         return oss.str();
     }else{
@@ -29,31 +27,38 @@ std::optional<std::string> normalizeField(Field field){
     
 }
 
-std::vector<std::string> SQLBuilder::getSqlByEntities(std::set<Table> tables){
+std::vector<std::string> SQLBuilder::getSqlByEntities(std::set<Table> tables) {
     std::vector<std::string> everything;
-    std::vector<std::string> pure_tables;
-    std::vector<std::string> many_to_many_tables;
-    std::vector<std::string> foreign_keys;
+    
+    for (const auto& table : tables) {
+        std::stringstream createStmt;
+        createStmt << "CREATE TABLE IF NOT EXISTS `" << table.getName() << "` (\n";
 
+        std::vector<std::string> fieldsSQL;
 
-    for(auto table : tables){
-        std::stringstream pureoss;
-        pureoss << "CREATE TABLE IF NOT EXISTS " << table.getName() << " (\n";
-        for(auto field : table.getFields()){
-            auto result = normalizeField(field);
-            if (result.has_value()) {
-                pureoss << result.value() << std::endl;
+        for (const auto& field : table.getFields()) {
+            auto fieldDef = normalizeField(field);
+            if (fieldDef.has_value()) {
+                fieldsSQL.push_back(fieldDef.value());
             }
         }
 
-        pureoss << ");\n\n";
-        pure_tables.push_back(pureoss.str());
-    }
+        if (fieldsSQL.empty()) {
+            continue; // Пропустим пустые таблицы
+        }
 
-    for(auto pure : pure_tables){
-        everything.push_back(pure);
+        // Добавляем поля с запятыми
+        for (size_t i = 0; i < fieldsSQL.size(); ++i) {
+            createStmt << fieldsSQL[i];
+            if (i != fieldsSQL.size() - 1) {
+                createStmt << ",";
+            }
+            createStmt << "\n";
+        }
+
+        createStmt << ");\n\n";
+        everything.push_back(createStmt.str());
     }
 
     return everything;
-
 }

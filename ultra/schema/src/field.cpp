@@ -1,13 +1,13 @@
 #include "field.hpp"
 
-Field::Field(const std::string& name, const std::string& type, std::set<OPTION> options) : name_(name), type_(type), options_(options){}
+Field::Field(const std::string& name, SQLVAR type, std::set<OPTION> options) : name_(name), type_(type), options_(options){}
 
 std::string Field::getSQLNormalize(){
     std::string options;
     if(options_.count(OPTION::ID)){
         options += " INT PRIMARY KEY AUTO_INCREMENT";
     }
-    return  "\t" + name_ + " " + type_ + options;
+    return  "\t" + name_ + " " + options;
 }
 
 const std::string& Field::getName() const{
@@ -85,14 +85,14 @@ std::string Field::toString(){
         }
     }
     
-    return "\tfield{ name: " + name_ + ", type: " + type_ + (options_.size() ? ", options: [" + options + " ]}" : "");  
+    return "\tfield{ name: " + name_ + ", type: " + varToString(type_) + (options_.size() ? ", options: [" + options + " ]}" : "");  
 }
 
 std::set<OPTION> Field::getOptions(){
     return options_;
 }
 
-std::string Field::getType(){
+SQLVAR Field::getType(){
     return type_;
 }
 

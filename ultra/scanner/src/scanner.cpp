@@ -36,18 +36,22 @@ bool isOptionKeyword(const std::string& line, std::set<OPTION>& pendingOptions) 
     }
     return false;
 }
-void parseFieldLine(const std::string& line, std::string& type, std::string& name) {
+void parseFieldLine(const std::string& line, SQLVAR& type, std::string& name) {
     size_t lastSpace = line.find_last_of(' ');
     if (lastSpace == std::string::npos || lastSpace == 0) {
-        type = "";
+        type = SQLVAR::OBJECT; // дефолтный тип
         name = "";
         return;
     }
+
     name = line.substr(lastSpace + 1);
-    if(!name.empty()){
+    if (!name.empty() && name.back() == ';') {
         name.pop_back();
     }
-    type = line.substr(0, lastSpace);
+    name = trims(name);
+
+    std::string typeStr = line.substr(0, lastSpace);
+    type = stringToSQLVAR(trims(typeStr));
 }
 bool isPrimitiveType(const std::string& type) {
     return type == "int" || type == "std::string";
@@ -157,20 +161,35 @@ std::pair<std::set<Field>, std::set<std::string>> HeaderScanner::getFieldsByBody
             continue;
         }
 
-        std::string fieldTypeStr, fieldName;
-        parseFieldLine(line, fieldTypeStr, fieldName);
+        std::string fieldName;
+        SQLVAR fieldType;
+        parseFieldLine(line, fieldType, fieldName);
 
-        if (fieldName.empty() || fieldTypeStr.empty()) {
+        if (fieldName.empty()) {
             continue; 
         }
 
-        extractDependenciesFromType(fieldTypeStr, dependencies);
+        if (fieldType == SQLVAR::OBJECT || fieldType == SQLVAR::VECTOR) {
+            std::string baseType;
+            if (fieldType == SQLVAR::VECTOR) {
+                size_t start = line.find('<');
+                size_t end = line.rfind('>');
+                if (start != std::string::npos && end != std::string::npos && end > start + 1) {
+                    baseType = line.substr(start + 1, end - start - 1);
+                }
+            } else {
+                baseType = line.substr(0, line.find_last_of(' '));
+            }
 
-        fields.insert({fieldName, fieldTypeStr, pendingOptions});
+            baseType = trims(baseType);
+            if (!isPrimitiveType(baseType)) {
+                dependencies.insert(baseType);
+            }
+        }
+
+        fields.emplace(fieldName, fieldType, pendingOptions);
         pendingOptions.clear();
     }
-
-    
 
     return {fields, dependencies};
 }

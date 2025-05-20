@@ -2,14 +2,14 @@
 #define FIELD
 
 #include "option.hpp"
-#include "var.hpp"
+#include "sqlvar.hpp"
 #include <string>
 #include <set>
 #include <iostream>
 
 class Field{
 public:
-    Field(const std::string& name, const std::string& type, std::set<OPTION> options);
+    Field(const std::string& name, SQLVAR type, std::set<OPTION> options);
 
     std::string getSQLNormalize();
     
@@ -21,7 +21,7 @@ public:
 
     std::string stringOptions();
 
-    std::string getType();
+    SQLVAR getType();
 
     bool operator<(const Field& other) const {
         return std::tie(name_) < std::tie(other.getName());
@@ -29,7 +29,7 @@ public:
 
 private:
     std::string name_;
-    std::string type_;
+    SQLVAR type_;
     std::set<OPTION> options_;
 };
 
