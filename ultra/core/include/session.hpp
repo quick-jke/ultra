@@ -2,7 +2,6 @@
 #define CORE_DRIVER_HPP
 
 #include "idriver.hpp"
-#include "class_metadata.hpp"
 #include "sql_builder.hpp"
 #include "scanner.hpp"
 

@@ -1,6 +1,9 @@
-#ifndef SCHEMA_SQL_VAR_H
-#define SCHEMA_SQL_VAR_H
+#ifndef QUICK_ULTRA_SCHEMA_SQL_VAR_HPP
+#define QUICK_ULTRA_SCHEMA_SQL_VAR_HPP
 #include <string>
+
+namespace quick{
+namespace ultra{
 
 enum SQLVAR{
     INT,
@@ -27,5 +30,9 @@ inline SQLVAR stringToSQLVAR(const std::string& str) {
     else if (str.find("std::vector<") != std::string::npos) return SQLVAR::VECTOR;
     else return SQLVAR::OBJECT; 
 }
+
+}
+}
+
 
 #endif

@@ -1,11 +1,14 @@
-#ifndef FIELD
-#define FIELD
+#ifndef QUICK_ULTRA_SCHEMA_FIELD_HPP
+#define QUICK_ULTRA_SCHEMA_FIELD_HPP
 
 #include "option.hpp"
 #include "sqlvar.hpp"
 #include <string>
 #include <set>
 #include <iostream>
+
+namespace quick{
+namespace ultra{
 
 class Field{
 public:
@@ -32,5 +35,7 @@ private:
     SQLVAR type_;
     std::set<OPTION> options_;
 };
+
+}}
 
 #endif

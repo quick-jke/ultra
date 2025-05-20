@@ -8,6 +8,9 @@
 #include <algorithm>
 #include <filesystem>
 
+namespace quick{
+namespace ultra{
+
 namespace fs = std::filesystem;
 
 
@@ -193,3 +196,5 @@ std::pair<std::set<Field>, std::set<std::string>> HeaderScanner::getFieldsByBody
 
     return {fields, dependencies};
 }
+
+}}

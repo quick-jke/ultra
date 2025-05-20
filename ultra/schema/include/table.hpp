@@ -1,5 +1,5 @@
-#ifndef TABLE
-#define TABLE
+#ifndef QUICK_ULTRA_SCHEMA_TABLE_HPP
+#define QUICK_ULTRA_SCHEMA_TABLE_HPP
 
 #include <string>
 #include <vector>
@@ -7,6 +7,9 @@
 #include <tuple>
 #include <map>
 #include "field.hpp"
+
+namespace quick{
+namespace ultra{
 
 
 class Table{
@@ -29,6 +32,7 @@ private:
     std::set<std::string> dependencies_;
 
 };
+}}
 
 
 #endif

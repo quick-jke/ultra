@@ -1,5 +1,6 @@
 #include "field.hpp"
-
+namespace quick{
+namespace ultra{
 Field::Field(const std::string& name, SQLVAR type, std::set<OPTION> options) : name_(name), type_(type), options_(options){}
 
 std::string Field::getSQLNormalize(){
@@ -98,7 +99,7 @@ SQLVAR Field::getType(){
 
 
 
-
+}}
 
 
 

@@ -1,5 +1,5 @@
-#ifndef SCANNER_HPP
-#define SCANNER_HPP
+#ifndef QUICK_ULTRA_SCANNER_HPP
+#define QUICK_ULTRA_SCANNER_HPP
 
 #include <iostream>
 #include <fstream>
@@ -15,6 +15,8 @@
 #include "table.hpp"
 
 
+namespace quick{
+namespace ultra{
 
 class HeaderScanner {
 public:
@@ -24,5 +26,6 @@ private:
     Table getTableFromFile(const std::string& filePath);
     std::pair<std::set<Field>, std::set<std::string>> getFieldsByBody(const std::string& body); 
 };
+}}
 
 #endif 

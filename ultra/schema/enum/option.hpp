@@ -1,5 +1,8 @@
-#ifndef OPTION_H
-#define OPTION_H
+#ifndef QUICK_ULTRA_SCHEMA_OPTION_HPP
+#define QUICK_ULTRA_SCHEMA_OPTION_HPP
+
+namespace quick{
+namespace ultra{
 
 enum OPTION {
 
@@ -9,5 +12,7 @@ enum OPTION {
     MANY_TO_ONE,
     ID
 };
+
+}}
 
 #endif

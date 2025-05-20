@@ -1,5 +1,9 @@
 #include "sql_builder.hpp"
 
+namespace quick{
+namespace ultra{
+
+
 SQLBuilder::SQLBuilder(){
 }
 
@@ -61,4 +65,7 @@ std::vector<std::string> SQLBuilder::getSqlByEntities(std::set<Table> tables) {
     }
 
     return everything;
+}
+    
+}
 }

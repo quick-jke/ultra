@@ -1,4 +1,6 @@
 #include "table.hpp"
+namespace quick{
+namespace ultra{
 Table::Table(){}
 
 Table::Table(const std::string& name, std::set<Field> fields, std::set<std::string> dependencies) 
@@ -31,3 +33,5 @@ std::string Table::toString(){
     // return "Table:\n\t" + name_ + "\nfields\n" + fields + "\ndeps:\n\t[" + dependencies + "]\n\n";
     return "Table:\n\t" + name_ + "\nfields\n" + fields + "\n==============\n";
 }
+
+}}
