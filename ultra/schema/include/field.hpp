@@ -22,7 +22,7 @@ public:
 
     std::set<OPTION> getOptions();
 
-    std::string stringOptions();
+    
 
     SQLVAR getType();
 

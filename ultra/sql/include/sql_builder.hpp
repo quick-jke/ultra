@@ -23,8 +23,9 @@ public:
 
 
 private:
+    std::optional<std::string> normalizeField(const std::string& tableName, Field field);
+    std::vector<std::string> foreign_keys_;
 
-    std::vector<std::string> sqls_;
 };
 
 }}

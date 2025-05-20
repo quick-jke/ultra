@@ -14,11 +14,10 @@ namespace ultra{
 
 class Table{
 public:
-    Table(const std::string& name, std::set<Field> fields, std::set<std::string> dependencies);
+    Table(const std::string& name, std::set<Field> fields);
     Table();
     const std::string& getName() const;
     const std::set<Field>& getFields() const;
-    std::set<std::string> getDependencies();
 
     std::string toString();
 
@@ -29,7 +28,6 @@ public:
 private:
     std::string name_;
     std::set<Field> fields_;
-    std::set<std::string> dependencies_;
 
 };
 }}

@@ -1,31 +1,28 @@
 #ifndef USER_ENTITY
 #define USER_ENTITY
-#include "macros.hpp"
+
 #include <string>
-#include <vector> 
-#include "passport.entity.hpp"
+
+#include "macros.hpp"
+
+IMPORT Product;
+IMPORT Passport;
+IMPORT SomeProduct;
 
 
-class Product;
-class SomeProduct;
-
-ENTITY
-struct User {
-    ID
-    int id;
+ENTITY User {
+    
+    ID int id;
 
     std::string name;
 
-    int age;
+    std::string email;
 
-    ONE_TO_MANY
-    std::vector<Product*> products;
+    ONE_TO_MANY(Product) products;
 
-    ONE_TO_ONE
-    Passport pass;
+    ONE_TO_ONE(Passport) pass;
 
-    MANY_TO_MANY
-    std::vector<SomeProduct*> some_products;
+    MANY_TO_MANY(SomeProduct) some_products;
 
 };
 

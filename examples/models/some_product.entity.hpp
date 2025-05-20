@@ -2,16 +2,16 @@
 #define SOME_PRODUCT
 
 #include "macros.hpp"
-#include "user.entity.hpp"
+
 #include <string>
 
-ENTITY
-struct SomeProduct{
-    ID
-    int id;
+IMPORT User;
 
-    MANY_TO_MANY
-    std::vector<User> users;
+ENTITY SomeProduct{
+    
+    ID int id;
+
+    MANY_TO_MANY(User) users;
 
     std::string text;
 };

@@ -10,6 +10,9 @@ Session::Session(std::shared_ptr<IDriver> driver) : driver_(driver) {
 
 void Session::create_tables() {
     auto tables = scanner_.getTables();
+
+    
+
     if (!tables.has_value()) {
         throw std::runtime_error("Failed to scan tables");
     }
@@ -25,8 +28,8 @@ void Session::create_tables() {
 
     try {
         for (const auto& req : requests) {
-            std::cout << req << std::endl;
-            driver_->execute(req);
+            // std::cout << req << std::endl;
+            // driver_->execute(req);
         }
         driver_->commit();
     } catch (const std::exception& e) {

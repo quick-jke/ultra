@@ -2,6 +2,8 @@
 
 #include "driver_factory.hpp"
 #include "session.hpp"
+#include "user.entity.hpp"
+#include "product.entity.hpp"
 
 int main() {
     // Подключение к базе данных
@@ -12,17 +14,20 @@ int main() {
     quick::ultra::Session session(driver);
     session.create_tables();
 
+    //Сохранение объекта в БД
+    // User user;
+    // user.name = "Alice";
+    // user.email = "alice@example.com";
+    // session.save<User>(user);
+
+
+    // Product product;
+    // product.info = "asd";
+    // session.save<Product>(product);
+
     
 //new
 /*
-    
-
-    Сохранение объекта в БД
-    User user;
-    user.name = "Alice";
-    user.email = "alice@example.com";
-    session.save(user);
-
     Загрузка объекта из БД по ID
     User loaded_user = session.load<User>(1); // SELECT * FROM users WHERE id=1
     std::cout << loaded_user.name << std::endl;

@@ -13,6 +13,12 @@ public:
     Session(std::shared_ptr<IDriver> driver);
     void create_tables();
 
+    template<typename T>
+    void save(T table){
+        std::cout << std::endl << std::string(typeid(T).name()).substr(1) << std::endl;
+        
+    }
+
 private:
     std::shared_ptr<IDriver> driver_;
     HeaderScanner scanner_;

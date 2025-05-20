@@ -24,7 +24,7 @@ public:
 private:
     bool isEntityFile(const std::filesystem::path& path);
     Table getTableFromFile(const std::string& filePath);
-    std::pair<std::set<Field>, std::set<std::string>> getFieldsByBody(const std::string& body); 
+    std::set<Field> getFieldsByBody(const std::string& body); 
 };
 }}
 

@@ -40,48 +40,72 @@ bool isOptionKeyword(const std::string& line, std::set<OPTION>& pendingOptions) 
     return false;
 }
 void parseFieldLine(const std::string& line, SQLVAR& type, std::string& name) {
-    size_t lastSpace = line.find_last_of(' ');
-    if (lastSpace == std::string::npos || lastSpace == 0) {
-        type = SQLVAR::OBJECT; // дефолтный тип
+    std::string trimmed = trims(line);
+    if (trimmed.empty()) {
+        type = SQLVAR::OBJECT;
         name = "";
         return;
     }
 
-    name = line.substr(lastSpace + 1);
-    if (!name.empty() && name.back() == ';') {
-        name.pop_back();
+    // Извлекаем имя поля
+    size_t nameStart = trimmed.find_last_of(' ');
+    if (nameStart == std::string::npos || nameStart == 0) {
+        name = "";
+        type = SQLVAR::OBJECT;
+        return;
     }
+
+    name = trimmed.substr(nameStart + 1);
+    if (!name.empty() && name.back() == ';') name.pop_back();
     name = trims(name);
 
-    std::string typeStr = line.substr(0, lastSpace);
-    type = stringToSQLVAR(trims(typeStr));
+    // Извлекаем тип
+    std::string typeStr = trimmed.substr(0, nameStart);
+    typeStr = trims(typeStr);
+
+    if (typeStr.find("ONE_TO_ONE") != std::string::npos) {
+        type = SQLVAR::OBJECT;
+    } else if (typeStr.find("ONE_TO_MANY") != std::string::npos ||
+               typeStr.find("MANY_TO_MANY") != std::string::npos) {
+        type = SQLVAR::VECTOR;
+    } else if (typeStr.find("MANY_TO_ONE") != std::string::npos) {
+        type = SQLVAR::OBJECT;
+    } else {
+        type = stringToSQLVAR(typeStr);
+    }
 }
 bool isPrimitiveType(const std::string& type) {
-    return type == "int" || type == "std::string";
+    return type == "int" || type == "std::string" || type == "long" || type == "double";
 }
+
 void extractDependenciesFromType(const std::string& typeStr, std::set<std::string>& dependencies) {
-    std::string baseType = typeStr;
-    bool isVector = false;
+    std::string baseType;
 
-    if (baseType.find("std::vector<") != std::string::npos) {
-        isVector = true;
-        size_t start = baseType.find('<');
-        size_t end = baseType.rfind('>');
+    if (typeStr.find("ONE_TO_ONE") != std::string::npos ||
+        typeStr.find("MANY_TO_ONE") != std::string::npos) {
+
+        size_t start = typeStr.find('(');
+        size_t end = typeStr.find(')');
         if (start != std::string::npos && end != std::string::npos && end > start + 1) {
-            baseType = baseType.substr(start + 1, end - start - 1);
+            baseType = typeStr.substr(start + 1, end - start - 1);
             baseType = trims(baseType);
-        } else {
-            return; 
+            if (!isPrimitiveType(baseType) && !baseType.empty()) {
+                dependencies.insert(baseType);
+            }
         }
-    }
 
-    if (!baseType.empty() && baseType.back() == '*') {
-        baseType.pop_back();
-        baseType = trims(baseType);
-    }
+    } else if (typeStr.find("ONE_TO_MANY") != std::string::npos ||
+               typeStr.find("MANY_TO_MANY") != std::string::npos) {
 
-    if (!isPrimitiveType(baseType) && !baseType.empty()) {
-        dependencies.insert(baseType);
+        size_t start = typeStr.find('(');
+        size_t end = typeStr.find(')');
+        if (start != std::string::npos && end != std::string::npos && end > start + 1) {
+            baseType = typeStr.substr(start + 1, end - start - 1);
+            baseType = trims(baseType);
+            if (!isPrimitiveType(baseType) && !baseType.empty()) {
+                dependencies.insert(baseType);
+            }
+        }
     }
 }
 
@@ -97,7 +121,9 @@ std::optional<std::set<Table>> HeaderScanner::getTables(){
         for (const auto& entry : fs::recursive_directory_iterator("models")) {
             if (isEntityFile(entry.path())) {
                 try {
-                    tables.insert(getTableFromFile(entry.path().string()));
+                    Table table = getTableFromFile(entry.path().string());
+                    tables.insert(table);
+                    // std::cout << table.toString() << std::endl;
                 } catch (const std::exception& e) {
                     std::cerr << "Error parsing file " << entry.path() << ": " << e.what() << "\n";
                 }
@@ -130,11 +156,11 @@ Table HeaderScanner::getTableFromFile(const std::string& filePath){
     buffer << file.rdbuf();
     std::string content = buffer.str();
 
-    size_t structPos = content.find("struct ");
-    if (structPos == std::string::npos)
-        throw std::runtime_error("No 'struct' found in file");
+    size_t entityPos = content.find("ENTITY ");
+    if (entityPos == std::string::npos)
+        throw std::runtime_error("No 'ENTITY' found in file");
 
-    size_t nameStart = content.find_first_not_of(" \t\n\r", structPos + 7);
+    size_t nameStart = content.find_first_not_of(" \t\n\r", entityPos + 7);
     size_t nameEnd = content.find_first_of(" \t\n\r{", nameStart);
 
     std::string tableName = content.substr(nameStart, nameEnd - nameStart);
@@ -143,58 +169,92 @@ Table HeaderScanner::getTableFromFile(const std::string& filePath){
     size_t bodyEnd = content.find("};", bodyStart);
 
     std::string tableBody = content.substr(bodyStart + 1, bodyEnd - bodyStart - 1);
+    
+    auto fields = getFieldsByBody(tableBody);
 
-    auto [fields, dependencies] = getFieldsByBody(tableBody);
-
-    return Table(tableName, fields, dependencies);
+    return Table(tableName, fields);
 }
 
-std::pair<std::set<Field>, std::set<std::string>> HeaderScanner::getFieldsByBody(const std::string& body) {
+Field parseField(const std::string& line) {
+    std::set<OPTION> options;
+    std::string processedLine = trims(line);
+
+    // Шаг 1: Извлечение опций (ID, ONE_TO_MANY и т.д.)
+    std::istringstream iss(processedLine);
+    std::string token;
+
+    while (iss >> token) {
+        if (!isOptionKeyword(token, options)) {
+            // Возвращаем поток на шаг назад
+            std::istringstream rest((token + " " + std::string(std::istreambuf_iterator<char>(iss), {})));
+            processedLine = rest.str();
+            break;
+        }
+    }
+
+    // Шаг 2: Извлечение типа и имени
+    std::string typeName, fieldName;
+
+    // Проверка на макросы вроде ONE_TO_MANY(Product) field;
+    size_t macroStart = processedLine.find('(');
+    size_t macroEnd = processedLine.find(')');
+    if (macroStart != std::string::npos && macroEnd != std::string::npos) {
+        std::string macroType = processedLine.substr(0, macroStart);
+        std::string innerType = processedLine.substr(macroStart + 1, macroEnd - macroStart - 1);
+        fieldName = processedLine.substr(macroEnd + 1);
+        
+        // Очистка имени
+        fieldName = trims(fieldName);
+        if (fieldName.back() == ';') fieldName.pop_back();
+        fieldName = trims(fieldName);
+
+        // Определение SQLVAR
+        if (macroType == "ONE_TO_MANY" || macroType == "MANY_TO_MANY") {
+            typeName = "std::vector<" + trims(innerType) + ">";
+        } else {
+            typeName = trims(innerType);
+        }
+    } else {
+        // Обычный случай: int id; или std::string name;
+        size_t lastSpace = processedLine.find_last_of(' ');
+        if (lastSpace == std::string::npos) {
+            throw std::runtime_error("Invalid field declaration");
+        }
+
+        fieldName = processedLine.substr(lastSpace + 1);
+        if (fieldName.back() == ';') fieldName.pop_back();
+        fieldName = trims(fieldName);
+
+        typeName = processedLine.substr(0, lastSpace);
+    }
+
+    // Шаг 3: Определение SQLVAR на основе typeName
+    SQLVAR sqlType = SQLVAR::OBJECT;
+    if (typeName == "int") {
+        sqlType = SQLVAR::INT;
+    } else if (typeName == "std::string") {
+        sqlType = SQLVAR::STRING;
+    } else if (typeName.find("std::vector<") != std::string::npos) {
+        sqlType = SQLVAR::VECTOR;
+    }
+    Field field(fieldName, sqlType, options);
+    std::cout << field.toString() << std::endl;
+    return field;
+}
+
+std::set<Field> HeaderScanner::getFieldsByBody(const std::string& body) {
     std::set<Field> fields;
-    std::set<std::string> dependencies;
     std::istringstream iss(body);
     std::string line;
-    std::set<OPTION> pendingOptions;
 
     while (std::getline(iss, line)) {
         line = trims(line);
         if (line.empty()) continue;
 
-        if (isOptionKeyword(line, pendingOptions)) {
-            continue;
-        }
-
-        std::string fieldName;
-        SQLVAR fieldType;
-        parseFieldLine(line, fieldType, fieldName);
-
-        if (fieldName.empty()) {
-            continue; 
-        }
-
-        if (fieldType == SQLVAR::OBJECT || fieldType == SQLVAR::VECTOR) {
-            std::string baseType;
-            if (fieldType == SQLVAR::VECTOR) {
-                size_t start = line.find('<');
-                size_t end = line.rfind('>');
-                if (start != std::string::npos && end != std::string::npos && end > start + 1) {
-                    baseType = line.substr(start + 1, end - start - 1);
-                }
-            } else {
-                baseType = line.substr(0, line.find_last_of(' '));
-            }
-
-            baseType = trims(baseType);
-            if (!isPrimitiveType(baseType)) {
-                dependencies.insert(baseType);
-            }
-        }
-
-        fields.emplace(fieldName, fieldType, pendingOptions);
-        pendingOptions.clear();
+        fields.emplace(parseField(line));
     }
 
-    return {fields, dependencies};
+    return fields;
 }
 
 }}

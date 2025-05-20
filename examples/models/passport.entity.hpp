@@ -3,10 +3,11 @@
 
 #include "macros.hpp"
 
-ENTITY
-struct Passport{
-    ID
-    int id;
+
+
+ENTITY Passport{
+    
+    ID int id;
 
     int num;
 };
