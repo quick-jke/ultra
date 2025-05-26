@@ -2,7 +2,6 @@
 #define USER_ENTITY
 
 #include <string>
-
 #include "macros.hpp"
 
 IMPORT Product;

@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "table.hpp"
+#include "dep.hpp"
 
 
 namespace quick{
@@ -20,11 +21,16 @@ namespace ultra{
 
 class HeaderScanner {
 public:
-    std::optional<std::set<Table>> getTables();
+    HeaderScanner();
+    std::pair<std::set<Table>, dependencies> getTablesAndDependencies();
+    
 private:
-    bool isEntityFile(const std::filesystem::path& path);
-    Table getTableFromFile(const std::string& filePath);
-    std::set<Field> getFieldsByBody(const std::string& body); 
+    std::pair<OPTION, std::string> parseDependencyString(std::string dependency_string);
+    std::vector<std::string> parseFieldTokens(std::string& field);
+    std::pair<dependencies, std::set<Table>> parseDependenciesList(dependenciesByTables deps_by_tables);
+    std::set<std::string> parseBody(const std::string& body);
+    std::pair<std::string, std::set<std::string>> getTableStructure(const std::string& filePath);
+
 };
 }}
 

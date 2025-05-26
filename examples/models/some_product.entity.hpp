@@ -2,7 +2,6 @@
 #define SOME_PRODUCT
 
 #include "macros.hpp"
-
 #include <string>
 
 IMPORT User;

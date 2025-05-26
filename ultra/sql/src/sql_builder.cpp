@@ -6,83 +6,79 @@ namespace ultra{
 
 SQLBuilder::SQLBuilder(){}
 
-bool isDependency(std::set<OPTION> options){
-    return (!options.count(OPTION::MANY_TO_MANY) && !options.count(OPTION::MANY_TO_ONE) && 
-            !options.count(OPTION::ONE_TO_MANY) && !options.count(OPTION::ONE_TO_ONE));
-}
-
-std::optional<std::string> normalizeFireignKey(const std::string& tableName, Field field){
-    std::stringstream option;
-    if(field.getOptions().count(OPTION::MANY_TO_MANY)){
-        option << "[MANY_TO_MANY]";
-    }
-    if(field.getOptions().count(OPTION::MANY_TO_ONE)){
-        option << "[MANY_TO_ONE]";
-    }
-    if(field.getOptions().count(OPTION::ONE_TO_MANY)){
-        option << "[ONE_TO_MANY]";
-    }
-    if(field.getOptions().count(OPTION::ONE_TO_ONE)){
-        option << "[ONE_TO_ONE]";
-    }
-    return "alter table " + tableName + " " + field.getName() + "_id " + option.str();
-}
-
 std::optional<std::string> SQLBuilder::normalizeField(const std::string& tableName, Field field){
     std::stringstream oss;
-    if(isDependency(field.getOptions())){
-        if(field.getOptions().count(OPTION::ID)){
-            oss << "\t" << field.getName() << " INT PRIMARY KEY AUTO_INCREMENT";
-        }else{
-            oss << "\t" << field.getName() << " " << varToString(field.getType());
-        }
-        return oss.str();
+    if(field.isIdentity()){
+        oss << "\t" << field.getName() << " INT PRIMARY KEY AUTO_INCREMENT";
     }else{
-        auto key = normalizeFireignKey(tableName, field);
-        if(key.has_value()){
-            foreign_keys_.push_back(key.value());
-        }
-        return std::nullopt;
+        oss << "\t" << field.getName() << " " << varToString(field.getType());
     }
-    
-    
+    return oss.str();
 }
 
-std::vector<std::string> SQLBuilder::getSqlByEntities(std::set<Table> tables) {
-    std::vector<std::string> everything;
-    
-    for (const auto& table : tables) {
-        std::stringstream createStmt;
-        createStmt << "CREATE TABLE IF NOT EXISTS `" << table.getName() << "` (\n";
-
-        std::vector<std::string> fieldsSQL;
-
-        for (const auto& field : table.getFields()) {
-            auto fieldDef = normalizeField(table.getName(), field);
-            if (fieldDef.has_value()) {
-                fieldsSQL.push_back(fieldDef.value());
-            }
+std::string SQLBuilder::sqlCreateTable(Table table){
+    std::stringstream createStmt;
+    createStmt << "CREATE TABLE IF NOT EXISTS `" << table.getName() << "` (\n";
+    std::vector<std::string> fieldsSQL;
+    for (const auto& field : table.getFields()) {
+        auto fieldDef = normalizeField(table.getName(), field);
+        if (fieldDef.has_value()) {
+            fieldsSQL.push_back(fieldDef.value());
         }
-
-        if (fieldsSQL.empty()) {
-            continue;
+    }
+    for (size_t i = 0; i < fieldsSQL.size(); ++i) {
+        createStmt << fieldsSQL[i];
+        if (i != fieldsSQL.size() - 1) {
+            createStmt << ",";
         }
+        createStmt << "\n";
+    }
+
+    createStmt << ");\n\n";
+
+    return createStmt.str();
+
+}
+
+std::string SQLBuilder::sqlCreateDependency(dependency dep){
+    std::stringstream oss;
+    auto [tab1, tab2] = dep.second;
+    switch (dep.first)
+    {
+    case ONE_TO_ONE: {
+        oss << "ALTER TABLE " << tab1 << std::endl;
+        oss << "ADD COLUMN " << tab2 << "_id INT," << std::endl;
+        oss << "ADD FOREIGN KEY (" << tab2 << "_id) REFERENCES " << tab2 << "(id);" << std::endl << std::endl;
+        break;
+    }
+
+    case ONE_TO_MANY: {
+        oss << "ALTER TABLE " << tab2 << std::endl;
+        oss << "ADD COLUMN " << tab1 << "_id INT," << std::endl;
+        oss << "ADD FOREIGN KEY (" << tab1 << "_id) REFERENCES " << tab1 << "(id);" << std::endl << std::endl;
         
-        for (size_t i = 0; i < fieldsSQL.size(); ++i) {
-            createStmt << fieldsSQL[i];
-            if (i != fieldsSQL.size() - 1) {
-                createStmt << ",";
-            }
-            createStmt << "\n";
-        }
-
-        createStmt << ");\n\n";
-        everything.push_back(createStmt.str());
+        break;
     }
-    for(auto key : foreign_keys_){
-        everything.push_back(key);
+    case MANY_TO_ONE: {
+        oss << "ALTER TABLE " << tab1 << std::endl;
+        oss << "ADD COLUMN " << tab2 << "_id INT," << std::endl;
+        oss << "ADD FOREIGN KEY (" << tab2 << "_id) REFERENCES " << tab2 << "(id);" << std::endl << std::endl;
+        break;
     }
-    return everything;
+    case MANY_TO_MANY: {
+        oss << "CREATE TABLE " << tab1 << "_" << tab2 << "(" << std::endl;
+        oss << "\t" << tab1 << "_id INT," << std::endl;
+        oss << "\t" << tab2 << "_id INT," << std::endl;
+        oss << "\t" << "FOREIGN KEY (" << tab1 << "_id)" << "REFERENCES " << tab1 << "(id)," << std::endl;
+        oss << "\t" << "FOREIGN KEY (" << tab2 << "_id)" << "REFERENCES " << tab2 << "(id)," << std::endl;
+        oss << "\t" << "PRIMARY KEY (" << tab1 << "_id, " << tab2 << "_id)" << std::endl;
+        oss << ");" << std::endl;
+        break;
+    }
+    default:
+        break;
+    }
+    return oss.str();
 }
     
 }

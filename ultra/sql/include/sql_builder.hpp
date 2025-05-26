@@ -2,6 +2,7 @@
 #define SQL_BUILDER_HPP
 
 #include <iostream>
+#include "dep.hpp"
 #include "table.hpp"
 #include <set>
 #include <map>
@@ -18,8 +19,11 @@ class SQLBuilder{
 public:
     SQLBuilder();
     
+    
     std::string sqlCreateTable(Table table);
-    std::vector<std::string> getSqlByEntities(std::set<Table> tables);
+    std::string sqlCreateDependency(dependency dep);
+
+    std::vector<std::string> getSqlByEntitiesAndDependencies(std::set<Table> tables, dependencies dep_set);
 
 
 private:

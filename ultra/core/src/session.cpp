@@ -9,27 +9,36 @@ Session::Session(std::shared_ptr<IDriver> driver) : driver_(driver) {
 }
 
 void Session::create_tables() {
-    auto tables = scanner_.getTables();
 
-    
 
-    if (!tables.has_value()) {
-        throw std::runtime_error("Failed to scan tables");
+
+    auto [tables, deps] = scanner_.getTablesAndDependencies();
+
+    std::vector<std::string> requests;
+
+    std::cout << "=== Table Structures ===\n";
+    for(auto table : tables){
+        requests.push_back(sqlbuilder_.sqlCreateTable(table));
     }
 
-    auto requests = sqlbuilder_.getSqlByEntities(tables.value());
 
+    std::cout << "=== Dependencies ===\n";
+    for(auto dep : deps){
+        requests.push_back(sqlbuilder_.sqlCreateDependency(dep));
+    }
+    
     if (requests.empty()) {
         std::cout << "No tables to create.\n";
         return;
     }
 
+
     driver_->begin_transaction();
 
     try {
         for (const auto& req : requests) {
-            // std::cout << req << std::endl;
-            // driver_->execute(req);
+            std::cout << req << std::endl;
+            driver_->execute(req);
         }
         driver_->commit();
     } catch (const std::exception& e) {

@@ -12,28 +12,21 @@ namespace ultra{
 
 class Field{
 public:
-    Field(const std::string& name, SQLVAR type, std::set<OPTION> options);
+    Field(const std::string& name, SQLVAR type, bool id);
 
-    std::string getSQLNormalize();
-    
     const std::string& getName() const;
-
-    std::string toString();
-
-    std::set<OPTION> getOptions();
-
-    
-
     SQLVAR getType();
+    std::string toString();
 
     bool operator<(const Field& other) const {
         return std::tie(name_) < std::tie(other.getName());
     }
+    bool isIdentity();
 
 private:
     std::string name_;
     SQLVAR type_;
-    std::set<OPTION> options_;
+    bool is_identity_;
 };
 
 }}

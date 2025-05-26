@@ -15,6 +15,7 @@ const std::set<Field>& Table::getFields() const {
 }
 
 
+
 std::string Table::toString(){
     std::string fields;
     for(auto field : fields_){
