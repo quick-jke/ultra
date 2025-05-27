@@ -1,8 +1,8 @@
 #include "sql_builder.hpp"
+#include <numeric>
 
 namespace quick{
 namespace ultra{
-
 
 SQLBuilder::SQLBuilder(){}
 
@@ -81,5 +81,26 @@ std::string SQLBuilder::sqlCreateDependency(dependency dep){
     return oss.str();
 }
     
+
+std::string joinWithComma(const std::vector<std::string>& vec, bool add_quotes = false) {
+    std::ostringstream oss;
+    for (size_t i = 0; i < vec.size(); ++i) {
+        if (i > 0) {
+            oss << ", ";
+        }
+        if (add_quotes) {
+            oss << "'" << vec[i] << "'";
+        } else {
+            oss << vec[i];
+        }
+    }
+    return oss.str();
+}
+
+std::string SQLBuilder::INSERT(const std::string& tableName, std::vector<std::string> fields, std::vector<std::string> values ){
+    return "INSERT INTO " + tableName + " (" + joinWithComma(fields) + ") VALUES (" + joinWithComma(values, true) + ");";
+}
+
+
 }
 }

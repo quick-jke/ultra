@@ -46,6 +46,5 @@ void Session::create_tables() {
 
 
 
-
 }    
 }

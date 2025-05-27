@@ -5,10 +5,6 @@
 #include "sql_builder.hpp"
 #include "scanner.hpp"
 
-
-// #include "generated/session_helper.hpp"
-
-
 namespace quick{
 namespace ultra{
 
@@ -26,10 +22,7 @@ private:
     SQLBuilder sqlbuilder_;
 };
 
-
-
 }
 }
-
 
 #endif

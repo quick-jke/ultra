@@ -17,9 +17,10 @@ int main() {
 
     // Сохранение объекта в БД
     User user;
-    user.name = "Alice";
-    user.email = "alice@example.com";
-    session.save<User>(user);
+    user.name = "Bob";
+    user.email = "Bob@example.com";
+    user.products = {new Product(), new Product()};
+    session.save(user);
     
 
 
@@ -27,19 +28,16 @@ int main() {
     // product.info = "asd";
     // session.save<Product>(product);
 
-    
-//new
-/*
-    Загрузка объекта из БД по ID
-    User loaded_user = session.load<User>(1); // SELECT * FROM users WHERE id=1
-    std::cout << loaded_user.name << std::endl;
+    // Загрузка объекта из БД по ID
+    // User loaded_user = session.load<User>(1); // SELECT * FROM users WHERE id=1
+    // std::cout << loaded_user.name << std::endl;
 
-    Выборка по условию
-    auto users = session.query<User>()
-                 .where("email LIKE '%example.com'")
-                 .limit(10)
-                 .execute();
-*/
+    // Выборка по условию
+    // auto users = session.query<User>()
+    //              .where("email LIKE '%example.com'")
+    //              .limit(10)
+    //              .execute();
+
 
 //old
 /*
