@@ -5,6 +5,10 @@
 #include "sql_builder.hpp"
 #include "scanner.hpp"
 
+
+// #include "generated/session_helper.hpp"
+
+
 namespace quick{
 namespace ultra{
 
@@ -14,10 +18,7 @@ public:
     void create_tables();
 
     template<typename T>
-    void save(T table){
-        std::cout << std::endl << std::string(typeid(T).name()).substr(1) << std::endl;
-        
-    }
+    void save(const T& obj);
 
 private:
     std::shared_ptr<IDriver> driver_;

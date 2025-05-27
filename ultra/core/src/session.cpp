@@ -1,4 +1,5 @@
 #include "session.hpp"
+#include "session_helper.hpp"
 
 namespace quick{
 namespace ultra{
@@ -9,20 +10,15 @@ Session::Session(std::shared_ptr<IDriver> driver) : driver_(driver) {
 }
 
 void Session::create_tables() {
-
-
-
     auto [tables, deps] = scanner_.getTablesAndDependencies();
 
     std::vector<std::string> requests;
 
-    std::cout << "=== Table Structures ===\n";
     for(auto table : tables){
         requests.push_back(sqlbuilder_.sqlCreateTable(table));
     }
 
 
-    std::cout << "=== Dependencies ===\n";
     for(auto dep : deps){
         requests.push_back(sqlbuilder_.sqlCreateDependency(dep));
     }
@@ -38,7 +34,7 @@ void Session::create_tables() {
     try {
         for (const auto& req : requests) {
             std::cout << req << std::endl;
-            driver_->execute(req);
+            // driver_->execute(req);
         }
         driver_->commit();
     } catch (const std::exception& e) {
@@ -47,6 +43,9 @@ void Session::create_tables() {
         throw;
     }
 }
+
+
+
 
 }    
 }

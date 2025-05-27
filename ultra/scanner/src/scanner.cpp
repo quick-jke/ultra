@@ -146,6 +146,9 @@ std::pair<std::set<Table>, dependencies> HeaderScanner::getTablesAndDependencies
 
         auto [dependencyList, tableStructs] = parseDependenciesList(deps_by_tables);
 
+        // std::string helperCode = generateSessionHelper(tableStructs);
+        // saveSessionHelper(helperCode);
+
         return {tableStructs, dependencyList};
     } catch (const fs::filesystem_error& e) {
         std::cerr << "Filesystem error: " << e.what() << "\n";
@@ -220,5 +223,53 @@ std::pair<std::string, std::set<std::string>> HeaderScanner::getTableStructure(c
     return { tableName, bodyFields };
 }
 
+std::vector<std::string> HeaderScanner::getFieldNames(const std::string& filePath) {
+    auto [table_name, fields_set] = getTableStructure(filePath);
+    return std::vector<std::string>(fields_set.begin(), fields_set.end());
+}
+
+
+
+std::string HeaderScanner::generateSessionHelper(const std::set<Table>& tables) {
+    std::ostringstream oss;
+
+    oss << "#pragma once\n"
+        << "#include \"session.hpp\"\n"
+        << "#include <iostream>\n"
+        << "#include <string>\n"
+        << "\n"
+        << "namespace quick{\n"
+        << "namespace ultra{\n"
+        << "\n"; 
+
+    for (const auto& table : tables) {
+        std::string className = table.getName();
+        oss << "template<>\n"
+            << "void Session::save<" << className << ">(const " << className << "& obj) {\n"
+            << "    std::cout << \"Saving " << className << ":\" << std::endl;\n";
+
+        for (auto field : table.getFields()) {
+            if (field.isIdentity()) {
+                oss << "    std::cout << \"  ID: \" << obj." << field.getName() << " << std::endl;\n";
+            } else {
+                oss << "    std::cout << \"  " << field.getName() << ": \" << obj." << field.getName() << " << std::endl;\n";
+            }
+        }
+
+        oss << "    // Handle dependencies here (e.g., save related objects)\n"
+            << "}\n\n";
+    }
+    oss << "}}";
+
+    return oss.str();
+}
+
+void HeaderScanner::saveSessionHelper(const std::string& content, const std::string& filename) {
+    std::ofstream file(filename);
+    if (!file) {
+        throw std::runtime_error("Failed to create session_helper.hpp");
+    }
+    file << content;
+}
 
 }}

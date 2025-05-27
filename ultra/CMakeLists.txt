@@ -1,7 +1,24 @@
-#тут настроить, чтобы нормльно всё было :)
+add_library(ultra INTERFACE)
 
-# file(GLOB ULTRA_SOURCES "src/*.cpp")
+add_subdirectory(core)
+add_subdirectory(drivers)
+add_subdirectory(scanner)
+add_subdirectory(schema)
+add_subdirectory(sql)
 
-# add_library(Ultra STATIC ${ULTRA_SOURCES})
+target_link_libraries(ultra
+    INTERFACE
+        Core
+        Driver
+        Scanner
+        Schema
+        Sql
+        mysqlcppconn
+)
 
-# target_include_directories(Ultra PUBLIC include)
+
+target_include_directories(ultra
+    INTERFACE
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+        $<INSTALL_INTERFACE:include>
+)

@@ -23,6 +23,10 @@ class HeaderScanner {
 public:
     HeaderScanner();
     std::pair<std::set<Table>, dependencies> getTablesAndDependencies();
+    std::vector<std::string> getFieldNames(const std::string& filePath);
+
+    std::string generateSessionHelper(const std::set<Table>& tables);
+    void saveSessionHelper(const std::string& content, const std::string& filename = "session_helper.hpp");
     
 private:
     std::pair<OPTION, std::string> parseDependencyString(std::string dependency_string);
@@ -30,6 +34,8 @@ private:
     std::pair<dependencies, std::set<Table>> parseDependenciesList(dependenciesByTables deps_by_tables);
     std::set<std::string> parseBody(const std::string& body);
     std::pair<std::string, std::set<std::string>> getTableStructure(const std::string& filePath);
+
+    
 
 };
 }}

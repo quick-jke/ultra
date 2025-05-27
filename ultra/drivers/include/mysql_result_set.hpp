@@ -2,7 +2,7 @@
 #define DRIVER_MYSQL_RESULT_SET_HPP
 
 
-#include "result_set.hpp"
+#include "iresult_set.hpp"
 #include <mysql_connection.h>
 #include <cppconn/resultset.h>
 

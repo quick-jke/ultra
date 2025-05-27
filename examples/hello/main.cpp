@@ -2,6 +2,7 @@
 
 #include "driver_factory.hpp"
 #include "session.hpp"
+#include "session_helper.hpp"
 #include "user.entity.hpp"
 #include "product.entity.hpp"
 
@@ -14,11 +15,12 @@ int main() {
     quick::ultra::Session session(driver);
     session.create_tables();
 
-    //Сохранение объекта в БД
-    // User user;
-    // user.name = "Alice";
-    // user.email = "alice@example.com";
-    // session.save<User>(user);
+    // Сохранение объекта в БД
+    User user;
+    user.name = "Alice";
+    user.email = "alice@example.com";
+    session.save<User>(user);
+    
 
 
     // Product product;
