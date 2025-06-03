@@ -72,3 +72,17 @@ int main() {
 */
     return 0;
 }
+
+
+
+/*
+std::cout << "ID\tName\tAge\n";
+    
+while (result->next()) {
+    int id = result->get_int("id");
+    std::string name = result->get_string("name");
+    int age = result->get_int("age");
+
+    std::cout << id << "\t" << name << "\t" << age << "\n";
+}
+*/

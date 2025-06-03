@@ -43,8 +43,6 @@ public:
         return *this;
     }
 
-    
-
     std::vector<std::string> build_all() const {
         std::vector<std::string> queries;
 

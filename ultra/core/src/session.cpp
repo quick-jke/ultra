@@ -24,7 +24,6 @@ void Session::create_tables(/* std::span<SQLTable> tables */) {
     /*
 
     //need to sort std::span
-
     builder->set_if_not_exists();
     for(auto table : tables){
         builder.add_table(table.table_name());
@@ -35,10 +34,6 @@ void Session::create_tables(/* std::span<SQLTable> tables */) {
         for(auto link : links){
             builder.add_goreign_key(link.to_foreign_key);
         }
-    }
-    auto queries = builder->build_all();
-    for (const auto& sql : queries) {
-        driver_->execute(sql);
     }
 
     */
@@ -63,8 +58,34 @@ void Session::create_tables(/* std::span<SQLTable> tables */) {
 
 
 //temp method
-ResultSetPtr Session::select(){
+
+/*
+
+struct SelectQuery{
+    std::vector<std::string> what;
+    Table from;
+    std::string where;
+    std::variant<std::string, int> limit;
+};
+
+SelectQuery squery = {
+    {table.id, table.name, table.age},
+    table.table_name(),
+    table.ageMoreThan(30),
+    10
+};
+
+*/
+ResultSetPtr Session::select(/* SelectQuery squery */){
     auto query = std::make_unique<SelectQueryBuilder>(dialect_.get());
+
+    /*
+    auto sql = query->select(squery.what)
+            .from(squery.from.table_name())
+            .where(squery.where)
+            .limit(squery.limit)
+            .build();
+    */
 
     auto sql = query->select({"id", "name", "age"})
             .from("users")
@@ -88,17 +109,7 @@ ResultSetPtr Session::select(){
         return ResultSetPtr();
     }
 
-    /*
-    std::cout << "ID\tName\tAge\n";
-        
-    while (result->next()) {
-        int id = result->get_int("id");
-        std::string name = result->get_string("name");
-        int age = result->get_int("age");
-
-        std::cout << id << "\t" << name << "\t" << age << "\n";
-    }
-    */
+    
 }
 
 //furure
@@ -108,7 +119,7 @@ void Session::insert_into(/* SQLTable table */) {
     
     auto query = std::make_unique<InsertQueryBuilder>(dialect_.get());
 
-    std::string sql = query->insert_into(table.name)
+    std::string sql = query->insert_into(table.table_name())
                               .columns(table.columns())
                               .values(table.values())
                               .build();
