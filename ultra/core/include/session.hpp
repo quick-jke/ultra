@@ -5,6 +5,7 @@
 #include "mysql_dialect.hpp"
 #include "create_table_query_builder.hpp" 
 #include "select_query_builder.hpp"
+#include "insert_query_builder.hpp"
 #include "sql_dialect.hpp"
 #include "mysql_result_set.hpp"
 namespace quick {
@@ -14,7 +15,7 @@ public:
     explicit Session(std::shared_ptr<IDriver> driver);
 
     void create_tables();
-    void select();
+    ResultSetPtr select();
 
     //future
     void insert_into();

@@ -11,8 +11,8 @@ int main() {
 
     //Создание таблиц на основе entity из models
     quick::ultra::Session session(driver);
-    session.select();
-    
+    // session.select();
+    session.insert_into();
 
     // // Сохранение объекта в БД
     // User user;

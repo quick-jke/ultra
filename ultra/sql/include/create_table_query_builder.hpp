@@ -19,33 +19,33 @@ public:
     explicit CreateTableQueryBuilder(const ISQLDialect* dialect)
         : dialect_(dialect), if_not_exists_(false) {}
 
-    CreateTableQueryBuilder& addTable(const std::string& table_name) {
+    CreateTableQueryBuilder& add_table(const std::string& table_name) {
         tables_.push_back({table_name, {}, {}});
         return *this;
     }
 
-    CreateTableQueryBuilder& setIfNotExists(bool enable = true) {
+    CreateTableQueryBuilder& set_if_not_exists(bool enable = true) {
         if_not_exists_ = enable;
         return *this;
     }
 
-    CreateTableQueryBuilder& addColumn(const Column& column) {
+    CreateTableQueryBuilder& add_column(const Column& column) {
         if (!tables_.empty()) {
             tables_.back().columns.push_back(column);
         }
         return *this;
     }
 
-    CreateTableQueryBuilder& addForeignKey(const std::string& col, const std::string& foreign_table, const std::string& foreign_col) {
+    CreateTableQueryBuilder& add_foreign_key(const std::string& column, const std::string& foreign_table, const std::string& foreign_column) {
         if (!tables_.empty()) {
-            tables_.back().foreign_keys.emplace_back(col, foreign_table, foreign_col);
+            tables_.back().foreign_keys.emplace_back(column, foreign_table, foreign_column);
         }
         return *this;
     }
 
     
 
-    std::vector<std::string> buildAll() const {
+    std::vector<std::string> build_all() const {
         std::vector<std::string> queries;
 
         for (const auto& table : tables_) {
