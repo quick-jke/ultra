@@ -45,10 +45,10 @@ void Session::select(){
     auto sql = query->select({"id", "name", "age"})
             .from("users")
             .where("age > 30")
-            .limit(5)
+            .limit(2, 2)
             .build();
 
-    // std::cout << sql << std::endl;
+    std::cout << sql << std::endl;
 
     try{
         auto result = driver_->query(sql);

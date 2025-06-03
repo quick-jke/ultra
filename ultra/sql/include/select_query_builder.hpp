@@ -27,12 +27,8 @@ public:
         return *this;
     }
 
-    SelectQueryBuilder& limit(int limit) {
+    SelectQueryBuilder& limit(int limit, int offset = 0) {
         limit_ = limit;
-        return *this;
-    }
-
-    SelectQueryBuilder& offset(int offset){
         offset_ = offset;
         return *this;
     }
