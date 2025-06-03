@@ -1,5 +1,5 @@
 #include "session.hpp"
-
+#define DEBUG
 namespace quick{
 namespace ultra{
 
@@ -52,6 +52,9 @@ void Session::create_tables(/* std::span<SQLTable> tables */) {
 
     auto queries = builder->build_all();
     for (const auto& sql : queries) {
+#ifdef DEBUG
+        std::cout << sql << std::endl;
+#endif
         driver_->execute(sql);
     }
 }

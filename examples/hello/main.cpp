@@ -2,7 +2,8 @@
 
 #include "driver_factory.hpp"
 #include "session.hpp"
-#include "mysql_dialect.hpp"
+
+
 
 int main() {
     // Подключение к базе данных
