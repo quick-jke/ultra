@@ -3,15 +3,12 @@
 #include "idriver.hpp"
 #include "mysql_result_set.hpp"
 #include <memory>
-
 #include <mysql_driver.h>
 #include <mysql_connection.h>
 #include <cppconn/statement.h>
 #include <cppconn/resultset.h>
-
 namespace quick {
 namespace ultra {
-
 class MySQLDriver : public IDriver {
 public:
     MySQLDriver();
@@ -26,11 +23,9 @@ public:
     void begin_transaction() override;
     void commit() override;
     void rollback() override;
-
+    DriverType type() const override;
 private:
     std::unique_ptr<sql::Connection> connection_;
 };
-
-}
-}
+}}// namespace quick::ultra
 #endif

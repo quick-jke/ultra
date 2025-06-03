@@ -1,28 +1,26 @@
-#ifndef CORE_DRIVER_HPP
-#define CORE_DRIVER_HPP
-
+#ifndef CORE_SESSION_HPP
+#define CORE_SESSION_HPP
 #include "idriver.hpp"
-#include "sql_builder.hpp"
-#include "scanner.hpp"
-
-namespace quick{
-namespace ultra{
-
-class Session{
+#include <iostream>
+#include "mysql_dialect.hpp"
+#include "create_table_query_builder.hpp" 
+#include "select_query_builder.hpp"
+#include "sql_dialect.hpp"
+#include "mysql_result_set.hpp"
+namespace quick {
+namespace ultra {
+class Session {
 public:
-    Session(std::shared_ptr<IDriver> driver);
-    void create_tables();
+    explicit Session(std::shared_ptr<IDriver> driver);
 
-    template<typename T>
-    void save(const T& obj);
+    void create_tables();
+    void select();
 
 private:
     std::shared_ptr<IDriver> driver_;
-    HeaderScanner scanner_;
-    SQLBuilder sqlbuilder_;
+    std::unique_ptr<ISQLDialect> dialect_;
 };
 
-}
-}
+}}// namespace quick::ultra
 
 #endif

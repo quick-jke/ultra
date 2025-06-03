@@ -1,8 +1,6 @@
 #include "driver_factory.hpp"
 #include "mysql_driver.hpp"
-
 #define HAVE_MYSQL
-
 #ifdef HAVE_MYSQL
     #include "mysql_driver.hpp"
 #endif
@@ -10,10 +8,8 @@
 #ifdef HAVE_POSTGRESQL
     #include "postgres_driver.hpp"
 #endif
-
 namespace quick {
 namespace ultra {
-
 std::shared_ptr<IDriver> DriverFactory::create(const std::string& driver_type) {
     if (driver_type == "mysql") {
         #ifdef HAVE_MYSQL
@@ -33,6 +29,4 @@ std::shared_ptr<IDriver> DriverFactory::create(const std::string& driver_type) {
         throw std::runtime_error("Unknown driver type: " + driver_type);
     }
 }
-
-} 
-}
+}}// namespace quick::ultra

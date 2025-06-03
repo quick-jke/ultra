@@ -1,50 +1,74 @@
 #include "session.hpp"
-#include "session_helper.hpp"
 
 namespace quick{
 namespace ultra{
 
-Session::Session(std::shared_ptr<IDriver> driver) : driver_(driver) {
-    scanner_ = HeaderScanner();
-    sqlbuilder_ = SQLBuilder();
+Session::Session(std::shared_ptr<IDriver> driver)
+    : driver_(std::move(driver)) {
+
+    switch (driver_->type()) {
+        case DriverType::MySQL:
+            dialect_ = std::make_unique<MySQLDialect>();
+            break;
+        default:
+            dialect_ = nullptr;
+            break;
+    }
+
+    create_tables();
 }
 
 void Session::create_tables() {
-    auto [tables, deps] = scanner_.getTablesAndDependencies();
+    auto builder = std::make_unique<CreateTableQueryBuilder>(dialect_.get());
 
-    std::vector<std::string> requests;
+    auto queries = builder->setIfNotExists()
+                              .addTable("users")
+                              .addColumn(Column{"id", "INT", true, true, false, ""})
+                              .addColumn(Column{"name", "VARCHAR(255)", false, false, true, "'default'"})
+                              .addColumn(Column{"age", "INT", false, false, false, "0"})
+                              .addTable("wow")
+                              .addColumn(Column{"id", "INT", true, true, false, ""})
+                              .addColumn(Column{"email", "VARCHAR(255)", false, false, true, "'default'"})
+                              .buildAll();
 
-    for(auto table : tables){
-        requests.push_back(sqlbuilder_.sqlCreateTable(table));
+    for (const auto& sql : queries) {
+        // std::cout << sql << std::endl;
+        driver_->execute(sql); 
     }
+}
 
 
-    for(auto dep : deps){
-        requests.push_back(sqlbuilder_.sqlCreateDependency(dep));
-    }
+//temp method
+void Session::select(){
+    auto query = std::make_unique<SelectQueryBuilder>(dialect_.get());
+
+    auto sql = query->select({"id", "name", "age"})
+            .from("users")
+            .where("age > 30")
+            .limit(5)
+            .build();
+
+    // std::cout << sql << std::endl;
+
+    try{
+        auto result = driver_->query(sql);
     
-    if (requests.empty()) {
-        std::cout << "No tables to create.\n";
-        return;
-    }
-
-
-    driver_->begin_transaction();
-
-    try {
-        for (const auto& req : requests) {
-            std::cout << req << std::endl;
-            // driver_->execute(req);
+        if (!result) {
+            std::cerr << "Query returned no result." << std::endl;
+            return;
         }
-        driver_->commit();
-    } catch (const std::exception& e) {
-        driver_->rollback();
-        std::cerr << "Error creating tables: " << e.what() << std::endl;
-        throw;
+    
+        std::cout << "ID\tName\tAge\n";
+    
+        while (result->next()) {
+            int id = result->get_int("id");
+            std::string name = result->get_string("name");
+            int age = result->get_int("age");
+    
+            std::cout << id << "\t" << name << "\t" << age << "\n";
+        }
+    }catch (const std::exception& e) {
+        std::cerr << "Exception during query: " << e.what() << std::endl;
     }
 }
-
-
-
-}    
-}
+}}// namespace quick::ultra

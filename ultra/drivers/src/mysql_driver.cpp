@@ -3,10 +3,8 @@
 #include <cppconn/exception.h>
 #include <cppconn/statement.h>
 #include <iostream>
-
 namespace quick {
 namespace ultra {
-
 MySQLDriver::MySQLDriver() = default;
 
 MySQLDriver::~MySQLDriver() {
@@ -98,5 +96,7 @@ void MySQLDriver::rollback() {
     connection_->setAutoCommit(true);
 }
 
-} 
+DriverType MySQLDriver::type() const {
+    return DriverType::MySQL;
 }
+}}// namespace quick::ultra

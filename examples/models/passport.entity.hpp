@@ -4,10 +4,10 @@
 #include "macros.hpp"
 
 
-
-ENTITY Passport{
+ENTITY Passport {
     
     ID int id;
+
 
     int num;
 };

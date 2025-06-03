@@ -2,31 +2,25 @@
 
 #include "driver_factory.hpp"
 #include "session.hpp"
-#include "session_helper.hpp"
-#include "user.entity.hpp"
-#include "product.entity.hpp"
+#include "mysql_dialect.hpp"
 
 int main() {
     // Подключение к базе данных
     auto driver = quick::ultra::DriverFactory::create("mysql");
     driver->connect("host=localhost;user=root;password=RootPass123!;database=hello");
 
-    //Создание таблицы на основе entity из models
+    //Создание таблиц на основе entity из models
     quick::ultra::Session session(driver);
-    session.create_tables();
-
-    // Сохранение объекта в БД
-    User user;
-    user.name = "Bob";
-    user.email = "Bob@example.com";
-    user.products = {new Product(), new Product()};
-    session.save(user);
+    session.select();
     
 
-
-    // Product product;
-    // product.info = "asd";
-    // session.save<Product>(product);
+    // // Сохранение объекта в БД
+    // User user;
+    // user.name = "Rachel";
+    // user.email = "Rachel@example.com";
+    // user.products = {new Product(), new Product()};
+    // session.save(user);
+    
 
     // Загрузка объекта из БД по ID
     // User loaded_user = session.load<User>(1); // SELECT * FROM users WHERE id=1

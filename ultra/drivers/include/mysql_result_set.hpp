@@ -1,14 +1,10 @@
 #ifndef DRIVER_MYSQL_RESULT_SET_HPP
 #define DRIVER_MYSQL_RESULT_SET_HPP
-
-
 #include "iresult_set.hpp"
 #include <mysql_connection.h>
 #include <cppconn/resultset.h>
-
 namespace quick {
 namespace ultra {
-
 class MySQLResultSet : public ResultSet {
 public:
     explicit MySQLResultSet(sql::ResultSet* rs);
@@ -21,8 +17,5 @@ public:
 private:
     std::unique_ptr<sql::ResultSet> result_set_;
 };
-
-}
-}
-
+}}// namespace quick::ultra
 #endif

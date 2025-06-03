@@ -1,9 +1,6 @@
-
 #include "mysql_result_set.hpp"
-
 namespace quick {
 namespace ultra {
-
 MySQLResultSet::MySQLResultSet(sql::ResultSet* rs)
     : result_set_(rs) {}
 
@@ -18,8 +15,6 @@ int MySQLResultSet::get_int(const std::string& column) {
 }
 
 std::string MySQLResultSet::get_string(const std::string& column) {
-    return result_set_->getString(column).c_str(); // cppconn возвращает sql::SQLString
+    return result_set_->getString(column).c_str(); 
 }
-
-}
-}
+}}// namespace quick::ultra

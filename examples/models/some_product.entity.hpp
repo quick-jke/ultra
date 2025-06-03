@@ -6,7 +6,7 @@
 
 IMPORT User;
 
-ENTITY SomeProduct{
+ENTITY SomeProduct {
     
     ID int id;
 
