@@ -16,6 +16,16 @@ public:
     void create_tables();
     void select();
 
+    //future
+    void insert_into();
+    void create_table();
+    void update();
+    void delete_from();
+    void drop_table();
+    void table_exists();
+    void truncate_table();
+    
+
 private:
     std::shared_ptr<IDriver> driver_;
     std::unique_ptr<ISQLDialect> dialect_;

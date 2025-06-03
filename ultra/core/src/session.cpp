@@ -71,4 +71,26 @@ void Session::select(){
         std::cerr << "Exception during query: " << e.what() << std::endl;
     }
 }
+
+//furure
+void Session::insert_into() {
+    // auto query = std::make_unique<InsertQueryBuilder>(dialect_.get());
+
+    // std::string sql = builder->insert_into("users")
+    //                           .columns({"name", "age"})
+    //                           .values({"Alice", "35"})
+    //                           .build();
+
+    // driver_->execute(sql);
+}
+
+void Session::drop_table() {
+    // auto query = std::make_unique<DropTableQueryBuilder>(dialect_.get());
+    // std::string sql = builder->drop_table("users").if_exists().build();
+    // driver_->execute(sql);
+}
+
+
+
+
 }}// namespace quick::ultra
