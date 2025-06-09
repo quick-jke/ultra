@@ -8,13 +8,15 @@
 #include "insert_query_builder.hpp"
 #include "sql_dialect.hpp"
 #include "mysql_result_set.hpp"
+#include "puretable.hpp"
 namespace quick {
 namespace ultra {
+
 class Session {
 public:
     explicit Session(std::shared_ptr<IDriver> driver);
 
-    void create_tables();
+    void create_tables(std::vector<PureTable> tables);
     ResultSetPtr select();
 
     //future

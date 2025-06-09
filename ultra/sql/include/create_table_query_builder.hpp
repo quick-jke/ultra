@@ -30,8 +30,14 @@ public:
     }
 
     CreateTableQueryBuilder& add_column(const Column& column) {
-        if (!tables_.empty()) {
-            tables_.back().columns.push_back(column);
+        
+        if (!tables_.empty() ) {
+            if(column.type == "string"){ // FIXME: template 
+                tables_.back().columns.push_back({column.name, "VARCHAR(255)", column.is_primary_key, column.is_auto_increment, column.is_nullable, column.default_value});
+            }else{
+                tables_.back().columns.push_back(column);
+            }
+            
         }
         return *this;
     }

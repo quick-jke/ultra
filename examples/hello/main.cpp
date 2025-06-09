@@ -2,7 +2,7 @@
 
 #include "driver_factory.hpp"
 #include "session.hpp"
-
+#include "build/models.hpp"
 
 
 int main() {
@@ -12,8 +12,9 @@ int main() {
 
     //Создание таблиц на основе entity из models
     quick::ultra::Session session(driver);
+    session.create_tables(hello::pure_tables);
     // session.select();
-    session.insert_into();
+    // session.insert_into();
 
     // // Сохранение объекта в БД
     // User user;

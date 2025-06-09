@@ -1,4 +1,5 @@
 #include "session.hpp"
+
 #define DEBUG
 namespace quick{
 namespace ultra{
@@ -14,41 +15,39 @@ Session::Session(std::shared_ptr<IDriver> driver)
             dialect_ = nullptr;
             break;
     }
-
-    create_tables();
+    // create_tables(hello::pure_tables);
 }
 
-void Session::create_tables(/* std::span<SQLTable> tables */) {
+void Session::create_tables(std::vector<PureTable> tables) {
     auto builder = std::make_unique<CreateTableQueryBuilder>(dialect_.get());
-
-    /*
-
+    
     //need to sort std::span
     builder->set_if_not_exists();
     for(auto table : tables){
-        builder.add_table(table.table_name());
-        for(auto column : table.columns()){
-            builder.add_column(column);
+        builder->add_table(table.name_);
+        for(auto column : table.columns_){
+            builder->add_column(column);
         }
-        auto links = table.links();
+        auto links = table.links_;
         for(auto link : links){
-            builder.add_goreign_key(link.to_foreign_key);
+            builder->add_foreign_key(link.column, link.foreign_column, link.foreign_table);
         }
     }
-
+    /*
     */
+    
 
-    builder->set_if_not_exists()
-           .add_table("users")
-           .add_column(Column{"id", "INT", true, true, false, ""})
-           .add_column(Column{"name", "VARCHAR(255)", false, false, true, "'default'"})
-           .add_column(Column{"age", "INT", false, false, false, "0"});
+    // builder->set_if_not_exists()
+    //        .add_table("users")
+    //        .add_column(Column{"id", "INT", true, true, false, ""})
+    //        .add_column(Column{"name", "VARCHAR(255)", false, false, true, "'default'"})
+    //        .add_column(Column{"age", "INT", false, false, false, "0"});
 
-    builder->add_table("orders")
-           .add_column(Column{"order_id", "INT", true, true, false, ""})
-           .add_column(Column{"user_id", "INT", false, false, false, ""})
-           .add_column(Column{"total", "DECIMAL(10,2)", false, false, false, ""})
-           .add_foreign_key("user_id", "users", "id");
+    // builder->add_table("orders")
+    //        .add_column(Column{"order_id", "INT", true, true, false, ""})
+    //        .add_column(Column{"user_id", "INT", false, false, false, ""})
+    //        .add_column(Column{"total", "DECIMAL(10,2)", false, false, false, ""})
+    //        .add_foreign_key("user_id", "users", "id");
 
     auto queries = builder->build_all();
     for (const auto& sql : queries) {
