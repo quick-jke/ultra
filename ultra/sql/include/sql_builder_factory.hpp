@@ -8,7 +8,7 @@
 #include <memory>
 namespace quick{
 namespace ultra{
-
+namespace sqljke {
 class SQLBuilderFactory {
 public:
     static std::unique_ptr<SQLQueryBuilder> createSelectBuilder(const ISQLDialect* dialect) {
@@ -19,5 +19,5 @@ public:
         return std::make_unique<CreateTableQueryBuilder>(dialect, table_name);
     }
 };
-}}// namespace quick::ultra
+}}}// namespace quick::ultra::sql
 #endif

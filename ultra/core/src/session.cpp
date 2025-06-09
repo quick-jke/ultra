@@ -1,5 +1,4 @@
 #include "session.hpp"
-
 #define DEBUG
 namespace quick{
 namespace ultra{
@@ -9,33 +8,35 @@ Session::Session(std::shared_ptr<IDriver> driver)
 
     switch (driver_->type()) {
         case DriverType::MySQL:
-            dialect_ = std::make_unique<MySQLDialect>();
+            dialect_ = std::make_unique<sqljke::MySQLDialect>();
             break;
         default:
             dialect_ = nullptr;
             break;
     }
-    // create_tables(hello::pure_tables);
+
+    // create_tables();
 }
 
-void Session::create_tables(std::vector<PureTable> tables) {
-    auto builder = std::make_unique<CreateTableQueryBuilder>(dialect_.get());
+void Session::create_tables(std::vector<sqljke::PureTable> tables) {
+    auto builder = std::make_unique<sqljke::CreateTableQueryBuilder>(dialect_.get());
+
     
+
     //need to sort std::span
     builder->set_if_not_exists();
-    for(auto table : tables){
+    for(auto& table : tables){
         builder->add_table(table.name_);
         for(auto column : table.columns_){
             builder->add_column(column);
         }
         auto links = table.links_;
         for(auto link : links){
-            builder->add_foreign_key(link.column, link.foreign_column, link.foreign_table);
+            builder->add_foreign_key(link.column, link.foreign_table, link.foreign_column);
         }
     }
     /*
     */
-    
 
     // builder->set_if_not_exists()
     //        .add_table("users")
@@ -48,6 +49,7 @@ void Session::create_tables(std::vector<PureTable> tables) {
     //        .add_column(Column{"user_id", "INT", false, false, false, ""})
     //        .add_column(Column{"total", "DECIMAL(10,2)", false, false, false, ""})
     //        .add_foreign_key("user_id", "users", "id");
+
 
     auto queries = builder->build_all();
     for (const auto& sql : queries) {
@@ -79,7 +81,7 @@ SelectQuery squery = {
 
 */
 ResultSetPtr Session::select(/* SelectQuery squery */){
-    auto query = std::make_unique<SelectQueryBuilder>(dialect_.get());
+    auto query = std::make_unique<sqljke::SelectQueryBuilder>(dialect_.get());
 
     /*
     auto sql = query->select(squery.what)
@@ -130,7 +132,7 @@ void Session::insert_into(/* SQLTable table */) {
     
     */
 
-    auto query = std::make_unique<InsertQueryBuilder>(dialect_.get());
+    auto query = std::make_unique<sqljke::InsertQueryBuilder>(dialect_.get());
 
     std::string sql = query->insert_into("users")
                               .columns({"name", "age"})

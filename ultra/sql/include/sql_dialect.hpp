@@ -3,6 +3,7 @@
 #include <string>
 namespace quick{
 namespace ultra{
+namespace sqljke {
 class ISQLDialect {
 public:
     virtual std::string quote_identifier(const std::string& name) const = 0;
@@ -11,5 +12,5 @@ public:
     virtual std::string if_not_exists_clause() const = 0;
     virtual ~ISQLDialect() = default;
 };
-}}// namespace quick::ultra
+}}}// namespace quick::ultra::sql
 #endif

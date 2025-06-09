@@ -7,6 +7,7 @@
 #include "column.hpp"
 namespace quick {
 namespace ultra {
+namespace sqljke {
 struct PureTable{
 	std::string name_;
 	std::vector<Column> columns_;
@@ -22,6 +23,6 @@ struct PureTable{
         links_ = links;
     }
 };
-}}
+}}} //namespace quick::ultra::sql
 
 #endif

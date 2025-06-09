@@ -9,6 +9,7 @@
 
 namespace quick {
 namespace ultra {
+namespace sqljke {
 
 class InsertQueryBuilder : public SQLQueryBuilder {
 public:
@@ -77,6 +78,6 @@ private:
     }
 };
 
-}} // namespace quick::ultra
+}}} // namespace quick::ultra
 
 #endif

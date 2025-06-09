@@ -9,6 +9,7 @@
 #include <tuple>
 namespace quick {
 namespace ultra {
+namespace sqljke{
 struct TableDefinition {
     std::string name;
     std::vector<Column> columns;
@@ -100,7 +101,7 @@ private:
     std::vector<TableDefinition> tables_;
     bool if_not_exists_;
 };
-}} // namespace quick::ultra
+}}} // namespace quick::ultra::sql
 #endif
 
 

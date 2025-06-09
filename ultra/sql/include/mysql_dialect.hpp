@@ -3,6 +3,7 @@
 #include "sql_dialect.hpp"
 namespace quick{
 namespace ultra{
+namespace sqljke {
 class MySQLDialect : public ISQLDialect {
 public:
     std::string quote_identifier(const std::string& name) const override {
@@ -25,5 +26,5 @@ public:
         return "IF NOT EXISTS";
     }
 };
-}}// namespace quick::ultra
+}}}// namespace quick::ultra::sql
 #endif

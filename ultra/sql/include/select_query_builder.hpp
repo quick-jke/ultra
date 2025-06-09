@@ -7,6 +7,7 @@
 #include <vector>
 namespace quick{
 namespace ultra{
+namespace sqljke {
 class SelectQueryBuilder : public SQLQueryBuilder {
 public:
     SelectQueryBuilder(const ISQLDialect* dialect)
@@ -67,7 +68,7 @@ private:
     int limit_ = -1;
     int offset_ = 0;
 };
-}}// namespace quick::ultra
+}}}// namespace quick::ultra::sql
 #endif
 
 /*

@@ -3,6 +3,7 @@
 #include <string>
 namespace quick{
 namespace ultra{
+namespace sqljke{
 struct Column {
     std::string name;
     std::string type;
@@ -11,5 +12,5 @@ struct Column {
     bool is_nullable = true;
     std::string default_value;
 };
-}}// namespace quick::ultra
+}}}// namespace quick::ultra::sql
 #endif
