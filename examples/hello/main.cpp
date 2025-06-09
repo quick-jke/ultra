@@ -6,30 +6,39 @@
 
 
 int main() {
-    // Подключение к базе данных
     auto driver = quick::ultra::DriverFactory::create("mysql");
     driver->connect("host=localhost;user=root;password=RootPass123!;database=hello");
-    //Создание таблиц на основе entity из models
     quick::ultra::Session session(driver);
     session.create_tables(hello::pure_tables);
 
 
-    auto user = std::make_shared<hello::User>();
-    user->set_name("John");
-    user->set_age(23);
-    user->set_email("John@icloud.com");
-    user->set_password("qweqweqwe");
+    auto user1 = std::make_shared<hello::User>();
+    user1->set_name("John");
+    user1->set_age(23);
+    user1->set_email("John@icloud.com");
+    user1->set_password("qweqweqwe");
 
-    session.insert_into(user);
-    // session.select();
-    // session.insert_into();
+    auto user2 = std::make_shared<hello::User>();
+    user2->set_name("Maty");
+    user2->set_age(43);
+    user2->set_email("Maty@icloud.com");
+    user2->set_password("zxczxczxc");
 
-    // // Сохранение объекта в БД
-    // User user;
-    // user.name = "Rachel";
-    // user.email = "Rachel@example.com";
-    // user.products = {new Product(), new Product()};
-    // session.save(user);
+    auto user3 = std::make_shared<hello::User>();
+    user3->set_name("Adam");
+    user3->set_age(34);
+    user3->set_email("Adam@icloud.com");
+    user3->set_password("asdasdasd");
+
+    session.save(user1);
+    session.save(user2);
+    session.save(user3);
+
+    
+    auto result = session.select({user1->column_names(), user1->table_name(), user1->age_less_or_equal(34), 4});
+    std::cout << result->debug(user1->column_names());
+
+    //User user1 = session.load<User>()
     
 
     // Загрузка объекта из БД по ID
@@ -43,56 +52,5 @@ int main() {
     //              .execute();
 
 
-//old
-/*
-    stmt->execute(
-        "CREATE TABLE IF NOT EXISTS users ("
-        "id INT AUTO_INCREMENT PRIMARY KEY, "
-        "name VARCHAR(100)"
-        ")"
-    );
-
-    sql::ResultSet *res = stmt->executeQuery("SELECT COUNT(*) FROM users");
-    res->next();
-    int count = res->getInt(1);
-    delete res;
-
-    if (count == 0) {
-        stmt->execute("INSERT INTO users (name) VALUES ('Alice'), ('Bob'), ('Charlie')");
-        std::cout << "Тестовые данные добавлены" << std::endl;
-    }
-
-    res = stmt->executeQuery("SELECT id, name FROM users");
-
-    while (res->next()) {
-        int id = res->getInt("id");
-        std::string name = res->getString("name");
-        std::cout << "ID: " << id << ", Name: " << name << std::endl;
-    }
-
-    delete res;
-    delete stmt;
-    delete con;
-
-    } catch (sql::SQLException &e) {
-        std::cerr << "SQL Error: " << e.what() << std::endl;
-        std::cerr << "Error Code: " << e.getErrorCode() << std::endl;
-        std::cerr << "SQL State: " << e.getSQLState() << std::endl;
-    }
-*/
     return 0;
 }
-
-
-
-/*
-std::cout << "ID\tName\tAge\n";
-    
-while (result->next()) {
-    int id = result->get_int("id");
-    std::string name = result->get_string("name");
-    int age = result->get_int("age");
-
-    std::cout << id << "\t" << name << "\t" << age << "\n";
-}
-*/

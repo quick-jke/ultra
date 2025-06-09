@@ -1,5 +1,4 @@
 #include "session.hpp"
-#define DEBUG
 namespace quick{
 namespace ultra{
 
@@ -116,7 +115,7 @@ ResultSetPtr Session::select(sqljke::SelectQuery select_query){
             std::cerr << "err " << ex.what() << std::endl; 
         }
     }
-    std::cout << sql.build() << std::endl;
+    // std::cout << sql.build() << std::endl;
 
     try{
         auto result = driver_->query(sql.build());
@@ -134,7 +133,7 @@ ResultSetPtr Session::select(sqljke::SelectQuery select_query){
 
 }
 
-void Session::insert_into(std::shared_ptr<sqljke::SQLTable> table) {
+void Session::save(std::shared_ptr<sqljke::SQLTable> table) {
     auto query = std::make_unique<sqljke::InsertQueryBuilder>(dialect_.get());
     std::string sql = query->insert_into(table->table_name())
                               .columns(table->column_names())
@@ -150,10 +149,10 @@ void Session::insert_into(std::shared_ptr<sqljke::SQLTable> table) {
         if(!is_exist(table)){
             driver_->execute(sql);
         }else{
-            std::cout << "obj exist" << std::endl;
+            // std::cout << "obj exist" << std::endl;
         }
     }catch(std::exception& ex){
-        std::cout << ex.what() << std::endl;
+        std::cerr << ex.what() << std::endl;
     }
     
 #ifdef DEBUG

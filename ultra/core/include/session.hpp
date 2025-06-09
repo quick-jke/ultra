@@ -22,7 +22,7 @@ public:
     
     //future
     bool is_exist(std::shared_ptr<sqljke::SQLTable> table);
-    void insert_into(std::shared_ptr<sqljke::SQLTable> table);
+    void save(std::shared_ptr<sqljke::SQLTable> table);
     //future
     void create_table();
     void update();

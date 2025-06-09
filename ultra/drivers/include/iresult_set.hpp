@@ -2,6 +2,7 @@
 #define DRIVER_RESULT_SET_HPP
 #include <string>
 #include <memory>
+#include <vector> 
 namespace quick {
 namespace ultra {
 class ResultSet {
@@ -14,6 +15,7 @@ public:
     virtual bool get_bool(const std::string& column) = 0;
     virtual double get_double(const std::string& column) = 0;
     virtual char get_char(const std::string& column) = 0;
+    virtual std::string debug(const std::vector<std::string>& columns) = 0;
 };
 using ResultSetPtr = std::unique_ptr<ResultSet>;
 }}// namespace quick::ultra
