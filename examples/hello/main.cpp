@@ -9,10 +9,18 @@ int main() {
     // Подключение к базе данных
     auto driver = quick::ultra::DriverFactory::create("mysql");
     driver->connect("host=localhost;user=root;password=RootPass123!;database=hello");
-
     //Создание таблиц на основе entity из models
     quick::ultra::Session session(driver);
     session.create_tables(hello::pure_tables);
+
+
+    auto user = std::make_shared<hello::User>();
+    user->set_name("John");
+    user->set_age(23);
+    user->set_email("John@icloud.com");
+    user->set_password("qweqweqwe");
+
+    session.insert_into(user);
     // session.select();
     // session.insert_into();
 

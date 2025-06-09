@@ -21,9 +21,6 @@ Session::Session(std::shared_ptr<IDriver> driver)
 void Session::create_tables(std::vector<sqljke::PureTable> tables) {
     auto builder = std::make_unique<sqljke::CreateTableQueryBuilder>(dialect_.get());
 
-    
-
-    //need to sort std::span
     builder->set_if_not_exists();
     for(auto& table : tables){
         builder->add_table(table.name_);
@@ -35,21 +32,6 @@ void Session::create_tables(std::vector<sqljke::PureTable> tables) {
             builder->add_foreign_key(link.column, link.foreign_table, link.foreign_column);
         }
     }
-    /*
-    */
-
-    // builder->set_if_not_exists()
-    //        .add_table("users")
-    //        .add_column(Column{"id", "INT", true, true, false, ""})
-    //        .add_column(Column{"name", "VARCHAR(255)", false, false, true, "'default'"})
-    //        .add_column(Column{"age", "INT", false, false, false, "0"});
-
-    // builder->add_table("orders")
-    //        .add_column(Column{"order_id", "INT", true, true, false, ""})
-    //        .add_column(Column{"user_id", "INT", false, false, false, ""})
-    //        .add_column(Column{"total", "DECIMAL(10,2)", false, false, false, ""})
-    //        .add_foreign_key("user_id", "users", "id");
-
 
     auto queries = builder->build_all();
     for (const auto& sql : queries) {
@@ -61,26 +43,7 @@ void Session::create_tables(std::vector<sqljke::PureTable> tables) {
 }
 
 
-//temp method
-
-/*
-
-struct SelectQuery{
-    std::vector<std::string> what;
-    Table from;
-    std::string where;
-    std::variant<std::string, int> limit;
-};
-
-SelectQuery squery = {
-    {table.id, table.name, table.age},
-    table.table_name(),
-    table.ageMoreThan(30),
-    10
-};
-
-*/
-ResultSetPtr Session::select(/* SelectQuery squery */){
+ResultSetPtr Session::select(sqljke::SelectQuery select_query){
     auto query = std::make_unique<sqljke::SelectQueryBuilder>(dialect_.get());
 
     /*
@@ -91,16 +54,30 @@ ResultSetPtr Session::select(/* SelectQuery squery */){
             .build();
     */
 
-    auto sql = query->select({"id", "name", "age"})
-            .from("users")
-            .where("age > 30")
-            .limit(2, 2)
-            .build();
+    auto sql = query->select(select_query.columns)
+            .from(select_query.table_name)
+            .where(select_query.where);
 
-    std::cout << sql << std::endl;
+    try
+    {
+        sql.limit(std::get<int>(select_query.limit));
+    }
+    catch (const std::bad_variant_access& ex)
+    {
+        try
+        {
+            auto p = std::get<std::pair<int, int>>(select_query.limit);
+            sql.limit(p.first, p.second);
+        }
+        catch(const std::bad_variant_access& ex)
+        {
+            std::cerr << "err " << ex.what() << std::endl; 
+        }
+    }
+    std::cout << sql.build() << std::endl;
 
     try{
-        auto result = driver_->query(sql);
+        auto result = driver_->query(sql.build());
     
         if (!result) {
             std::cerr << "Query returned no result." << std::endl;
@@ -117,29 +94,29 @@ ResultSetPtr Session::select(/* SelectQuery squery */){
 }
 
 //furure
-void Session::insert_into(/* SQLTable table */) {
+void Session::insert_into(std::shared_ptr<sqljke::SQLTable> table) {
 
-    /*
     
-    auto query = std::make_unique<InsertQueryBuilder>(dialect_.get());
-
-    std::string sql = query->insert_into(table.table_name())
-                              .columns(table.columns())
-                              .values(table.values())
-                              .build();
-    std::cout << sql << std::endl;
-    driver_->execute(sql);
     
-    */
-
     auto query = std::make_unique<sqljke::InsertQueryBuilder>(dialect_.get());
-
-    std::string sql = query->insert_into("users")
-                              .columns({"name", "age"})
-                              .values({"Alice", "35"})
+    std::vector<std::string> columns;
+    for(auto col : table->columns()){
+        columns.push_back(col.name);
+    }
+    std::string sql = query->insert_into(table->table_name())
+                              .columns(columns)
+                              .values(table->values())
                               .build();
     std::cout << sql << std::endl;
-    driver_->execute(sql);
+    try{
+        driver_->execute(sql);
+    }catch(std::exception& ex){
+        std::cout << ex.what() << std::endl;
+    }
+    
+#ifdef DEBUG
+    std::cout << sql << std::endl;
+#endif
 }
 
 void Session::drop_table() {

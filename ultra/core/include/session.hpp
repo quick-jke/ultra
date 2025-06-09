@@ -18,10 +18,11 @@ public:
     explicit Session(std::shared_ptr<IDriver> driver);
 
     void create_tables(std::vector<sqljke::PureTable> tables);
-    ResultSetPtr select();
+    ResultSetPtr select(sqljke::SelectQuery query);
 
     //future
-    void insert_into();
+    void insert_into(std::shared_ptr<sqljke::SQLTable> table);
+    //future
     void create_table();
     void update();
     void delete_from();
