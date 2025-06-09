@@ -17,4 +17,15 @@ int MySQLResultSet::get_int(const std::string& column) {
 std::string MySQLResultSet::get_string(const std::string& column) {
     return result_set_->getString(column).c_str(); 
 }
+
+bool MySQLResultSet::get_bool(const std::string& column) {
+    return result_set_->getBoolean(column); 
+}
+
+double MySQLResultSet::get_double(const std::string& column) {
+    return result_set_->getDouble(column); 
+}
+char MySQLResultSet::get_char(const std::string& column) {
+    return result_set_->getString(column)[0]; 
+}
 }}// namespace quick::ultra

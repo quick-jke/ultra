@@ -13,6 +13,9 @@ public:
     bool next() override;
     int get_int(const std::string& column) override;
     std::string get_string(const std::string& column) override;
+    bool get_bool(const std::string& column) override;
+    double get_double(const std::string& column) override;
+    char get_char(const std::string& column) override;
 
 private:
     std::unique_ptr<sql::ResultSet> result_set_;

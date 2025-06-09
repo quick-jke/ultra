@@ -19,8 +19,9 @@ public:
 
     void create_tables(std::vector<sqljke::PureTable> tables);
     ResultSetPtr select(sqljke::SelectQuery query);
-
+    
     //future
+    bool is_exist(std::shared_ptr<sqljke::SQLTable> table);
     void insert_into(std::shared_ptr<sqljke::SQLTable> table);
     //future
     void create_table();

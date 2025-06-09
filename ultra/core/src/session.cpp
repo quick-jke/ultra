@@ -42,18 +42,60 @@ void Session::create_tables(std::vector<sqljke::PureTable> tables) {
     }
 }
 
+bool Session::is_exist(std::shared_ptr<sqljke::SQLTable> table) {
+    auto query = std::make_unique<sqljke::SelectQueryBuilder>(dialect_.get());
+    auto sql = query->select({}).from(table->table_name()).build();
+
+#ifdef DEBUG
+    std::cout << "Executing SQL: " << sql << std::endl;
+#endif
+
+    try {
+        ResultSetPtr result = driver_->query(sql);
+
+        if (!result) {
+            std::cerr << "Query returned no result." << std::endl;
+            return false;
+        }
+
+        bool has_rows = false;
+
+        std::vector<std::string> column_names;
+        for (const auto& col : table->columns()) {
+            column_names.push_back(col.name);
+        }
+
+#ifdef DEBUG
+        std::cout << "Columns: ";
+        for (const auto& col : column_names) {
+            std::cout << col << "\t";
+        }
+        std::cout << std::endl;
+#endif
+
+        while (result->next()) {
+            has_rows = true;
+
+#ifdef DEBUG
+            std::cout << "Row:\n";
+            for (const auto& col : column_names) {
+                std::cout << "  " << col << ": " << result->get_string(col) << "\n";
+            }
+            std::cout << "--------\n";
+#endif
+        }
+
+        return has_rows;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Exception during query: " << e.what() << std::endl;
+        return false;
+    }
+}
+
 
 ResultSetPtr Session::select(sqljke::SelectQuery select_query){
     auto query = std::make_unique<sqljke::SelectQueryBuilder>(dialect_.get());
-
-    /*
-    auto sql = query->select(squery.what)
-            .from(squery.from.table_name())
-            .where(squery.where)
-            .limit(squery.limit)
-            .build();
-    */
-
     auto sql = query->select(select_query.columns)
             .from(select_query.table_name)
             .where(select_query.where);
@@ -90,26 +132,26 @@ ResultSetPtr Session::select(sqljke::SelectQuery select_query){
         return ResultSetPtr();
     }
 
-    
 }
 
-//furure
 void Session::insert_into(std::shared_ptr<sqljke::SQLTable> table) {
-
-    
-    
     auto query = std::make_unique<sqljke::InsertQueryBuilder>(dialect_.get());
-    std::vector<std::string> columns;
-    for(auto col : table->columns()){
-        columns.push_back(col.name);
-    }
     std::string sql = query->insert_into(table->table_name())
-                              .columns(columns)
+                              .columns(table->column_names())
                               .values(table->values())
                               .build();
+
+
+
+#ifdef DEBUG
     std::cout << sql << std::endl;
+#endif
     try{
-        driver_->execute(sql);
+        if(!is_exist(table)){
+            driver_->execute(sql);
+        }else{
+            std::cout << "obj exist" << std::endl;
+        }
     }catch(std::exception& ex){
         std::cout << ex.what() << std::endl;
     }

@@ -11,6 +11,9 @@ public:
     virtual bool next() = 0; 
     virtual int get_int(const std::string& column) = 0;
     virtual std::string get_string(const std::string& column) = 0;
+    virtual bool get_bool(const std::string& column) = 0;
+    virtual double get_double(const std::string& column) = 0;
+    virtual char get_char(const std::string& column) = 0;
 };
 using ResultSetPtr = std::unique_ptr<ResultSet>;
 }}// namespace quick::ultra
