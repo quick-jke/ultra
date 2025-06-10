@@ -20,26 +20,32 @@ int main() {
     user1->set_email("John@icloud.com");
     user1->set_password("qweqweqwe");
 
-    // auto user2 = std::make_shared<hello::User>();
-    // user2->set_name("Maty");
-    // user2->set_age(43);
-    // user2->set_email("Maty@icloud.com");
-    // user2->set_password("zxczxczxc");
+    auto user2 = std::make_shared<hello::User>();
+    user2->set_name("Maty");
+    user2->set_age(43);
+    user2->set_email("Maty@icloud.com");
+    user2->set_password("zxczxczxc");
 
-    // auto user3 = std::make_shared<hello::User>();
-    // user3->set_name("Adam");
-    // user3->set_age(34);
-    // user3->set_email("Adam@icloud.com");
-    // user3->set_password("asdasdasd");
+    auto user3 = std::make_shared<hello::User>();
+    user3->set_name("Adam");
+    user3->set_age(34);
+    user3->set_email("Adam@icloud.com");
+    user3->set_password("asdasdasd");
 
-    session.save(user1);
+    session.save<hello::User>(user1);
+    session.save<hello::User>(user2);
+    session.save<hello::User>(user3);
 
     // auto sql = session.select({}).from(hello::User::TABLE_NAME).build();
     // auto res = session.execute(sql);
     // std::cout << res->debug(hello::User::COLUMN_NAMES);
 
-    auto user = session.get<hello::User>(1);
-    std::cout << user->age() << std::endl;
+    auto users = session.get_all<hello::User>();
+    for(auto user : users){
+        std::cout << user->age() << std::endl;
+    }
+
+
 
     // auto select_sql = session.select(hello::User::COLUMN_NAMES).from(hello::User::TABLE_NAME).where(user1->age_between_and(20, 40)).build();
 

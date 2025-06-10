@@ -6,6 +6,7 @@
 #include "create_table_query_builder.hpp" 
 #include "select_query_builder.hpp"
 #include "insert_query_builder.hpp"
+#include "update_query_builder.hpp"
 #include "sql_dialect.hpp"
 #include "mysql_result_set.hpp"
 #include "puretable.hpp"
@@ -21,6 +22,7 @@ public:
     
     //select
     sqljke::SelectQueryBuilder& select(const std::vector<std::string>& columns);
+
     template <typename TBL>
     std::shared_ptr<TBL> get(int id) {
         static_assert(std::is_base_of_v<quick::ultra::sqljke::SQLTable, TBL>,
@@ -32,9 +34,9 @@ public:
                                 .where("id = " + std::to_string(id))
                                 .build();
 
-    #ifdef DEBUG
+#ifdef DEBUG
         std::cout << "Executing SQL: " << sql << std::endl;
-    #endif
+#endif
 
         try {
             ResultSetPtr result = driver_->query(sql);
@@ -51,23 +53,98 @@ public:
             return nullptr;
         }
     }
+    
+    template <typename TBL>
+    std::vector<std::shared_ptr<TBL>> get_all(const std::string& where = "", int limit = -1, int offset = -1) {
+        static_assert(std::is_base_of_v<quick::ultra::sqljke::SQLTable, TBL>,
+                    "Template argument must derive from SQLTable");
 
+        auto select = std::make_unique<sqljke::SelectQueryBuilder>(dialect_.get());
+        std::string table_name = TBL::TABLE_NAME;
+        auto sql_builder = select->from(table_name);
+
+        if (!where.empty()) {
+            sql_builder = sql_builder.where(where);
+        }
+
+        if (limit > 0) {
+            sql_builder = sql_builder.limit(limit);
+            if (offset > 0) {
+                sql_builder = sql_builder.limit(limit, offset);
+            }
+        }
+
+        std::string sql = sql_builder.build();
+
+#ifdef DEBUG
+        std::cout << "Executing SQL: " << sql << std::endl;
+#endif
+
+        std::vector<std::shared_ptr<TBL>> result;
+
+        try {
+            ResultSetPtr rs = driver_->query(sql);
+            if (!rs) return result;
+
+            while (rs->next()) {
+                auto obj = std::make_shared<TBL>(*rs); 
+                result.push_back(obj);
+            }
+
+        } catch (const std::exception& e) {
+            std::cerr << "Exception during get_all(): " << e.what() << std::endl;
+        }
+
+        return result;
+    }
+    
+    
+    
     //create
     sqljke::CreateTableQueryBuilder& create_table(const std::string& table_name);
     void create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> tables);
 
     //insert
     sqljke::InsertQueryBuilder& insert_into(const std::string& table_name);
-    void save(std::shared_ptr<sqljke::SQLTable> table);
+
+    template <typename TBL>
+    void save(const std::shared_ptr<TBL>& obj) {
+        static_assert(std::is_base_of_v<quick::ultra::sqljke::SQLTable, TBL>,
+                    "Template argument must derive from SQLTable");
+
+        if (!obj) {
+            std::cerr << "Error: null object passed to save()" << std::endl;
+            return;
+        }
+
+        try {
+                std::string sql = insert_.set_table(obj->table_name())
+                                        .columns(obj->column_names())
+                                        .values(obj->values())
+                                        .build();
+
+#ifdef DEBUG
+                std::cout << "Executing SQL: " << sql << std::endl;
+#endif
+                execute(sql);
+                int inserted_id = driver_->get_last_insert_id();
+                obj->set_id(inserted_id);
+        } catch (const std::exception& e) {
+            std::cerr << "Exception during save(): " << e.what() << std::endl;
+        }
+    }
     
     bool is_exist(std::shared_ptr<sqljke::SQLTable> table);
 
     ResultSetPtr execute(const std::string& sql);
 
 
+    sqljke::UpdateQueryBuilder& update(const std::string& table_name);
+
     //future
     void create_table();
-    void update();
+
+    
     void delete_from();
     void drop_table();
     void table_exists();
@@ -82,6 +159,7 @@ private:
     sqljke::SelectQueryBuilder select_;
     sqljke::CreateTableQueryBuilder create_;
     sqljke::InsertQueryBuilder insert_;
+    sqljke::UpdateQueryBuilder update_;
 };
 
 }}// namespace quick::ultra

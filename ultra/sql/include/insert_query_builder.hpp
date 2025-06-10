@@ -16,13 +16,10 @@ public:
     explicit InsertQueryBuilder(const ISQLDialect* dialect)
         : dialect_(dialect) {}
 
-    // InsertQueryBuilder& insert_into(const std::string& table_name) {
-    //     table_name_ = dialect_->quote_identifier(table_name);
-    //     return *this;
-    // }
 
-    void set_table(const std::string& table_name){
+    InsertQueryBuilder& set_table(const std::string& table_name){
         table_name_ = dialect_->quote_identifier(table_name);
+        return *this;
     }
 
     InsertQueryBuilder& columns(const std::vector<std::string>& columns) {

@@ -24,6 +24,7 @@ public:
     void commit() override;
     void rollback() override;
     DriverType type() const override;
+    int get_last_insert_id() const override;
 private:
     std::unique_ptr<sql::Connection> connection_;
 };

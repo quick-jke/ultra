@@ -99,4 +99,28 @@ void MySQLDriver::rollback() {
 DriverType MySQLDriver::type() const {
     return DriverType::MySQL;
 }
+
+int MySQLDriver::get_last_insert_id() const {
+    if (!connection_ || !connection_->isValid()) {
+        throw std::runtime_error("Database connection is not valid");
+    }
+
+    try {
+        std::unique_ptr<sql::Statement> stmt(connection_->createStatement());
+
+        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery("SELECT LAST_INSERT_ID()"));
+
+        if (res->next()) {
+            uint64_t last_id = res->getUInt64(1); 
+            return static_cast<int>(last_id);
+        } else {
+            throw std::runtime_error("Failed to get last insert id");
+        }
+
+    } catch (const sql::SQLException& e) {
+        std::cerr << "SQL Error: " << e.what() << std::endl;
+        throw;
+    }
+}
+
 }}// namespace quick::ultra

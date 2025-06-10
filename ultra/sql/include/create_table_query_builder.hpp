@@ -20,10 +20,6 @@ public:
     explicit CreateTableQueryBuilder(const ISQLDialect* dialect)
         : dialect_(dialect), if_not_exists_(false) {}
 
-    // CreateTableQueryBuilder& add_table(const std::string& table_name) {
-    //     tables_.push_back({table_name, {}, {}});
-    //     return *this;
-    // }
 
     void set_table_name(const std::string& table_name){
         tables_.push_back({table_name, {}, {}});

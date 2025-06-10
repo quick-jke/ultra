@@ -18,6 +18,8 @@ public:
     virtual void commit() = 0;
     virtual void rollback() = 0;
     virtual DriverType type() const = 0;
+    virtual int get_last_insert_id() const = 0;
+
 };
 }}// namespace quick::ultra
 #endif

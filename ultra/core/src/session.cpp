@@ -7,7 +7,8 @@ Session::Session(std::shared_ptr<IDriver> driver)
       dialect_(),
       select_(dialect_.get()),       
       create_(dialect_.get()),      
-      insert_(dialect_.get())       
+      insert_(dialect_.get()),
+      update_(dialect_.get())       
 {
     switch (driver_->type()) {
         case DriverType::MySQL:
@@ -21,6 +22,7 @@ Session::Session(std::shared_ptr<IDriver> driver)
     select_ = sqljke::SelectQueryBuilder(dialect_.get());
     create_ = sqljke::CreateTableQueryBuilder(dialect_.get());
     insert_ = sqljke::InsertQueryBuilder(dialect_.get());
+    update_ = sqljke::UpdateQueryBuilder(dialect_.get());
 }
 
 void Session::create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> tables) {
@@ -47,6 +49,7 @@ void Session::create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> table
 }
 
 bool Session::is_exist(std::shared_ptr<sqljke::SQLTable> table) {
+
     return true;
 }
 
@@ -66,27 +69,6 @@ ResultSetPtr Session::execute(const std::string& sql){
     }
 }
 
-void Session::save(std::shared_ptr<sqljke::SQLTable> table) {
-    auto query = std::make_unique<sqljke::InsertQueryBuilder>(dialect_.get());
-    std::string sql = insert_into(table->table_name())
-                        .columns(table->column_names())
-                        .values(table->values())
-                        .build();
-
-
-#ifdef DEBUG
-    std::cout << sql << std::endl;
-#endif
-    try{
-        driver_->execute(sql);
-    }catch(std::exception& ex){
-        std::cerr << ex.what() << std::endl;
-    }
-    
-#ifdef DEBUG
-    std::cout << sql << std::endl;
-#endif
-}
 
 void Session::drop_table() {
     // auto query = std::make_unique<DropTableQueryBuilder>(dialect_.get());
@@ -107,6 +89,11 @@ sqljke::CreateTableQueryBuilder& Session::create_table(const std::string& table_
 sqljke::InsertQueryBuilder& Session::insert_into(const std::string& table_name){
     insert_.set_table(table_name);
     return insert_;
+}
+
+sqljke::UpdateQueryBuilder& Session::update(const std::string& table_name){
+    update_.set_table(table_name);
+    return update_;
 }
 
 void Session::drop_database(const std::string& database_name){

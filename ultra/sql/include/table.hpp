@@ -10,6 +10,7 @@ namespace sqljke {
 class SQLTable{
 public:
 	SQLTable() = default;
+    virtual int id() const = 0;
 	virtual std::string table_name() const = 0;
 	virtual std::vector<quick::ultra::sqljke::Column> columns() const = 0;
 	virtual std::vector<quick::ultra::sqljke::Link> links() const = 0;
