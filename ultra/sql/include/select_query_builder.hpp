@@ -22,10 +22,10 @@ public:
     SelectQueryBuilder(const ISQLDialect* dialect)
         : dialect_(dialect) {}
 
-    SelectQueryBuilder& select(const std::vector<std::string>& columns) {
-        columns_ = columns;
-        return *this;
-    }
+    // SelectQueryBuilder& select(const std::vector<std::string>& columns) {
+    //     columns_ = columns;
+    //     return *this;
+    // }
 
     SelectQueryBuilder& from(const std::string& table) {
         table_ = dialect_->quote_identifier(table);
@@ -67,6 +67,10 @@ public:
         }
 
         return oss.str();
+    }
+
+    void set_columns(const std::vector<std::string>& columns){
+        columns_ = columns;
     }
 
 private:

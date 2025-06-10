@@ -16,9 +16,13 @@ public:
     explicit InsertQueryBuilder(const ISQLDialect* dialect)
         : dialect_(dialect) {}
 
-    InsertQueryBuilder& insert_into(const std::string& table_name) {
+    // InsertQueryBuilder& insert_into(const std::string& table_name) {
+    //     table_name_ = dialect_->quote_identifier(table_name);
+    //     return *this;
+    // }
+
+    void set_table(const std::string& table_name){
         table_name_ = dialect_->quote_identifier(table_name);
-        return *this;
     }
 
     InsertQueryBuilder& columns(const std::vector<std::string>& columns) {
@@ -35,24 +39,21 @@ public:
         std::ostringstream oss;
         oss << "INSERT INTO " << table_name_ << " ";
 
-        // Часть с колонками
         if (columns_.empty()) {
             throw std::runtime_error("Columns must be specified for INSERT");
         }
 
-        oss << "("; // Открытие скобок для колонок
+        oss << "("; 
         for (size_t i = 0; i < columns_.size(); ++i) {
             if (i > 0) oss << ", ";
             oss << dialect_->quote_identifier(columns_[i]);
         }
         oss << ") VALUES ";
 
-        // Часть со значениями
         oss << "(";
         for (size_t i = 0; i < values_.size(); ++i) {
             if (i > 0) oss << ", ";
 
-            // Оборачиваем строковые значения в ''
             const auto& val = values_[i];
             if (is_string_value(val)) {
                 oss << "'" << val << "'";
@@ -71,9 +72,7 @@ private:
     std::vector<std::string> columns_;
     std::vector<std::string> values_;
 
-    // Простая проверка, является ли значение строкой
     bool is_string_value(const std::string& val) const {
-        // Можно улучшить логику (например, через типы данных)
         return !val.empty() && val[0] != '\'' && val.find_first_of("0123456789") == std::string::npos;
     }
 };

@@ -3,8 +3,12 @@ namespace quick{
 namespace ultra{
 
 Session::Session(std::shared_ptr<IDriver> driver)
-    : driver_(std::move(driver)) {
-
+    : driver_(std::move(driver)),
+      dialect_(),
+      select_(dialect_.get()),       
+      create_(dialect_.get()),      
+      insert_(dialect_.get())       
+{
     switch (driver_->type()) {
         case DriverType::MySQL:
             dialect_ = std::make_unique<sqljke::MySQLDialect>();
@@ -14,25 +18,26 @@ Session::Session(std::shared_ptr<IDriver> driver)
             break;
     }
 
-    // create_tables();
+    select_ = sqljke::SelectQueryBuilder(dialect_.get());
+    create_ = sqljke::CreateTableQueryBuilder(dialect_.get());
+    insert_ = sqljke::InsertQueryBuilder(dialect_.get());
 }
 
-void Session::create_tables(std::vector<sqljke::PureTable> tables) {
-    auto builder = std::make_unique<sqljke::CreateTableQueryBuilder>(dialect_.get());
+void Session::create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> tables) {
 
-    builder->set_if_not_exists();
+    create_.set_if_not_exists();
     for(auto& table : tables){
-        builder->add_table(table.name_);
-        for(auto column : table.columns_){
-            builder->add_column(column);
+        create_table(table->table_name());
+        for(auto column : table->columns()){
+            create_.add_column(column);
         }
-        auto links = table.links_;
+        auto links = table->links();
         for(auto link : links){
-            builder->add_foreign_key(link.column, link.foreign_table, link.foreign_column);
+            create_.add_foreign_key(link.column, link.foreign_table, link.foreign_column);
         }
     }
+    auto queries = create_.build_all();
 
-    auto queries = builder->build_all();
     for (const auto& sql : queries) {
 #ifdef DEBUG
         std::cout << sql << std::endl;
@@ -42,84 +47,13 @@ void Session::create_tables(std::vector<sqljke::PureTable> tables) {
 }
 
 bool Session::is_exist(std::shared_ptr<sqljke::SQLTable> table) {
-    auto query = std::make_unique<sqljke::SelectQueryBuilder>(dialect_.get());
-    auto sql = query->select({}).from(table->table_name()).build();
-
-#ifdef DEBUG
-    std::cout << "Executing SQL: " << sql << std::endl;
-#endif
-
-    try {
-        ResultSetPtr result = driver_->query(sql);
-
-        if (!result) {
-            std::cerr << "Query returned no result." << std::endl;
-            return false;
-        }
-
-        bool has_rows = false;
-
-        std::vector<std::string> column_names;
-        for (const auto& col : table->columns()) {
-            column_names.push_back(col.name);
-        }
-
-#ifdef DEBUG
-        std::cout << "Columns: ";
-        for (const auto& col : column_names) {
-            std::cout << col << "\t";
-        }
-        std::cout << std::endl;
-#endif
-
-        while (result->next()) {
-            has_rows = true;
-
-#ifdef DEBUG
-            std::cout << "Row:\n";
-            for (const auto& col : column_names) {
-                std::cout << "  " << col << ": " << result->get_string(col) << "\n";
-            }
-            std::cout << "--------\n";
-#endif
-        }
-
-        return has_rows;
-
-    } catch (const std::exception& e) {
-        std::cerr << "Exception during query: " << e.what() << std::endl;
-        return false;
-    }
+    return true;
 }
 
 
-ResultSetPtr Session::select(sqljke::SelectQuery select_query){
-    auto query = std::make_unique<sqljke::SelectQueryBuilder>(dialect_.get());
-    auto sql = query->select(select_query.columns)
-            .from(select_query.table_name)
-            .where(select_query.where);
-
-    try
-    {
-        sql.limit(std::get<int>(select_query.limit));
-    }
-    catch (const std::bad_variant_access& ex)
-    {
-        try
-        {
-            auto p = std::get<std::pair<int, int>>(select_query.limit);
-            sql.limit(p.first, p.second);
-        }
-        catch(const std::bad_variant_access& ex)
-        {
-            std::cerr << "err " << ex.what() << std::endl; 
-        }
-    }
-    // std::cout << sql.build() << std::endl;
-
+ResultSetPtr Session::execute(const std::string& sql){
     try{
-        auto result = driver_->query(sql.build());
-    
+        auto result = driver_->query(sql);
         if (!result) {
             std::cerr << "Query returned no result." << std::endl;
             return ResultSetPtr();
@@ -130,27 +64,21 @@ ResultSetPtr Session::select(sqljke::SelectQuery select_query){
         std::cerr << "Exception during query: " << e.what() << std::endl;
         return ResultSetPtr();
     }
-
 }
 
 void Session::save(std::shared_ptr<sqljke::SQLTable> table) {
     auto query = std::make_unique<sqljke::InsertQueryBuilder>(dialect_.get());
-    std::string sql = query->insert_into(table->table_name())
-                              .columns(table->column_names())
-                              .values(table->values())
-                              .build();
-
+    std::string sql = insert_into(table->table_name())
+                        .columns(table->column_names())
+                        .values(table->values())
+                        .build();
 
 
 #ifdef DEBUG
     std::cout << sql << std::endl;
 #endif
     try{
-        if(!is_exist(table)){
-            driver_->execute(sql);
-        }else{
-            // std::cout << "obj exist" << std::endl;
-        }
+        driver_->execute(sql);
     }catch(std::exception& ex){
         std::cerr << ex.what() << std::endl;
     }
@@ -166,7 +94,24 @@ void Session::drop_table() {
     // driver_->execute(sql);
 }
 
+sqljke::SelectQueryBuilder& Session::select(const std::vector<std::string>& columns){
+    select_.set_columns(columns);
+    return select_;
+}
 
+sqljke::CreateTableQueryBuilder& Session::create_table(const std::string& table_name){
+    create_.set_table_name(table_name);
+    return create_;
+}
+
+sqljke::InsertQueryBuilder& Session::insert_into(const std::string& table_name){
+    insert_.set_table(table_name);
+    return insert_;
+}
+
+void Session::drop_database(const std::string& database_name){
+    execute("drop database " + database_name + ";");
+}
 
 
 }}// namespace quick::ultra
