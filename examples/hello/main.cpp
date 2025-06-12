@@ -6,14 +6,16 @@
 
 
 int main() {
+    //init driver
     auto driver = quick::ultra::DriverFactory::create("mysql");
     driver->connect("host=localhost;user=root;password=RootPass123!;database=" + hello::DATABASE_NAME);
+    //init session
     quick::ultra::Session session(driver);
-    // session.drop_database(hello::DATABASE_NAME);
-    session.create_tables(hello::tables);
-    // session.execute("use " + hello::DATABASE_NAME);
-    
 
+    //creating tables from generated file
+    session.create_tables(hello::tables);
+    
+    //creating objects
     auto user1 = std::make_shared<hello::User>();
     user1->set_name("John");
     user1->set_age(23);
@@ -45,6 +47,7 @@ int main() {
     user5->set_email("Tony@icloud.com");
     user5->set_password("bnmbnmbnm");
 
+    //insert objects into tables 
     session.save<hello::User>(user1);
     session.save<hello::User>(user2);
     session.save<hello::User>(user3);
@@ -55,29 +58,33 @@ int main() {
     // auto res = session.execute(sql);
     // std::cout << res->debug(hello::User::COLUMN_NAMES);
 
-    auto users = session.get_all<hello::User>();
+    auto users = session.get_all<hello::User>({hello::age_less_or_equal(23)});
     for(auto user : users){
-        std::cout << user->age() << std::endl;
+        for(size_t i = 0; i < user->column_names().size(); ++i){
+            std::cout << user->column_names().at(i) << ":" << user->values().at(i) << std::endl;
+        }
+        std::cout << std::endl;
+        std::cout << std::endl;
     }
 
+    auto user = session.get_by_id<hello::User>(4);
 
+    for(size_t i = 0; i < user->column_names().size(); ++i){
+        std::cout << user->column_names().at(i) << ":" << user->values().at(i) << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
 
-    // auto select_sql = session.select(hello::User::COLUMN_NAMES).from(hello::User::TABLE_NAME).where(user1->age_between_and(20, 40)).build();
-
-
-    //User user1 = session.load<User>()
-    
-
-    // Загрузка объекта из БД по ID
-    // User loaded_user = session.load<User>(1); // SELECT * FROM users WHERE id=1
-    // std::cout << loaded_user.name << std::endl;
-
-    // Выборка по условию
-    // auto users = session.query<User>()
-    //              .where("email LIKE '%example.com'")
-    //              .limit(10)
-    //              .execute();
+    auto select_sql = session.select(hello::User::COLUMN_NAMES).from(hello::User::TABLE_NAME).where(hello::age_between_and(20, 40)).build();
 
     
     return 0;
 }
+
+
+
+// TODO: CREATE TABLE (create_table/s)
+// TODO: INSERT INTO (save, insert_into)
+// TODO: SELECT (select, get_by_id, get_all)
+// TODO: UPDATE
+

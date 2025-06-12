@@ -9,7 +9,6 @@
 #include "update_query_builder.hpp"
 #include "sql_dialect.hpp"
 #include "mysql_result_set.hpp"
-#include "puretable.hpp"
 #include "relation.hpp"
 #define DEBUG
 namespace quick {
@@ -20,7 +19,7 @@ public:
     explicit Session(std::shared_ptr<IDriver> driver);
 
     template <typename TBL>
-    std::shared_ptr<TBL> get(int id) {
+    std::shared_ptr<TBL> get_by_id(int id) {
         static_assert(std::is_base_of_v<quick::ultra::sqljke::SQLTable, TBL>, "Template argument must derive from SQLTable");
 
         auto select = std::make_unique<sqljke::SelectQueryBuilder>(dialect_.get());
