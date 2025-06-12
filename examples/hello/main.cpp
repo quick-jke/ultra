@@ -32,9 +32,24 @@ int main() {
     user3->set_email("Adam@icloud.com");
     user3->set_password("asdasdasd");
 
+
+    auto user4 = std::make_shared<hello::User>();
+    user4->set_name("Rachel");
+    user4->set_age(18);
+    user4->set_email("Rachel@icloud.com");
+    user4->set_password("][p][p][p]");
+
+    auto user5 = std::make_shared<hello::User>();
+    user5->set_name("Tony");
+    user5->set_age(13);
+    user5->set_email("Tony@icloud.com");
+    user5->set_password("bnmbnmbnm");
+
     session.save<hello::User>(user1);
     session.save<hello::User>(user2);
     session.save<hello::User>(user3);
+    session.save<hello::User>(user4);
+    session.save<hello::User>(user5);
 
     // auto sql = session.select({}).from(hello::User::TABLE_NAME).build();
     // auto res = session.execute(sql);

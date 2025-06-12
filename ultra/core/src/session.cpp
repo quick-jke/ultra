@@ -48,12 +48,6 @@ void Session::create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> table
     }
 }
 
-bool Session::is_exist(std::shared_ptr<sqljke::SQLTable> table) {
-
-    return true;
-}
-
-
 ResultSetPtr Session::execute(const std::string& sql){
     try{
         auto result = driver_->query(sql);
@@ -68,7 +62,6 @@ ResultSetPtr Session::execute(const std::string& sql){
         return ResultSetPtr();
     }
 }
-
 
 void Session::drop_table() {
     // auto query = std::make_unique<DropTableQueryBuilder>(dialect_.get());

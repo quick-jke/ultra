@@ -29,7 +29,9 @@ public:
     }
 
     SelectQueryBuilder& where(const std::string& condition) {
-        where_clause_ = condition;
+        if (!condition.empty()) {
+            where_clauses_.push_back(condition);
+        }
         return *this;
     }
 
@@ -54,8 +56,12 @@ public:
 
         oss << " FROM " << table_;
 
-        if (!where_clause_.empty()) {
-            oss << " WHERE " << where_clause_;
+        if (!where_clauses_.empty()) {
+            oss << " WHERE ";
+            for (size_t i = 0; i < where_clauses_.size(); ++i) {
+                if (i > 0) oss << " AND ";
+                oss << where_clauses_[i];
+            }
         }
 
         if (limit_ > 0) {
@@ -73,7 +79,7 @@ private:
     const ISQLDialect* dialect_;
     std::vector<std::string> columns_;
     std::string table_;
-    std::string where_clause_;
+    std::vector<std::string> where_clauses_;
     int limit_ = -1;
     int offset_ = 0;
 };
