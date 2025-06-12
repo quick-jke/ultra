@@ -19,10 +19,6 @@ class Session {
 public:
     explicit Session(std::shared_ptr<IDriver> driver);
 
-    
-    //select
-    sqljke::SelectQueryBuilder& select(const std::vector<std::string>& columns);
-
     template <typename TBL>
     std::shared_ptr<TBL> get(int id) {
         static_assert(std::is_base_of_v<quick::ultra::sqljke::SQLTable, TBL>, "Template argument must derive from SQLTable");
@@ -94,13 +90,6 @@ public:
 
         return result;
     }
-    
-    //create
-    sqljke::CreateTableQueryBuilder& create_table(const std::string& table_name);
-    void create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> tables);
-
-    //insert
-    sqljke::InsertQueryBuilder& insert_into(const std::string& table_name);
 
     template <typename TBL>
     void save(const std::shared_ptr<TBL>& obj) {
@@ -163,16 +152,18 @@ public:
         }
         return true;
     }
+    
+
+    sqljke::CreateTableQueryBuilder& create_table(const std::string& table_name);
+    sqljke::SelectQueryBuilder& select(const std::vector<std::string>& columns);
+    sqljke::UpdateQueryBuilder& update(const std::string& table_name);
+    sqljke::InsertQueryBuilder& insert_into(const std::string& table_name);
+
+    void create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> tables);
 
     ResultSetPtr execute(const std::string& sql);
 
-
-    sqljke::UpdateQueryBuilder& update(const std::string& table_name);
-
     //future
-    void create_table();
-
-    
     void delete_from();
     void drop_table();
     void table_exists();
