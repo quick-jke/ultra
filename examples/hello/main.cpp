@@ -5,10 +5,11 @@
 #include "build/models.hpp"
 
 
+
 int main() {
     //init driver
     auto driver = quick::ultra::DriverFactory::create("mysql");
-    driver->connect("host=localhost;user=root;password=RootPass123!;database=" + hello::DATABASE_NAME);
+    driver->connect(quick::ultra::to_connection_string("localhost", "root", "RootPass123!", hello::DATABASE_NAME));
     //init session
     quick::ultra::Session session(driver);
 
@@ -72,7 +73,6 @@ int main() {
     for(size_t i = 0; i < user->column_names().size(); ++i){
         std::cout << user->column_names().at(i) << ":" << user->values().at(i) << std::endl;
     }
-    std::cout << std::endl;
     std::cout << std::endl;
 
     auto select_sql = session.select(hello::User::COLUMN_NAMES).from(hello::User::TABLE_NAME).where(hello::age_between_and(20, 40)).build();

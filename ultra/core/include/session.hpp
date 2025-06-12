@@ -14,6 +14,10 @@
 namespace quick {
 namespace ultra {
 
+std::string to_connection_string(const std::string& host, const std::string& user, const std::string& pass, const std::string& dbnm){
+    return "host=" + host + ";user=" + user + ";password=" + pass + ";database=" + dbnm;
+}
+
 class Session {
 public:
     explicit Session(std::shared_ptr<IDriver> driver);
