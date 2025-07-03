@@ -67,7 +67,6 @@ public:
         if (limit_ > 0) {
             oss << " " << dialect_->limit_clause(limit_, offset_);
         }
-
         return oss.str();
     }
 

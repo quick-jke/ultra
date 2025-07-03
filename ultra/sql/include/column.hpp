@@ -1,6 +1,7 @@
 #ifndef QUICK_ULTRA_COLUMN_HPP
 #define QUICK_ULTRA_COLUMN_HPP
 #include <string>
+#include "expr.hpp"
 namespace quick{
 namespace ultra{
 namespace sqljke{

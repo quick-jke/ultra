@@ -14,7 +14,7 @@
 namespace quick {
 namespace ultra {
 
-std::string to_connection_string(const std::string& host, const std::string& user, const std::string& pass, const std::string& dbnm){
+inline std::string to_connection_string(const std::string& host, const std::string& user, const std::string& pass, const std::string& dbnm){
     return "host=" + host + ";user=" + user + ";password=" + pass + ";database=" + dbnm;
 }
 
@@ -133,20 +133,17 @@ public:
             for(size_t i = 0; i < obj->column_names().size(); ++i){
 
                 squery.where(obj->column_names().at(i) + " = " 
-                    + (obj->columns().at(i + 1).type == "string" ? "\'" : "") 
+                    + (obj->columns().at(i + 1).type == "VARCHAR(255)" ? "\'" : "") 
                     + obj->values().at(i)
-                    + (obj->columns().at(i + 1).type == "string" ? "\'" : "")  
+                    + (obj->columns().at(i + 1).type == "VARCHAR(255)" ? "\'" : "")  
                 );
-            } 
-            std::cout << squery.build() << std::endl;
+            }
             ResultSetPtr rs = driver_->query(squery.build());
 
 
             if (rs && rs->next()) {
-                std::cout << "return true" << std::endl;
                 return true;
             } else {
-                std::cout << "return false" << std::endl;
                 return false;
             }
 

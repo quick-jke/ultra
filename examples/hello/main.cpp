@@ -2,14 +2,14 @@
 
 #include "driver_factory.hpp"
 #include "session.hpp"
-#include "build/models/User.hpp"
+#include "build/models/hello.hpp"
 
 
 
 int main() {
     //init driver
     auto driver = quick::ultra::DriverFactory::create("mysql");
-    driver->connect(quick::ultra::to_connection_string("localhost", "root", "RootPass123!", hello::DATABASE_NAME));
+    driver->connect(quick::ultra::to_connection_string("localhost", "root", "root7423", hello::DATABASE_NAME));
     //init session
     quick::ultra::Session session(driver);
 
@@ -59,23 +59,23 @@ int main() {
     // auto res = session.execute(sql);
     // std::cout << res->debug(hello::User::COLUMN_NAMES);
 
-    auto users = session.get_all<hello::User>({hello::age_less_or_equal(23)});
-    for(auto user : users){
-        for(size_t i = 0; i < user->column_names().size(); ++i){
-            std::cout << user->column_names().at(i) << ":" << user->values().at(i) << std::endl;
-        }
-        std::cout << std::endl;
-        std::cout << std::endl;
-    }
+    // auto users = session.get_all<hello::User>({hello::age_less_or_equal(23)});
+    // for(auto user : users){
+    //     for(size_t i = 0; i < user->column_names().size(); ++i){
+    //         std::cout << user->column_names().at(i) << ":" << user->values().at(i) << std::endl;
+    //     }
+    //     std::cout << std::endl;
+    //     std::cout << std::endl;
+    // }
 
-    auto user = session.get_by_id<hello::User>(4);
+    // auto user = session.get_by_id<hello::User>(4);
 
-    for(size_t i = 0; i < user->column_names().size(); ++i){
-        std::cout << user->column_names().at(i) << ":" << user->values().at(i) << std::endl;
-    }
-    std::cout << std::endl;
+    // for(size_t i = 0; i < user->column_names().size(); ++i){
+    //     std::cout << user->column_names().at(i) << ":" << user->values().at(i) << std::endl;
+    // }
+    // std::cout << std::endl;
 
-    auto select_sql = session.select(hello::User::COLUMN_NAMES).from(hello::User::TABLE_NAME).where(hello::age_between_and(20, 40)).build();
+    // auto select_sql = session.select(hello::User::COLUMN_NAMES).from(hello::User::TABLE_NAME).where(hello::age_between_and(20, 40)).build();
 
     
     return 0;
