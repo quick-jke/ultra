@@ -20,7 +20,7 @@ public:
 	virtual ~SQLTable() = default;
 
     virtual std::vector<std::shared_ptr<SQLTable>> get_dependent_objects() const {
-        return {}; // по умолчанию — нет зависимостей
+        return {}; 
     }
 };
 }}} //namespace quick::ultra::sql

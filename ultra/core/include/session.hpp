@@ -103,16 +103,16 @@ public:
 
         if (!obj) return;
 
-        // === КАСКАД: сначала сохраняем зависимые объекты ===
         for (const auto& dep : obj->get_dependent_objects()) {
             if (dep->id() == 0) {
-                save(dep); // ← рекурсивно сохраняем Passport
+                save(dep); 
             }
         }
 
-        if (is_exist(obj)) return;
+        if (obj->id() != 0) {
+            return; 
+        }
 
-        // === Теперь вставляем сам объект ===
         try {
             std::string sql = insert_
                 .set_table(obj->table_name())
@@ -126,7 +126,9 @@ public:
             int inserted_id = driver_->get_last_insert_id();
             obj->set_id(inserted_id);
 
+    #ifdef DEBUG
             std::cout << "Saved " << obj->table_name() << " with id=" << inserted_id << std::endl;
+    #endif
 
         } catch (const std::exception& e) {
             std::cerr << "Exception during save(): " << e.what() << std::endl;

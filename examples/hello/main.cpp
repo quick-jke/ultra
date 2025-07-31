@@ -27,7 +27,7 @@ int main() {
     Mike->set_name("Mike");
     auto MikePass = std::make_shared<one_to_one::Passport>();
     MikePass->set_num(144);
-    John->set_passport(MikePass);
+    Mike->set_passport(MikePass);
 
     
 
