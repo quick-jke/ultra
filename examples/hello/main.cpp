@@ -2,58 +2,39 @@
 
 #include "driver_factory.hpp"
 #include "session.hpp"
-#include "build/models/hello.hpp"
+#include "build/models/one_to_one.hpp"
 
 
 
 int main() {
     //init driver
     auto driver = quick::ultra::DriverFactory::create("mysql");
-    driver->connect(quick::ultra::to_connection_string("localhost", "root", "root7423", hello::DATABASE_NAME));
+    driver->connect(quick::ultra::to_connection_string("localhost", "root", "root7423", one_to_one::DATABASE_NAME));
     //init session
     quick::ultra::Session session(driver);
 
     //creating tables from generated file
-    session.create_tables(hello::tables);
+    session.create_tables(one_to_one::tables);
     
     //creating objects
-    auto user1 = std::make_shared<hello::User>();
-    user1->set_name("John");
-    user1->set_age(23);
-    user1->set_email("John@icloud.com");
-    user1->set_password("qweqweqwe");
+    auto John = std::make_shared<one_to_one::User>();
+    John->set_name("John");
+    auto JohnPass = std::make_shared<one_to_one::Passport>();
+    JohnPass->set_num(23);
+    John->set_passport(JohnPass);
 
-    auto user2 = std::make_shared<hello::User>();
-    user2->set_name("Maty");
-    user2->set_age(43);
-    user2->set_email("Maty@icloud.com");
-    user2->set_password("zxczxczxc");
+    auto Mike = std::make_shared<one_to_one::User>();
+    Mike->set_name("Mike");
+    auto MikePass = std::make_shared<one_to_one::Passport>();
+    MikePass->set_num(144);
+    John->set_passport(MikePass);
 
-    auto user3 = std::make_shared<hello::User>();
-    user3->set_name("Adam");
-    user3->set_age(34);
-    user3->set_email("Adam@icloud.com");
-    user3->set_password("asdasdasd");
-
-
-    auto user4 = std::make_shared<hello::User>();
-    user4->set_name("Rachel");
-    user4->set_age(18);
-    user4->set_email("Rachel@icloud.com");
-    user4->set_password("][p][p][p]");
-
-    auto user5 = std::make_shared<hello::User>();
-    user5->set_name("Tony");
-    user5->set_age(13);
-    user5->set_email("Tony@icloud.com");
-    user5->set_password("bnmbnmbnm");
+    
 
     //insert objects into tables 
-    session.save<hello::User>(user1);
-    session.save<hello::User>(user2);
-    session.save<hello::User>(user3);
-    session.save<hello::User>(user4);
-    session.save<hello::User>(user5);
+    session.save<one_to_one::User>(John);
+    session.save<one_to_one::User>(Mike);
+    
 
     // auto sql = session.select({}).from(hello::User::TABLE_NAME).build();
     // auto res = session.execute(sql);

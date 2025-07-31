@@ -1,0 +1,12 @@
+database one_to_one;
+
+table User{
+    PRIMARY int id;
+    string name;
+    ONE_TO_ONE(Passport) passport;
+}
+
+table Passport{
+    PRIMARY int id;
+    int num;
+}

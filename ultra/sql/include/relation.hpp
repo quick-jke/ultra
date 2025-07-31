@@ -26,3 +26,5 @@ struct ManyToManyRelation : public IRelation {
 };
 }}} //namespace quick::ultra::sql
 #endif
+
+

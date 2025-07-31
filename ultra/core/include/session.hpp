@@ -96,33 +96,41 @@ public:
 
     template <typename TBL>
     void save(const std::shared_ptr<TBL>& obj) {
-        static_assert(std::is_base_of_v<quick::ultra::sqljke::SQLTable, TBL>, "Template argument must derive from SQLTable");
+        static_assert(
+            std::is_base_of_v<sqljke::SQLTable, TBL>,
+            "TBL must derive from SQLTable"
+        );
 
-        if (!obj) {
-            std::cerr << "Error: null object passed to save()" << std::endl;
-            return;
-        }
-        if(!is_exist(obj)){
-            try {
-                std::string sql = insert_
-                                        .set_table(obj->table_name())
-                                        .columns(obj->column_names())
-                                        .values(obj->values())
-                                        .build();
+        if (!obj) return;
 
-#ifdef DEBUG
-                std::cout << "Executing SQL: " << sql << std::endl;
-#endif
-                execute(sql);
-                int inserted_id = driver_->get_last_insert_id();
-                obj->set_id(inserted_id);
-            } catch (const std::exception& e) {
-                std::cerr << "Exception during save(): " << e.what() << std::endl;
+        // === КАСКАД: сначала сохраняем зависимые объекты ===
+        for (const auto& dep : obj->get_dependent_objects()) {
+            if (dep->id() == 0) {
+                save(dep); // ← рекурсивно сохраняем Passport
             }
-        }else{
-            std::cerr << "Object exist" << std::endl;
         }
-        
+
+        if (is_exist(obj)) return;
+
+        // === Теперь вставляем сам объект ===
+        try {
+            std::string sql = insert_
+                .set_table(obj->table_name())
+                .columns(obj->column_names())
+                .values(obj->values())
+                .build();
+
+            std::cout << "Executing SQL: " << sql << std::endl;
+
+            execute(sql);
+            int inserted_id = driver_->get_last_insert_id();
+            obj->set_id(inserted_id);
+
+            std::cout << "Saved " << obj->table_name() << " with id=" << inserted_id << std::endl;
+
+        } catch (const std::exception& e) {
+            std::cerr << "Exception during save(): " << e.what() << std::endl;
+        }
     }
     
     template<typename TBL>
