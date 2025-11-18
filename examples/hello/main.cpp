@@ -9,19 +9,23 @@
 int main() {
     //init driver
     auto driver = quick::ultra::DriverFactory::create("mysql");
-    driver->connect(quick::ultra::to_connection_string("localhost", "root", "root7423", one_to_many::DATABASE_NAME));
+    driver->connect(quick::ultra::to_connection_string("localhost", "root", "rootjke7423", one_to_many::DATABASE_NAME));
     //init session
     quick::ultra::Session session(driver);
 
     //creating tables from generated file
     session.create_tables(one_to_many::tables);
 
-    auto Pass1 = std::make_shared<one_to_many::Passport>();
-    Pass1->set_num(5);
+    // auto Pass1 = std::make_shared<one_to_many::Passport>();
+    // Pass1->set_num(5);
+    // session.save(Pass1);
 
-    session.save(Pass1);
 
+    auto passwords = session.get_all<one_to_many::Passport>();
 
+    for(auto pass : passwords){
+        std::cout << "id: " << pass->id() << " num: " << pass->num() << std::endl;
+    }
     
     
     

@@ -46,7 +46,10 @@ public:
         }
         case DOUBLE:{
             return "DOUBLE";
-        }        
+        }    
+        case VARCHAR:{
+            return "VARCHAR(255)";
+        }    
         default:
             return "UNKNOWN";
         }

@@ -13,7 +13,8 @@ enum Type{
     TINYINT,
     DECIMAL,
     FLOAT,
-    DOUBLE
+    DOUBLE,
+    VARCHAR
 };
 }}}
 #endif
