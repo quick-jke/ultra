@@ -33,6 +33,11 @@ public:
 
         return *this;
     }
+    
+    UpdateQueryBuilder& set(const std::string& column, const std::string& value) {
+        column_value_map_[column] = value;
+        return *this;
+    }
 
     UpdateQueryBuilder& add_column_value(std::pair<std::string, std::string> pair){
         column_value_map_.insert(pair);

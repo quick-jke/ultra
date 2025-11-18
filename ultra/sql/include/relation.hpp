@@ -9,8 +9,14 @@ struct IRelation{
 public:
 };
 struct OneToOneRelation : public IRelation {
-	std::shared_ptr<SQLTable> first_;
-	std::shared_ptr<SQLTable> second_;
+    std::shared_ptr<SQLTable> first_;
+    std::shared_ptr<SQLTable> second_;
+
+    OneToOneRelation(
+        std::shared_ptr<SQLTable> first,
+        std::shared_ptr<SQLTable> second
+    ) : first_(std::move(first)), second_(std::move(second)) {}
+
 };
 struct OneToManyRelation : public IRelation {
 	std::shared_ptr<SQLTable> one_;
@@ -24,7 +30,7 @@ struct ManyToManyRelation : public IRelation {
 	std::shared_ptr<SQLTable> first_;
 	std::shared_ptr<SQLTable> second_;
 };
-}}} //namespace quick::ultra::sql
+}}} //namespace quick::ultra::sqljke
 #endif
 
 

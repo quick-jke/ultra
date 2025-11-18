@@ -60,19 +60,23 @@ public:
             for (size_t i = 0; i < table.columns.size(); ++i) {
                 const auto& col = table.columns[i];
                 if (i > 0) oss << ",\n";
-                oss << "  " << dialect_->quote_identifier(col.name) << " " << col.type;
+                oss << "  " << dialect_->quote_identifier(col.name) << " " << dialect_->type_clause(col.type);
 
                 if (!col.is_nullable) oss << " NOT NULL";
                 if (col.is_primary_key) oss << " PRIMARY KEY";
                 if (col.is_auto_increment) oss << " " << dialect_->auto_increment_clause();
+                
                 if (!col.default_value.empty()) {
                     oss << " DEFAULT ";
-                    if (col.type == "INT" || col.type == "BIGINT" || col.type == "SMALLINT" ||
-                        col.type == "TINYINT" || col.type == "DECIMAL" || col.type == "FLOAT" ||
-                        col.type == "DOUBLE") {
-                        oss << col.default_value;
-                    } else {
-                        oss << "'" << col.default_value << "'";
+                    switch(col.type){
+                        case STRING:{
+                            oss << "'" << col.default_value << "'";
+                            break;
+                        }
+                        default:{
+                            oss << col.default_value;
+                            break;
+                        }
                     }
                 }
             }

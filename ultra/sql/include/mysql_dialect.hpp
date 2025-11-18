@@ -1,6 +1,7 @@
 #ifndef QUICK_ULTRA_MYSQL_DIALECT_HPP
 #define QUICK_ULTRA_MYSQL_DIALECT_HPP
 #include "sql_dialect.hpp"
+#include "type.hpp"
 #include <sstream>
 namespace quick{
 namespace ultra{
@@ -19,6 +20,38 @@ public:
         }
     }
 
+    std::string type_clause(Type t) const override{
+        switch (t)
+        {
+        case STRING:{
+            return "VARCHAR(255)";
+        }
+        case INT:{
+            return "INT";
+        }
+        case BIGINT:{
+            return "BIGINT";
+        }
+        case SMALLINT:{
+            return "SMALLINT";
+        }
+        case TINYINT:{
+            return "TINYINT";
+        }
+        case DECIMAL:{
+            return "DECIMAL";
+        }
+        case FLOAT:{
+            return "FLOAT";
+        }
+        case DOUBLE:{
+            return "DOUBLE";
+        }        
+        default:
+            return "UNKNOWN";
+        }
+    }
+
     std::string auto_increment_clause() const {
         return "AUTO_INCREMENT";
     }
@@ -27,43 +60,42 @@ public:
         return "IF NOT EXISTS";
     }
 
-    std::string where_clause(const ExprStruct& expr) const {
+    std::string where_clause(Expression expr) const {
         std::stringstream oss;
-        oss << expr.field_;
-        switch (expr.expr_)
-        {
-        case MORE_THAN:{
-            oss << " > ";
-            break;
-        }
-        case LESS_THAN:{
-            oss << " < ";
-            break;
-        }
-        case MORE_OR_EQUAL:{
-            oss << " >= ";
-            break;
-        }
-        case LESS_OR_EQUAL:{
-            oss << " <= ";
-            break;
-        }
-        case EQUAL:{
-            oss << " = ";
-            break;
-        }
-        case NOT_EQUAL:{
-            oss << " != ";
-            break;
-        }
-        case LIKE:{
+        oss << expr.field();
+        switch (expr.sign()) {
+            case MORE_THAN:{
+                oss << " > ";
+                break;
+            }
+            case LESS_THAN:{
+                oss << " < ";
+                break;
+            }
+            case MORE_OR_EQUAL:{
+                oss << " >= ";
+                break;
+            }
+            case LESS_OR_EQUAL:{
+                oss << " <= ";
+                break;
+            }
+            case EQUAL:{
+                oss << " = ";
+                break;
+            }
+            case NOT_EQUAL:{
+                oss << " != ";
+                break;
+            }
+            case LIKE:{
 
-            break;
-        }
-        
-        default:
-            break;
-        }
+                break;
+            }
+            
+            default:
+                break;
+            }
         return oss.str();
     }
 

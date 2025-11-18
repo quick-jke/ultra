@@ -1,0 +1,20 @@
+database one_to_many;
+
+table User{
+    PRIMARY int id;
+    string name;
+    ONE_TO_MANY(Sneaker) sneakers;
+    ONE_TO_ONE(Passport) passport;
+}
+
+table Sneaker{
+    PRIMARY int id;
+    string name;
+    int age;
+    MANY_TO_ONE(User) user;
+}
+
+table Passport{
+    PRIMARY int id;
+    int num;
+}

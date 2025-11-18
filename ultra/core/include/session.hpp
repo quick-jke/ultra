@@ -110,57 +110,10 @@ public:
         }
 
         if (obj->id() != 0) {
-            return; 
+            do_update(obj);
+        } else {
+            do_insert(obj);
         }
-
-        try {
-            std::string sql = insert_
-                .set_table(obj->table_name())
-                .columns(obj->column_names())
-                .values(obj->values())
-                .build();
-
-            std::cout << "Executing SQL: " << sql << std::endl;
-
-            execute(sql);
-            int inserted_id = driver_->get_last_insert_id();
-            obj->set_id(inserted_id);
-
-    #ifdef DEBUG
-            std::cout << "Saved " << obj->table_name() << " with id=" << inserted_id << std::endl;
-    #endif
-
-        } catch (const std::exception& e) {
-            std::cerr << "Exception during save(): " << e.what() << std::endl;
-        }
-    }
-    
-    template<typename TBL>
-    bool is_exist(const std::shared_ptr<TBL>& obj){
-        static_assert(std::is_base_of_v<quick::ultra::sqljke::SQLTable, TBL>, "Template argument must derive from SQLTable");
-        try{
-            auto squery = select({}).from(obj->table_name());
-            for(size_t i = 0; i < obj->column_names().size(); ++i){
-
-                squery.where(obj->column_names().at(i) + " = " 
-                    + (obj->columns().at(i + 1).type == "VARCHAR(255)" ? "\'" : "") 
-                    + obj->values().at(i)
-                    + (obj->columns().at(i + 1).type == "VARCHAR(255)" ? "\'" : "")  
-                );
-            }
-            ResultSetPtr rs = driver_->query(squery.build());
-
-
-            if (rs && rs->next()) {
-                return true;
-            } else {
-                return false;
-            }
-
-        }catch (const std::exception& e) {
-            std::cerr << "Exception during is_exist(): " << e.what() << std::endl;
-        }
-        return true;
     }
     
 
@@ -189,6 +142,57 @@ private:
     sqljke::CreateTableQueryBuilder create_;
     sqljke::InsertQueryBuilder insert_;
     sqljke::UpdateQueryBuilder update_;
+
+
+    template <typename TBL>
+    void do_insert(const std::shared_ptr<TBL>& obj) {
+        try {
+            std::string sql = insert_
+                .set_table(obj->table_name())
+                .columns(obj->column_names())
+                .values(obj->values())
+                .build();
+
+            std::cout << "Executing SQL: " << sql << std::endl;
+
+            execute(sql);
+            int inserted_id = driver_->get_last_insert_id();
+            obj->set_id(inserted_id);
+
+#ifdef DEBUG
+            std::cout << "Saved " << obj->table_name() << " with id=" << inserted_id << std::endl;
+#endif
+
+        } catch (const std::exception& e) {
+            std::cerr << "Exception during INSERT: " << e.what() << std::endl;
+        }
+    }
+
+    template <typename TBL>
+    void do_update(const std::shared_ptr<TBL>& obj) {
+        try {
+            auto update_builder = update(obj->table_name());
+            const auto& cols = obj->column_names();
+            const auto& vals = obj->values();
+
+            for (size_t i = 0; i < cols.size(); ++i) {
+                update_builder.set(cols[i], vals[i]);
+            }
+
+            std::string sql = update_builder.where("id = " + std::to_string(obj->id())).build();
+
+            std::cout << "Executing SQL: " << sql << std::endl;
+
+            execute(sql);
+
+#ifdef DEBUG
+            std::cout << "Updated " << obj->table_name() << " with id=" << obj->id() << std::endl;
+#endif
+
+        } catch (const std::exception& e) {
+            std::cerr << "Exception during UPDATE: " << e.what() << std::endl;
+        }
+    }
 };
 
 }}// namespace quick::ultra

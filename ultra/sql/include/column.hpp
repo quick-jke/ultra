@@ -2,12 +2,13 @@
 #define QUICK_ULTRA_COLUMN_HPP
 #include <string>
 #include "expr.hpp"
+#include "type.hpp"
 namespace quick{
 namespace ultra{
 namespace sqljke{
 struct Column {
     std::string name;
-    std::string type;
+    Type type;
     bool is_primary_key = false;
     bool is_auto_increment = false;
     bool is_nullable = true;

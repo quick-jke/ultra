@@ -7,7 +7,7 @@ namespace ultra{
 namespace sqljke{
 
 
-enum Expr{
+enum SIGN{
     MORE_THAN,
     LESS_THAN,
     MORE_OR_EQUAL,
@@ -25,11 +25,24 @@ enum Expr{
 
 };
 
-struct ExprStruct{
+
+class Expression
+{
+private:
     std::string field_;
-    Expr expr_;
+    SIGN sign_;
     std::variant<double, int, std::string, bool> value_;
+public:
+    Expression(std::string field, SIGN sign, std::variant<double, int, std::string, bool> value)
+        : field_(field), sign_(sign), value_(value) {}
+    ~Expression() {}
+
+    std::string field() { return field_; }
+    SIGN sign() { return sign_; }
+    std::variant<double, int, std::string, bool> value() { return value_; }
 };
+
+
 
 }}}
 #endif

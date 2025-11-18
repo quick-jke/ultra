@@ -59,7 +59,6 @@ public:
             }
         }
         oss << ");";
-        
         return oss.str();   
     }
 
