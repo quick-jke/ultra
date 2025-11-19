@@ -28,12 +28,12 @@ double MySQLResultSet::get_double(const std::string& column) {
 char MySQLResultSet::get_char(const std::string& column) {
     return result_set_->getString(column)[0]; 
 }
-std::string MySQLResultSet::debug(const std::vector<std::string>& columns){
+std::string MySQLResultSet::debug(std::vector<sqljke::Column> columns){
     std::stringstream oss;
     while (next()) {
         oss << "Row:\n";
-        for (const auto& col : columns) {
-            oss << "  " << col << ": " << get_string(col) << "\n";
+        for (auto& col : columns) {
+            oss << "  " << col.get() << ": " << get_string(col.get()) << "\n";
         }
         oss << "--------\n";
     }

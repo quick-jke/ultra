@@ -2,13 +2,12 @@
 #define QUICK_ULTRA_SQL_SELECT_QUERY_BUILDER_HPP
 #include "sql_query_builder.hpp"
 #include "sql_dialect.hpp"
+#include "table.hpp"
 #include <string>
 #include <sstream>
 #include <vector>
 #include <variant>
-namespace quick{
-namespace ultra{
-namespace sqljke {
+namespace quick::ultra::sqljke {
 
 struct SelectQuery{
     std::vector<std::string> columns;
@@ -19,70 +18,30 @@ struct SelectQuery{
 
 class SelectQueryBuilder : public SQLQueryBuilder {
 public:
-    SelectQueryBuilder(const ISQLDialect* dialect)
-        : dialect_(dialect) {}
+    SelectQueryBuilder(const ISQLDialect* dialect);
 
+    void set_columns(const std::vector<sqljke::Column>& columns);
 
-    SelectQueryBuilder& from(const std::string& table) {
-        table_ = dialect_->quote_identifier(table);
-        return *this;
-    }
+    SelectQueryBuilder& from(Table table);
 
-    SelectQueryBuilder& where(const std::string& condition) {
-        if (!condition.empty()) {
-            where_clauses_.push_back(condition);
-        }
-        return *this;
-    }
+    SelectQueryBuilder& where(Expression expression);
 
-    SelectQueryBuilder& limit(int limit, int offset = 0) {
-        limit_ = limit;
-        offset_ = offset;
-        return *this;
-    }
+    SelectQueryBuilder& limit(int limit, int offset = 0);
 
-    std::string build() const {
-        std::ostringstream oss;
-        oss << "SELECT ";
+    std::string build();
 
-        if (columns_.empty()) {
-            oss << "*";
-        } else {
-            for (size_t i = 0; i < columns_.size(); ++i) {
-                if (i > 0) oss << ", ";
-                oss << dialect_->quote_identifier(columns_[i]);
-            }
-        }
-
-        oss << " FROM " << table_;
-
-        if (!where_clauses_.empty()) {
-            oss << " WHERE ";
-            for (size_t i = 0; i < where_clauses_.size(); ++i) {
-                if (i > 0) oss << " AND ";
-                oss << where_clauses_[i];
-            }
-        }
-
-        if (limit_ > 0) {
-            oss << " " << dialect_->limit_clause(limit_, offset_);
-        }
-        return oss.str();
-    }
-
-    void set_columns(const std::vector<std::string>& columns){
-        columns_ = columns;
-    }
+    std::string query();
 
 private:
     const ISQLDialect* dialect_;
-    std::vector<std::string> columns_;
-    std::string table_;
+    std::vector<sqljke::Column> columns_;
+    std::string table_name_;
     std::vector<std::string> where_clauses_;
     int limit_ = -1;
     int offset_ = 0;
+    std::string query_;
 };
-}}}// namespace quick::ultra::sql
+}// namespace quick::ultra::sql
 #endif
 
 /*

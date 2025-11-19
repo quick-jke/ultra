@@ -9,6 +9,7 @@ class SQLQueryBuilder {
 public:
     // virtual std::vector<std::string> buildAll() const = 0;
     virtual ~SQLQueryBuilder() = default;
+    // virtual std::string query();
 };
 }}}// namespace quick::ultra::sql
 #endif

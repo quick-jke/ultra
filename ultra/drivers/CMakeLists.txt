@@ -11,5 +11,7 @@ target_include_directories(Driver
         mysqlclient
         
 )
+target_link_libraries(Driver PUBLIC Sql)
+
 
 

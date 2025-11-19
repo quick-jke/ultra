@@ -4,6 +4,7 @@
 #include <sstream>
 #include <mysql_connection.h>
 #include <cppconn/resultset.h>
+#include "column.hpp"
 namespace quick {
 namespace ultra {
 class MySQLResultSet : public ResultSet {
@@ -17,7 +18,7 @@ public:
     bool get_bool(const std::string& column) override;
     double get_double(const std::string& column) override;
     char get_char(const std::string& column) override;
-    std::string debug(const std::vector<std::string>& columns) override;
+    std::string debug(std::vector<sqljke::Column> columns) override;
 
 private:
     std::unique_ptr<sql::ResultSet> result_set_;

@@ -1,11 +1,9 @@
 #ifndef QUICK_ULTRA_EXPR_HPP
 #define QUICK_ULTRA_EXPR_HPP
 #include <string>
-#include <variant>
-namespace quick{
-namespace ultra{
-namespace sqljke{
 
+
+namespace quick::ultra::sqljke{
 
 enum SIGN{
     MORE_THAN,
@@ -15,34 +13,39 @@ enum SIGN{
     EQUAL,
     NOT_EQUAL,
 
-    LIKE,
+    BETWEEN_AND,
 
+    LIKE,
+    
     IS_TRUE,
     IS_FALSE,
 
     IS_NULL,
-    IS_NOT_NULL
+    IS_NOT_NULL,
+
+    IN
 
 };
 
+std::string signToString(SIGN sign);
 
 class Expression
 {
 private:
     std::string field_;
     SIGN sign_;
-    std::variant<double, int, std::string, bool> value_;
+    std::string value_;
 public:
-    Expression(std::string field, SIGN sign, std::variant<double, int, std::string, bool> value)
-        : field_(field), sign_(sign), value_(value) {}
-    ~Expression() {}
+    Expression(std::string field, SIGN sign, std::string value);
+    Expression(std::string field, SIGN sign);
+    ~Expression();
 
-    std::string field() { return field_; }
-    SIGN sign() { return sign_; }
-    std::variant<double, int, std::string, bool> value() { return value_; }
+    std::string field();
+    SIGN sign();
+    std::string value();
+
+    std::string get();
 };
 
-
-
-}}}
+}
 #endif

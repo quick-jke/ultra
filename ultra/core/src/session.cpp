@@ -1,4 +1,5 @@
 #include "session.hpp"
+#include "column.hpp"
 namespace quick{
 namespace ultra{
 
@@ -69,7 +70,7 @@ void Session::drop_table() {
     // driver_->execute(sql);
 }
 
-sqljke::SelectQueryBuilder& Session::select(const std::vector<std::string>& columns){
+sqljke::SelectQueryBuilder& Session::select(const std::vector<sqljke::Column>& columns){
     select_.set_columns(columns);
     return select_;
 }

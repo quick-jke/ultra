@@ -2,11 +2,21 @@
 #define QUICK_ULTRA_SQL_TABLE_HPP
 #include <vector>
 #include <string>
+#include <memory>
 #include "column.hpp"
 #include "link.hpp"
 namespace quick{
 namespace ultra{
 namespace sqljke {
+
+class Table{
+public:
+    Table(const std::string name) : name_(name){}
+    std::string get() { return name_; }
+private:
+    std::string name_;
+};
+
 class SQLTable{
 public:
 	SQLTable() = default;

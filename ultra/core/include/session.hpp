@@ -50,7 +50,7 @@ public:
     }
     
     template <typename TBL>
-    std::vector<std::shared_ptr<TBL>> get_all(std::vector<std::string> where = {}, int limit = -1, int offset = -1) {
+    std::vector<std::shared_ptr<TBL>> get_all(std::vector<sqljke::Expression> where = {}, int limit = -1, int offset = -1) {
         static_assert(std::is_base_of_v<quick::ultra::sqljke::SQLTable, TBL>, "Template argument must derive from SQLTable");
 
         auto select = std::make_unique<sqljke::SelectQueryBuilder>(dialect_.get());
@@ -118,7 +118,7 @@ public:
     
 
     sqljke::CreateTableQueryBuilder& create_table(const std::string& table_name);
-    sqljke::SelectQueryBuilder& select(const std::vector<std::string>& columns);
+    sqljke::SelectQueryBuilder& select(const std::vector<sqljke::Column>& columns);
     sqljke::UpdateQueryBuilder& update(const std::string& table_name);
     sqljke::InsertQueryBuilder& insert_into(const std::string& table_name);
 

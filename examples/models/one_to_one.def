@@ -3,10 +3,8 @@ database one_to_one;
 table User{
     PRIMARY int id;
     string name;
-    ONE_TO_ONE(Passport) passport;
+    int age;
+    double degree;
+    bool is;
 }
 
-table Passport{
-    PRIMARY int id;
-    int num;
-}

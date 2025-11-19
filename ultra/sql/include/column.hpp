@@ -13,6 +13,9 @@ struct Column {
     bool is_auto_increment = false;
     bool is_nullable = true;
     std::string default_value;
+    const std::string& get() {
+        return name;
+    }
 };
 }}}// namespace quick::ultra::sql
 #endif
