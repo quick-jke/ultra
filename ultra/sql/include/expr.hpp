@@ -35,7 +35,9 @@ private:
     std::string field_;
     SIGN sign_;
     std::string value_;
+    std::string value2_;
 public:
+    Expression(std::string field, SIGN sign, std::string value1, std::string value2);
     Expression(std::string field, SIGN sign, std::string value);
     Expression(std::string field, SIGN sign);
     ~Expression();

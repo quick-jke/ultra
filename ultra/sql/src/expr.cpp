@@ -2,7 +2,7 @@
 #include <stdexcept>
 namespace quick::ultra::sqljke{
 
-
+Expression::Expression(std::string field, SIGN sign, std::string value1, std::string value2) : field_(field), sign_(sign), value_(value1), value2_(value2) {}
 Expression::Expression(std::string field, SIGN sign, std::string value) : field_(field), sign_(sign), value_(value) {}
 Expression::Expression(std::string field, SIGN sign) : field_(field), sign_(sign) {}
 Expression::~Expression() {}
@@ -18,15 +18,8 @@ std::string Expression::get() {
         case IS_NOT_NULL:   return field_ + " IS NOT NULL";
         case IS_TRUE:       return field_ + " IS TRUE";
         case IS_FALSE:      return field_ + " IS FALSE";
-        
-        case BETWEEN_AND:
-        return field_ + " BETWEEN " + value_;
-        
-        case IN:
-        return " IN " + field_;
-        
-        default:
-        return field_ + " " + signToString(sign_) + " " + value_;
+        case BETWEEN_AND:   return field_ + " BETWEEN " + value_ + " AND " + value2_;
+        default:            return field_ + " " + signToString(sign_) + " " + value_;
     }
 }
 
@@ -43,6 +36,7 @@ std::string signToString(SIGN sign) {
         case IS_FALSE:        return "IS FALSE";
         case IS_NULL:         return "IS NULL";
         case IS_NOT_NULL:     return "IS NOT NULL";
+        case IN:              return "IN";
         default:
             throw std::invalid_argument("Unknown SIGN value");
     }

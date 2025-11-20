@@ -9,6 +9,11 @@
 #include <variant>
 namespace quick::ultra::sqljke {
 
+enum ORDER_DIR{
+    ASC,
+    DESC
+};
+
 struct SelectQuery{
     std::vector<std::string> columns;
     std::string table_name;
@@ -20,11 +25,17 @@ class SelectQueryBuilder : public SQLQueryBuilder {
 public:
     SelectQueryBuilder(const ISQLDialect* dialect);
 
-    void set_columns(const std::vector<sqljke::Column>& columns);
+    void set_columns(const std::vector<Column>& columns);
 
     SelectQueryBuilder& from(Table table);
 
     SelectQueryBuilder& where(Expression expression);
+
+    SelectQueryBuilder& group_by(const std::vector<Column>& columns); 
+
+    SelectQueryBuilder& having(Expression expression);
+
+    SelectQueryBuilder& order_by(const std::vector<std::pair<Column, ORDER_DIR>>& column_dirs); 
 
     SelectQueryBuilder& limit(int limit, int offset = 0);
 

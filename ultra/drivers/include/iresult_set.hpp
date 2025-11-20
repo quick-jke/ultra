@@ -4,8 +4,7 @@
 #include <memory>
 #include <vector> 
 #include "column.hpp"
-namespace quick {
-namespace ultra {
+namespace quick::ultra {
 class ResultSet {
 public:
     virtual ~ResultSet() = default;
@@ -19,5 +18,5 @@ public:
     virtual std::string debug(std::vector<sqljke::Column> columns) = 0;
 };
 using ResultSetPtr = std::unique_ptr<ResultSet>;
-}}// namespace quick::ultra
+}// namespace quick::ultra
 #endif
