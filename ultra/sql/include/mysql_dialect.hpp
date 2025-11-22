@@ -75,7 +75,15 @@ public:
     }
 
     std::string order_by_clause(const std::vector<std::pair<Column, ORDER_DIR>>& column_dirs) const {
-        return " ";
+        std::stringstream oss;
+        oss << "ORDER BY ";
+        for(size_t i = 0; i < column_dirs.size(); ++i){
+            if (i > 0) {
+                oss << ", ";
+            }
+            oss << column_dirs.at(i).first.name << "  " << order_dir_to_string(column_dirs.at(i).second);
+        }
+        return oss.str();
     }
     std::string group_by_clause(std::vector<Column> columns) const override {
         if (columns.empty()) {

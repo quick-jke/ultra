@@ -37,13 +37,11 @@ int main() {
     auto sql = session.select(one_to_one::User::COLUMNS)
         .from(one_to_one::User::TABLE_NAME)
         // .where(one_to_one::User::age_in({24, 25, 26}))
-        .group_by({one_to_one::User::AGE})
-        .limit(2)
+        .order_by({{one_to_one::User::AGE, ORDER_DIR::ASC}})
         // .having(one_to_one::User::degree_less_than(5))
         .build();
 
     std::cout << session.execute(sql)->debug(one_to_one::User::COLUMNS);
-    
     return 0;
 }
 

@@ -51,6 +51,7 @@ private:
     std::string query_;
     std::string having_clause_;
     std::string group_by_clause_;
+    std::string order_by_clause_;
     bool is_aggregate_ = false;
 };
 }// namespace quick::ultra::sql

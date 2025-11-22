@@ -38,7 +38,7 @@ SelectQueryBuilder& SelectQueryBuilder::having(Expression expression){
 }
 
 SelectQueryBuilder& SelectQueryBuilder::order_by(const std::vector<std::pair<Column, ORDER_DIR>>& column_dirs){
-
+    order_by_clause_ = dialect_->order_by_clause(column_dirs);
     return *this;
 } 
 
@@ -67,6 +67,9 @@ std::string SelectQueryBuilder::build() {
     }
     if(!group_by_clause_.empty()){
         oss << " " << group_by_clause_;
+    }
+    if(!order_by_clause_.empty()){
+        oss << " " << order_by_clause_;
     }
     if (limit_ > 0) {
         oss << " " << dialect_->limit_clause(limit_, offset_);
