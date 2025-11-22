@@ -7,12 +7,10 @@
 #include <sstream>
 #include <vector>
 #include <variant>
+#include "order_dir.hpp"
 namespace quick::ultra::sqljke {
 
-enum ORDER_DIR{
-    ASC,
-    DESC
-};
+
 
 struct SelectQuery{
     std::vector<std::string> columns;
@@ -51,6 +49,9 @@ private:
     int limit_ = -1;
     int offset_ = 0;
     std::string query_;
+    std::string having_clause_;
+    std::string group_by_clause_;
+    bool is_aggregate_ = false;
 };
 }// namespace quick::ultra::sql
 #endif

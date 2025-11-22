@@ -3,13 +3,24 @@
 #include "sql_dialect.hpp"
 #include "type.hpp"
 #include <sstream>
-namespace quick{
-namespace ultra{
-namespace sqljke {
+namespace quick::ultra::sqljke {
 class MySQLDialect : public ISQLDialect {
 public:
-    std::string quote_identifier(const std::string& name) const override {
-        return "`" + name + "`";
+
+    std::string read_expression(Expression expr) const{
+        switch (expr.sign()) {
+            case MORE_THAN: return " > "; 
+            case LESS_THAN: return " < "; 
+            case MORE_OR_EQUAL: return " >= "; 
+            case LESS_OR_EQUAL: return " <= "; 
+            case EQUAL: return " = "; 
+            case NOT_EQUAL: return " != "; 
+            default: return ""; 
+        }
+    }
+
+    std::string quote_identifier(Table table) const override {
+        return "`" + table.get() + "`";
     }
 
     std::string limit_clause(int limit, int offset = 0) const override {
@@ -63,47 +74,36 @@ public:
         return "IF NOT EXISTS";
     }
 
-    std::string where_clause(Expression expr) const {
-        std::stringstream oss;
-        oss << expr.field();
-        switch (expr.sign()) {
-            case MORE_THAN:{
-                oss << " > ";
-                break;
-            }
-            case LESS_THAN:{
-                oss << " < ";
-                break;
-            }
-            case MORE_OR_EQUAL:{
-                oss << " >= ";
-                break;
-            }
-            case LESS_OR_EQUAL:{
-                oss << " <= ";
-                break;
-            }
-            case EQUAL:{
-                oss << " = ";
-                break;
-            }
-            case NOT_EQUAL:{
-                oss << " != ";
-                break;
-            }
-            case LIKE:{
+    std::string order_by_clause(const std::vector<std::pair<Column, ORDER_DIR>>& column_dirs) const {
+        return " ";
+    }
+    std::string group_by_clause(std::vector<Column> columns) const override {
+        if (columns.empty()) {
+            return "";
+        }
 
-                break;
+        std::ostringstream oss;
+        oss << "GROUP BY ";
+        for (size_t i = 0; i < columns.size(); ++i) {
+            if (i > 0) {
+                oss << ", ";
             }
-            
-            default:
-                break;
-            }
+            oss << quote_identifier(columns[i].get());  
+        }
+        return oss.str();
+    }
+    std::string having_clause(Expression expression) const {
+        return "HAVING " + expression.get();
+    }
+
+    std::string where_clause(Expression expression) const {
+        std::stringstream oss;
+        oss << expression.field() << read_expression(expression);
         return oss.str();
     }
 
 };
-}}}// namespace quick::ultra::sql
+}// namespace quick::ultra::sql
 #endif
 
 /*

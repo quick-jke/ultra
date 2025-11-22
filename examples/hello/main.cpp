@@ -9,7 +9,7 @@
 int main() {
     //init driver
     auto driver = quick::ultra::DriverFactory::create("mysql");
-    driver->connect(quick::ultra::to_connection_string("localhost", "root", "root7423", one_to_one::DATABASE_NAME));
+    driver->connect(quick::ultra::to_connection_string("localhost", "root", "rootjke7423", one_to_one::DATABASE_NAME));
     //init session
     quick::ultra::Session session(driver);
 
@@ -36,8 +36,10 @@ int main() {
 
     auto sql = session.select(one_to_one::User::COLUMNS)
         .from(one_to_one::User::TABLE_NAME)
-        .where(one_to_one::User::age_in({24, 25, 26}))
+        // .where(one_to_one::User::age_in({24, 25, 26}))
+        .group_by({one_to_one::User::AGE})
         .limit(2)
+        // .having(one_to_one::User::degree_less_than(5))
         .build();
 
     std::cout << session.execute(sql)->debug(one_to_one::User::COLUMNS);
