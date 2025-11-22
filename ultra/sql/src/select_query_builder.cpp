@@ -5,8 +5,13 @@ namespace quick::ultra::sqljke{
 SelectQueryBuilder::SelectQueryBuilder(const ISQLDialect* dialect)
         : dialect_(dialect) {}
 
-void SelectQueryBuilder::set_columns(const std::vector<sqljke::Column>& columns){
+void SelectQueryBuilder::set_columns(const std::vector<Column>& columns){
     columns_ = columns;
+}
+
+void SelectQueryBuilder::set_aggregate(const Aggregate aggregate){
+    is_aggregate_ = true;
+    aggregate_ = aggregate;
 }
 
 SelectQueryBuilder& SelectQueryBuilder::from(Table table) {
@@ -46,15 +51,20 @@ std::string SelectQueryBuilder::build() {
     std::ostringstream oss;
     oss << "SELECT ";
 
-    if (columns_.empty()) {
-        oss << "*";
-    } else {
-        for (size_t i = 0; i < columns_.size(); ++i) {
-            if (i > 0) oss << ", ";
-            Column col = columns_.at(i);
-            oss << dialect_->quote_identifier(col.get());
+    if(is_aggregate_){
+        oss << dialect_->aggregate_clause(aggregate_);
+    }else{
+        if (columns_.empty()) {
+            oss << "*";
+        } else {
+            for (size_t i = 0; i < columns_.size(); ++i) {
+                if (i > 0) oss << ", ";
+                Column col = columns_.at(i);
+                oss << dialect_->quote_identifier(col.get());
+            }
         }
     }
+    
 
     oss << " FROM " << table_name_;
 

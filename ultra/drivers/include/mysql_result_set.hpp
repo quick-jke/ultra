@@ -18,7 +18,7 @@ public:
     bool get_bool(const std::string& column) override;
     double get_double(const std::string& column) override;
     char get_char(const std::string& column) override;
-    std::string debug(std::vector<sqljke::Column> columns) override;
+    std::string debug() override;
 
 private:
     std::unique_ptr<sql::ResultSet> result_set_;

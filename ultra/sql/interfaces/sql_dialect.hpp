@@ -1,5 +1,5 @@
-#ifndef QUICK_ULTRA_SQL_IDIALECT_HPP
-#define QUICK_ULTRA_SQL_IDIALECT_HPP
+#ifndef QUICK_ULTRA_SQL_INTERFACE_IDIALECT_HPP
+#define QUICK_ULTRA_SQL_INTERFACE_IDIALECT_HPP
 #include <string>
 #include <vector>
 #include "expr.hpp"
@@ -7,11 +7,13 @@
 #include "column.hpp"
 #include "order_dir.hpp"
 #include "table.hpp"
+#include "aggregate.hpp"
 namespace quick{
 namespace ultra{
 namespace sqljke {
 class ISQLDialect {
 public:
+    virtual std::string aggregate_clause(Aggregate aggregate) const = 0;
     virtual std::string order_by_clause(const std::vector<std::pair<Column, ORDER_DIR>>& column_dirs) const = 0;
     virtual std::string group_by_clause(std::vector<Column> columns) const = 0;
     virtual std::string having_clause(Expression expression) const = 0;

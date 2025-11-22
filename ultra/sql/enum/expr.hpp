@@ -1,5 +1,5 @@
-#ifndef QUICK_ULTRA_EXPR_HPP
-#define QUICK_ULTRA_EXPR_HPP
+#ifndef QUICK_ULTRA_SQL_ENUM_EXPR_HPP
+#define QUICK_ULTRA_SQL_ENUM_EXPR_HPP
 #include <string>
 
 

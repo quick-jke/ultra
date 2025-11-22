@@ -1,5 +1,5 @@
-#ifndef QUICK_ULTRA_SQL_RELATION_HPP
-#define QUICK_ULTRA_SQL_RELATION_HPP
+#ifndef QUICK_ULTRA_SQL_INCLUDE_RELATION_HPP
+#define QUICK_ULTRA_SQL_INCLUDE_RELATION_HPP
 #include <memory>
 #include "table.hpp"
 namespace quick {

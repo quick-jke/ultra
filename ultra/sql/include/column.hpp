@@ -1,5 +1,5 @@
-#ifndef QUICK_ULTRA_COLUMN_HPP
-#define QUICK_ULTRA_COLUMN_HPP
+#ifndef QUICK_ULTRA_SQL_INCLUDE_COLUMN_HPP
+#define QUICK_ULTRA_SQL_INCLUDE_COLUMN_HPP
 #include <string>
 #include "expr.hpp"
 #include "type.hpp"

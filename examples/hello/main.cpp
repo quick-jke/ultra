@@ -41,7 +41,19 @@ int main() {
         // .having(one_to_one::User::degree_less_than(5))
         .build();
 
-    std::cout << session.execute(sql)->debug(one_to_one::User::COLUMNS);
+    std::cout << session.execute(sql)->debug();
+
+
+    
+    // auto sql = session.select(avg(one_to_one::User::AGE))
+    //     .from(one_to_one::User::TABLE_NAME)
+    //     // .where(one_to_one::User::age_in({24, 25, 26}))
+    //     // .order_by({{one_to_one::User::AGE, ORDER_DIR::ASC}})
+    //     // .having(one_to_one::User::degree_less_than(5))
+    //     .build();
+
+    // std::cout << session.execute(sql)->debug();
+    
     return 0;
 }
 

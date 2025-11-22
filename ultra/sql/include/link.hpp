@@ -1,5 +1,5 @@
-#ifndef QUICK_ULTRA_LINK_HPP
-#define QUICK_ULTRA_LINK_HPP
+#ifndef QUICK_ULTRA_SQL_INCLUDE_LINK_HPP
+#define QUICK_ULTRA_SQL_INCLUDE_LINK_HPP
 
 #include <string>
 namespace quick {

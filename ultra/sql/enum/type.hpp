@@ -1,5 +1,5 @@
-#ifndef QUICK_ULTRA_TYPE_HPP
-#define QUICK_ULTRA_TYPE_HPP
+#ifndef QUICK_ULTRA_SQL_ENUM_TYPE_HPP
+#define QUICK_ULTRA_SQL_ENUM_TYPE_HPP
 namespace quick{
 namespace ultra{
 namespace sqljke {

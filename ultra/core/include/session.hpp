@@ -10,6 +10,7 @@
 #include "sql_dialect.hpp"
 #include "mysql_result_set.hpp"
 #include "relation.hpp"
+#include "aggregate.hpp"
 #define DEBUG
 namespace quick {
 namespace ultra {
@@ -119,6 +120,7 @@ public:
 
     sqljke::CreateTableQueryBuilder& create_table(const std::string& table_name);
     sqljke::SelectQueryBuilder& select(const std::vector<sqljke::Column>& columns);
+    sqljke::SelectQueryBuilder& select(const sqljke::Aggregate& aggregate);
     sqljke::UpdateQueryBuilder& update(const std::string& table_name);
     sqljke::InsertQueryBuilder& insert_into(const std::string& table_name);
 

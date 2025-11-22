@@ -1,5 +1,5 @@
-#ifndef QUICK_ULTRA_SQL_CREATE_QUERY_BUILDER_HPP
-#define QUICK_ULTRA_SQL_CREATE_QUERY_BUILDER_HPP
+#ifndef QUICK_ULTRA_SQL_INCLUDE_CREATE_QUERY_BUILDER_HPP
+#define QUICK_ULTRA_SQL_INCLUDE_CREATE_QUERY_BUILDER_HPP
 #include "sql_query_builder.hpp"
 #include "sql_dialect.hpp"
 #include "column.hpp"

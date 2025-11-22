@@ -74,6 +74,10 @@ sqljke::SelectQueryBuilder& Session::select(const std::vector<sqljke::Column>& c
     select_.set_columns(columns);
     return select_;
 }
+sqljke::SelectQueryBuilder& Session::select(const sqljke::Aggregate& aggregate){
+    select_.set_aggregate(aggregate);
+    return select_;
+}
 
 sqljke::CreateTableQueryBuilder& Session::create_table(const std::string& table_name){
     create_.set_table_name(table_name);

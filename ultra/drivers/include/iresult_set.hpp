@@ -15,7 +15,7 @@ public:
     virtual bool get_bool(const std::string& column) = 0;
     virtual double get_double(const std::string& column) = 0;
     virtual char get_char(const std::string& column) = 0;
-    virtual std::string debug(std::vector<sqljke::Column> columns) = 0;
+    virtual std::string debug() = 0;
 };
 using ResultSetPtr = std::unique_ptr<ResultSet>;
 }// namespace quick::ultra

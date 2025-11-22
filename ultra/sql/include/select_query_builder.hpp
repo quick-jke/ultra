@@ -1,13 +1,15 @@
-#ifndef QUICK_ULTRA_SQL_SELECT_QUERY_BUILDER_HPP
-#define QUICK_ULTRA_SQL_SELECT_QUERY_BUILDER_HPP
+#ifndef QUICK_ULTRA_SQL_INCLUDE_SELECT_QUERY_BUILDER_HPP
+#define QUICK_ULTRA_SQL_INCLUDE_SELECT_QUERY_BUILDER_HPP
 #include "sql_query_builder.hpp"
 #include "sql_dialect.hpp"
 #include "table.hpp"
+#include "order_dir.hpp"
+#include "aggregate.hpp"
 #include <string>
 #include <sstream>
 #include <vector>
 #include <variant>
-#include "order_dir.hpp"
+
 namespace quick::ultra::sqljke {
 
 
@@ -24,6 +26,8 @@ public:
     SelectQueryBuilder(const ISQLDialect* dialect);
 
     void set_columns(const std::vector<Column>& columns);
+
+    void set_aggregate(const Aggregate aggregate);
 
     SelectQueryBuilder& from(Table table);
 
@@ -53,6 +57,7 @@ private:
     std::string group_by_clause_;
     std::string order_by_clause_;
     bool is_aggregate_ = false;
+    Aggregate aggregate_;
 };
 }// namespace quick::ultra::sql
 #endif

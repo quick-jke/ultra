@@ -1,5 +1,5 @@
-#ifndef QUICK_ULTRA_SQL_BUILDER_FACTORY_HPP
-#define QUICK_ULTRA_SQL_BUILDER_FACTORY_HPP
+#ifndef QUICK_ULTRA_SQL_INCLUDE_BUILDER_FACTORY_HPP
+#define QUICK_ULTRA_SQL_INCLUDE_BUILDER_FACTORY_HPP
 #include "sql_query_builder.hpp"
 #include "select_query_builder.hpp"
 #include "create_table_query_builder.hpp"

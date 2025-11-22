@@ -1,5 +1,5 @@
-#ifndef QUICK_ULTRA_SQL_TABLE_HPP
-#define QUICK_ULTRA_SQL_TABLE_HPP
+#ifndef QUICK_ULTRA_SQL_INTERFACE_TABLE_HPP
+#define QUICK_ULTRA_SQL_INTERFACE_TABLE_HPP
 #include <vector>
 #include <string>
 #include <memory>

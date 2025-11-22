@@ -1,5 +1,5 @@
-#ifndef QUICK_ULTRA_MYSQL_DIALECT_HPP
-#define QUICK_ULTRA_MYSQL_DIALECT_HPP
+#ifndef QUICK_ULTRA_SQL_INCLUDE_MYSQL_DIALECT_HPP
+#define QUICK_ULTRA_SQL_INCLUDE_MYSQL_DIALECT_HPP
 #include "sql_dialect.hpp"
 #include "type.hpp"
 #include <sstream>
@@ -108,6 +108,10 @@ public:
         std::stringstream oss;
         oss << expression.field() << read_expression(expression);
         return oss.str();
+    }
+
+    std::string aggregate_clause(Aggregate aggregate) const {
+        return aggregate.aggregate_to_string();
     }
 
 };
