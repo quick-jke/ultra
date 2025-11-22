@@ -53,12 +53,12 @@ std::string MySQLResultSet::debug() {
         row_num++;
         oss << "Row " << row_num << ":\n";
         for (int i = 1; i <= col_count; ++i) {
-            std::string col_name = meta->getColumnName(i);
+            std::string col_name = meta->getColumnLabel(i);
             try {
                 std::string value = result_set_->getString(i);  
-                oss << "  [" << i << "] " << col_name << " = \"" << value << "\"\n";
+                oss << col_name << " = \"" << value << "\"\n";
             } catch (const sql::SQLException& e) {
-                oss << "  [" << i << "] " << col_name << " = <ERROR: " << e.what() << ">\n";
+                oss << col_name << " = <ERROR: " << e.what() << ">\n";
             }
         }
         oss << "--------\n";
