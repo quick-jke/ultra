@@ -88,7 +88,7 @@ std::string SelectQueryBuilder::build() {
     if(!having_clause_.empty()){
         oss << " " << having_clause_;
     }
-    std::cout << oss.str() << std::endl;
+    std::cout << "[DEBUG:QUERY] " << oss.str() << std::endl;
     query_ = oss.str();
     return oss.str();
 }

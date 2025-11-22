@@ -2,24 +2,31 @@
 #define QUICK_ULTRA_SQL_INCLUDE_AGGREGATE_HPP
 #include "column.hpp"
 #include "eaggregate.hpp"
+#include <optional>
 namespace quick::ultra::sqljke{
 
 
 struct Aggregate{
     EAggregate type_;
     Column col_;
+    std::optional<std::string> alias_ = std::nullopt;
     std::string aggregate_to_string(){
         switch (type_){
-            case EAggregate::MIN   : return "MIN(" + col_.get() + ")";
-            case EAggregate::MAX   : return "MAX(" + col_.get() + ")";
-            case EAggregate::AVG   : return "AVG(" + col_.get() + ")";
-            case EAggregate::COUNT : return "COUNT(" + col_.get() + ")";
-            case EAggregate::SUM   : return "SUM(" + col_.get() + ")";
+            case EAggregate::MIN   : return "MIN(" + col_.get() + ")" + (alias_.has_value() ? " AS " + *alias_ : "");
+            case EAggregate::MAX   : return "MAX(" + col_.get() + ")" + (alias_.has_value() ? " AS " + *alias_ : "");
+            case EAggregate::AVG   : return "AVG(" + col_.get() + ")" + (alias_.has_value() ? " AS " + *alias_ : "");
+            case EAggregate::COUNT : return "COUNT(" + col_.get() + ")" + (alias_.has_value() ? " AS " + *alias_ : "");
+            case EAggregate::SUM   : return "SUM(" + col_.get() + ")" + (alias_.has_value() ? " AS " + *alias_ : "");
             default                : return "UNKNOW";
         }
     }
-    std::string as(const std::string& name){
-        return " AS " + name;
+    Aggregate& as(const std::string& alias){ 
+        alias_ = alias; 
+        return *this;
+    }
+
+    std::optional<std::string> alias(){
+        return alias_;
     }
 };
 

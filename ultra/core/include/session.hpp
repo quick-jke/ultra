@@ -15,9 +15,10 @@
 namespace quick {
 namespace ultra {
 
-inline std::string to_connection_string(const std::string& host, const std::string& user, const std::string& pass, const std::string& dbnm){
+inline std::string to_connection_string(const std::string& host, const std::string& user, const std::string& pass, const std::string& dbnm, int port = 3306){
     return "host=" + host + ";user=" + user + ";password=" + pass + ";database=" + dbnm;
 }
+
 
 class Session {
 public:
