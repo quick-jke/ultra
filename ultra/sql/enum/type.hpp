@@ -1,8 +1,6 @@
 #ifndef QUICK_ULTRA_SQL_ENUM_TYPE_HPP
 #define QUICK_ULTRA_SQL_ENUM_TYPE_HPP
-namespace quick{
-namespace ultra{
-namespace sqljke {
+namespace quick::ultra::sqljke {
 enum Type{
     INT,
     STRING,
@@ -16,5 +14,5 @@ enum Type{
     DOUBLE,
     VARCHAR
 };
-}}}
+}
 #endif

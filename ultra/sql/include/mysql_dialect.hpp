@@ -61,6 +61,9 @@ public:
         case VARCHAR:{
             return "VARCHAR(255)";
         }    
+        case BOOL:{
+            return "BOOL";
+        }
         default:
             return "UNKNOWN";
         }
