@@ -1,11 +1,8 @@
 #ifndef QUICK_ULTRA_SQL_INCLUDE_COLUMN_HPP
 #define QUICK_ULTRA_SQL_INCLUDE_COLUMN_HPP
 #include <string>
-#include "expr.hpp"
 #include "type.hpp"
-namespace quick{
-namespace ultra{
-namespace sqljke{
+namespace quick::ultra::sqljke{
 struct Column {
     std::string name;
     Type type;
@@ -17,5 +14,5 @@ struct Column {
         return name;
     }
 };
-}}}// namespace quick::ultra::sql
+}// namespace quick::ultra::sql
 #endif

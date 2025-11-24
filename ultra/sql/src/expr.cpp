@@ -1,5 +1,4 @@
 #include "expr.hpp"
-#include <stdexcept>
 namespace quick::ultra::sqljke{
 
 Expression::Expression(std::string field, SIGN sign, std::string value1, std::string value2) : field_(field), sign_(sign), value_(value1), value2_(value2) {}
@@ -14,32 +13,15 @@ std::string Expression::value() { return value_; }
 
 std::string Expression::get() {
     switch (sign_) {
-        case IS_NULL:       return field_ + " IS NULL";
-        case IS_NOT_NULL:   return field_ + " IS NOT NULL";
-        case IS_TRUE:       return field_ + " IS TRUE";
-        case IS_FALSE:      return field_ + " IS FALSE";
-        case BETWEEN_AND:   return field_ + " BETWEEN " + value_ + " AND " + value2_;
+        case SIGN::IS_NULL:       return field_ + " IS NULL";
+        case SIGN::IS_NOT_NULL:   return field_ + " IS NOT NULL";
+        case SIGN::IS_TRUE:       return field_ + " IS TRUE";
+        case SIGN::IS_FALSE:      return field_ + " IS FALSE";
+        case SIGN::BETWEEN_AND:   return field_ + " BETWEEN " + value_ + " AND " + value2_;
         default:            return field_ + " " + signToString(sign_) + " " + value_;
     }
 }
 
-std::string signToString(SIGN sign) {
-    switch (sign) {
-        case MORE_THAN:       return ">";
-        case LESS_THAN:       return "<";
-        case MORE_OR_EQUAL:   return ">=";
-        case LESS_OR_EQUAL:   return "<=";
-        case EQUAL:           return "=";
-        case NOT_EQUAL:       return "!=";
-        case LIKE:            return "LIKE";
-        case IS_TRUE:         return "IS TRUE";
-        case IS_FALSE:        return "IS FALSE";
-        case IS_NULL:         return "IS NULL";
-        case IS_NOT_NULL:     return "IS NOT NULL";
-        case IN:              return "IN";
-        default:
-            throw std::invalid_argument("Unknown SIGN value");
-    }
-}
+
 
 }

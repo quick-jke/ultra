@@ -8,25 +8,29 @@
 #ifdef HAVE_POSTGRESQL
     #include "postgres_driver.hpp"
 #endif
-namespace quick {
-namespace ultra {
-std::shared_ptr<IDriver> DriverFactory::create(const std::string& driver_type) {
-    if (driver_type == "mysql") {
-        #ifdef HAVE_MYSQL
-            return std::make_shared<MySQLDriver>();
-        #else
-            throw std::runtime_error("MySQL driver not available (not compiled in)");
-        #endif
-    }
-    else if (driver_type == "postgres" || driver_type == "postgresql") {
-        #ifdef HAVE_POSTGRESQL
-            return std::make_shared<PostgreSQLDriver>();
-        #else
-            throw std::runtime_error("PostgreSQL driver not available (not compiled in)");
-        #endif
-    }
-    else {
-        throw std::runtime_error("Unknown driver type: " + driver_type);
+namespace quick::ultra {
+
+std::shared_ptr<IDriver> DriverFactory::create(const DRIVER_TYPE& driver_type) {
+    switch (driver_type)
+    {
+        case DRIVER_TYPE::MS_SQL: {
+            #ifdef HAVE_MYSQL
+                return std::make_shared<MySQLDriver>();
+            #else
+                throw std::runtime_error("MySQL driver not available (not compiled in)");
+            #endif
+        }
+        
+        case DRIVER_TYPE::POSTGRE_SQL: {
+            #ifdef HAVE_POSTGRESQL
+                return std::make_shared<PostgreSQLDriver>();
+            #else
+                throw std::runtime_error("PostgreSQL driver not available (not compiled in)");
+            #endif
+        }
+        default: {
+            throw std::runtime_error("Unknown driver type");
+        }
     }
 }
-}}// namespace quick::ultra
+}// namespace quick::ultra

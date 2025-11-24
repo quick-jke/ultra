@@ -2,6 +2,7 @@
 #define QUICK_ULTRA_SQL_INCLUDE_MYSQL_DIALECT_HPP
 #include "sql_dialect.hpp"
 #include "type.hpp"
+#include "sign.hpp"
 #include <sstream>
 namespace quick::ultra::sqljke {
 class MySQLDialect : public ISQLDialect {
@@ -9,12 +10,12 @@ public:
 
     std::string read_expression(Expression expr) const{
         switch (expr.sign()) {
-            case MORE_THAN: return " > "; 
-            case LESS_THAN: return " < "; 
-            case MORE_OR_EQUAL: return " >= "; 
-            case LESS_OR_EQUAL: return " <= "; 
-            case EQUAL: return " = "; 
-            case NOT_EQUAL: return " != "; 
+            case SIGN::MORE_THAN: return " > "; 
+            case SIGN::LESS_THAN: return " < "; 
+            case SIGN::MORE_OR_EQUAL: return " >= "; 
+            case SIGN::LESS_OR_EQUAL: return " <= "; 
+            case SIGN::EQUAL: return " = "; 
+            case SIGN::NOT_EQUAL: return " != "; 
             default: return ""; 
         }
     }

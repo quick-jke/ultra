@@ -8,7 +8,7 @@
 
 int main() {
     //init driver
-    auto driver = quick::ultra::DriverFactory::create("mysql");
+    auto driver = quick::ultra::DriverFactory::create(quick::ultra::DRIVER_TYPE::MS_SQL);
     driver->connect(quick::ultra::to_connection_string("localhost", "root", "root7423", one_to_one::DATABASE_NAME));
     //init session
     quick::ultra::Session session(driver);
@@ -36,13 +36,14 @@ int main() {
 
     auto sql = session.select(one_to_one::User::COLUMNS)
         .from(one_to_one::User::TABLE_NAME)
-        .where(one_to_one::User::age_in({24, 25, 26}))
+        // .where(one_to_one::User::age_in({24, 25, 26}))
+        .where(Expression(one_to_one::User::AGE).more_than(25))
         .order_by({{one_to_one::User::AGE, ORDER_DIR::ASC}})
         // .having(one_to_one::User::degree_less_than(5))
         .limit(3)
         .build();
 
-    // std::cout << session.execute(sql)->debug();
+    std::cout << session.execute(sql)->debug();
 
 
 
@@ -54,14 +55,14 @@ int main() {
     //     // .having(one_to_one::User::degree_less_than(5))
     //     .build();
 
-    auto objects = session.execute(sql)->to_vector_of_maps();
+    // auto objects = session.execute(sql)->to_vector_of_maps();
 
-    for(auto obj : objects){
-        for(auto [field, value] : obj){
-            std::cout << field << ":" << value << std::endl;
-        }
-        std::cout << "______" << std::endl;
-    }
+    // for(auto obj : objects){
+    //     for(auto [field, value] : obj){
+    //         std::cout << field << ":" << value << std::endl;
+    //     }
+    //     std::cout << "______" << std::endl;
+    // }
     
     return 0;
 }
