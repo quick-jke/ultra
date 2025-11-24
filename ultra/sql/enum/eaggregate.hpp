@@ -6,7 +6,8 @@ enum class EAggregate{
     MAX,
     AVG,
     COUNT,
-    SUM
+    SUM,
+    ROUND
 };
 }
 #endif

@@ -120,8 +120,9 @@ public:
     
 
     sqljke::CreateTableQueryBuilder& create_table(const std::string& table_name);
-    sqljke::SelectQueryBuilder& select(const std::vector<sqljke::Column>& columns);
-    sqljke::SelectQueryBuilder& select(const sqljke::Aggregate& aggregate);
+    // sqljke::SelectQueryBuilder& select(const std::vector<sqljke::Column>& columns);
+    // sqljke::SelectQueryBuilder& select(const sqljke::Aggregate& aggregate);
+    sqljke::SelectQueryBuilder& select(const std::vector<std::variant<sqljke::Column, sqljke::Aggregate>> select_list);
     sqljke::UpdateQueryBuilder& update(const std::string& table_name);
     sqljke::InsertQueryBuilder& insert_into(const std::string& table_name);
 

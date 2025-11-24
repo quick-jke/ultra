@@ -14,6 +14,11 @@ void SelectQueryBuilder::set_aggregate(const Aggregate aggregate){
     aggregate_ = aggregate;
 }
 
+void SelectQueryBuilder::set_select_list(const std::vector<std::variant<Column, Aggregate>> select_list){
+    select_list_ = select_list;
+}
+
+
 SelectQueryBuilder& SelectQueryBuilder::from(Table table) {
     table_name_ = dialect_->quote_identifier(table);
     return *this;
@@ -51,17 +56,19 @@ std::string SelectQueryBuilder::build() {
     std::ostringstream oss;
     oss << "SELECT ";
 
-    if(is_aggregate_){
-        oss << dialect_->aggregate_clause(aggregate_);
-    }else{
-        if (columns_.empty()) {
-            oss << "*";
-        } else {
-            for (size_t i = 0; i < columns_.size(); ++i) {
-                if (i > 0) oss << ", ";
-                Column col = columns_.at(i);
-                oss << dialect_->quote_identifier(col.get());
-            }
+    if (!select_list_.empty()) {
+        for (size_t i = 0; i < select_list_.size(); ++i) {
+            if (i > 0) oss << ", ";
+
+            std::visit([&oss, this](auto item) {
+                using T = std::decay_t<decltype(item)>;
+
+                if constexpr (std::is_same_v<T, Column>) {
+                    oss << dialect_->quote_identifier(item.get());
+                } else if constexpr (std::is_same_v<T, Aggregate>) {
+                    oss << dialect_->aggregate_clause(item);
+                }
+            }, select_list_[i]);
         }
     }
     

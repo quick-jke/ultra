@@ -17,7 +17,7 @@ struct Aggregate{
             case EAggregate::AVG   : return "AVG(" + col_.get() + ")" + (alias_.has_value() ? " AS " + *alias_ : "");
             case EAggregate::COUNT : return "COUNT(" + col_.get() + ")" + (alias_.has_value() ? " AS " + *alias_ : "");
             case EAggregate::SUM   : return "SUM(" + col_.get() + ")" + (alias_.has_value() ? " AS " + *alias_ : "");
-            default                : return "UNKNOW";
+            default                : return "UNKNOWN";
         }
     }
     Aggregate& as(const std::string& alias){ 
@@ -31,7 +31,7 @@ struct Aggregate{
 };
 
 
-inline Aggregate count(const Column& col) {
+inline Aggregate count(const Column& col = Column{.name = "*"}) {
     return {EAggregate::COUNT, col};
 }
 inline Aggregate avg(const Column& col) {
@@ -39,7 +39,8 @@ inline Aggregate avg(const Column& col) {
 }
 inline Aggregate min(const Column& col) { return {EAggregate::MIN, col}; }
 inline Aggregate max(const Column& col) { return {EAggregate::MAX, col}; }
-
+inline Aggregate sum(const Column& col) { return {EAggregate::SUM, col}; }
+// inline Aggregate round(const Aggregate agg, int value) {return {}};
 }
 
 #endif

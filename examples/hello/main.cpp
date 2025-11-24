@@ -5,7 +5,7 @@
 #include "build/models/one_to_one.hpp"
 
 
-
+using namespace quick::ultra::sqljke;
 int main() {
     //init driver
     auto driver = quick::ultra::DriverFactory::create(quick::ultra::DRIVER_TYPE::MS_SQL);
@@ -18,51 +18,95 @@ int main() {
 
     // session.drop_database(one_to_one::DATABASE_NAME);
 
-    auto u1 = std::make_shared<one_to_one::User>();
-    u1->set_age(24);
-    u1->set_degree(4.2);
-    u1->set_is_bool(true);
-    u1->set_name("stepan");
+    auto users = std::vector<std::shared_ptr<one_to_one::User>>{
+        // 1
+        []{
+            auto u = std::make_shared<one_to_one::User>();
+            u->set_name("antonuy"); u->set_age(34); u->set_degree(4.7); u->set_is_bool(false);
+            return u;
+        }(),
+        // 2
+        []{
+            auto u = std::make_shared<one_to_one::User>();
+            u->set_name("maria"); u->set_age(22); u->set_degree(4.2); u->set_is_bool(true);
+            return u;
+        }(),
+        // 3
+        []{
+            auto u = std::make_shared<one_to_one::User>();
+            u->set_name("ivan"); u->set_age(34); u->set_degree(3.8); u->set_is_bool(false);
+            return u;
+        }(),
+        // 4
+        []{
+            auto u = std::make_shared<one_to_one::User>();
+            u->set_name("olga"); u->set_age(22); u->set_degree(4.9); u->set_is_bool(true);
+            return u;
+        }(),
+        // 5
+        []{
+            auto u = std::make_shared<one_to_one::User>();
+            u->set_name("petr"); u->set_age(34); u->set_degree(4.7); u->set_is_bool(true);
+            return u;
+        }(),
+        // 6
+        []{
+            auto u = std::make_shared<one_to_one::User>();
+            u->set_name("anna"); u->set_age(28); u->set_degree(3.5); u->set_is_bool(false);
+            return u;
+        }(),
+        // 7
+        []{
+            auto u = std::make_shared<one_to_one::User>();
+            u->set_name("dmitry"); u->set_age(28); u->set_degree(4.0); u->set_is_bool(false);
+            return u;
+        }(),
+        // 8
+        []{
+            auto u = std::make_shared<one_to_one::User>();
+            u->set_name("elena"); u->set_age(22); u->set_degree(4.2); u->set_is_bool(false);
+            return u;
+        }()
+    };
 
-    auto u2 = std::make_shared<one_to_one::User>();
-    u2->set_age(34);
-    u2->set_degree(4.7);
-    u2->set_is_bool(false);
-    u2->set_name("antonuy");
-
-    session.save(u1);
-    session.save(u2);
+    for(const auto& user : users){
+        session.save(user);
+    }
 
 
-    auto sql = session.select(one_to_one::User::COLUMNS)
+    // auto sql = session.select(one_to_one::User::COLUMNS)
+    //     .from(one_to_one::User::TABLE_NAME)
+    //     // .where(one_to_one::User::age_in({24, 25, 26}))
+    //     .where(Expression(one_to_one::User::AGE).more_than(25))
+    //     .order_by({{one_to_one::User::AGE, ORDER_DIR::ASC}})
+    //     // .having(one_to_one::User::degree_less_than(5))
+    //     .limit(3)
+    //     .build();
+
+    // std::cout << session.execute(sql)->debug();
+
+
+
+    
+    auto sql = session.select({
+        one_to_one::User::AGE,
+        count().as("user_count"),
+        avg(one_to_one::User::DEGREE).as("avg_degree"),
+        min(one_to_one::User::DEGREE).as("min_degree"),
+        max(one_to_one::User::DEGREE).as("max_degree"),
+        sum(one_to_one::User::IS_BOOL).as("active_count")
+    })
         .from(one_to_one::User::TABLE_NAME)
-        // .where(one_to_one::User::age_in({24, 25, 26}))
-        .where(Expression(one_to_one::User::AGE).more_than(25))
+        .group_by({one_to_one::User::AGE})
         .order_by({{one_to_one::User::AGE, ORDER_DIR::ASC}})
+        // .where(Expression(one_to_one::User::AGE).in(std::vector<int>{24, 25, 26}))
+        // .order_by({{one_to_one::User::AGE, ORDER_DIR::ASC}})
         // .having(one_to_one::User::degree_less_than(5))
-        .limit(3)
         .build();
 
     std::cout << session.execute(sql)->debug();
 
 
-
-    
-    // auto sql = session.select(avg(one_to_one::User::AGE).as("avgage"))
-    //     .from(one_to_one::User::TABLE_NAME)
-    //     // .where(one_to_one::User::age_in({24, 25, 26}))
-    //     // .order_by({{one_to_one::User::AGE, ORDER_DIR::ASC}})
-    //     // .having(one_to_one::User::degree_less_than(5))
-    //     .build();
-
-    // auto objects = session.execute(sql)->to_vector_of_maps();
-
-    // for(auto obj : objects){
-    //     for(auto [field, value] : obj){
-    //         std::cout << field << ":" << value << std::endl;
-    //     }
-    //     std::cout << "______" << std::endl;
-    // }
     
     return 0;
 }

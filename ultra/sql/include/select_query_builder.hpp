@@ -29,6 +29,8 @@ public:
 
     void set_aggregate(const Aggregate aggregate);
 
+    void set_select_list(const std::vector<std::variant<Column, Aggregate>> select_list);
+
     SelectQueryBuilder& from(Table table);
 
     SelectQueryBuilder& where(Expression expression);
@@ -46,7 +48,8 @@ public:
 
 private:
     const ISQLDialect* dialect_;
-    std::vector<sqljke::Column> columns_;
+    std::vector<Column> columns_;
+    std::vector<std::variant<Column, Aggregate>> select_list_;
     std::string table_name_;
     std::vector<std::string> where_clauses_;
     int limit_ = -1;

@@ -70,14 +70,20 @@ void Session::drop_table() {
     // driver_->execute(sql);
 }
 
-sqljke::SelectQueryBuilder& Session::select(const std::vector<sqljke::Column>& columns){
-    select_.set_columns(columns);
+// sqljke::SelectQueryBuilder& Session::select(const std::vector<sqljke::Column>& columns){
+//     select_.set_columns(columns);
+//     return select_;
+// }
+// sqljke::SelectQueryBuilder& Session::select(const sqljke::Aggregate& aggregate){
+//     select_.set_aggregate(aggregate);
+//     return select_;
+// }
+
+sqljke::SelectQueryBuilder& Session::select(const std::vector<std::variant<sqljke::Column, sqljke::Aggregate>> select_list){
+    select_.set_select_list(select_list);
     return select_;
 }
-sqljke::SelectQueryBuilder& Session::select(const sqljke::Aggregate& aggregate){
-    select_.set_aggregate(aggregate);
-    return select_;
-}
+
 
 sqljke::CreateTableQueryBuilder& Session::create_table(const std::string& table_name){
     create_.set_table_name(table_name);
