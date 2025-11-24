@@ -5,6 +5,6 @@ table User{
     string name;
     int age;
     double degree;
-    bool is;
+    bool is_bool;
 }
 

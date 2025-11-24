@@ -89,12 +89,7 @@ std::string SelectQueryBuilder::build() {
         oss << " " << having_clause_;
     }
     std::cout << "[DEBUG:QUERY] " << oss.str() << std::endl;
-    query_ = oss.str();
     return oss.str();
-}
-
-std::string SelectQueryBuilder::query(){
-    return query_;
 }
 
 

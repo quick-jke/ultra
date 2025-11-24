@@ -3,8 +3,10 @@
 #include <string>
 #include <memory>
 #include <vector> 
+#include <unordered_map>
 #include "column.hpp"
 namespace quick::ultra {
+using Objects = std::vector<std::unordered_map<std::string, std::string>>;
 class ResultSet {
 public:
     virtual ~ResultSet() = default;
@@ -16,6 +18,7 @@ public:
     virtual double get_double(const std::string& column) = 0;
     virtual char get_char(const std::string& column) = 0;
     virtual std::string debug() = 0;
+    virtual Objects to_vector_of_maps() = 0;
 };
 using ResultSetPtr = std::unique_ptr<ResultSet>;
 }// namespace quick::ultra

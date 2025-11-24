@@ -19,6 +19,7 @@ public:
     double get_double(const std::string& column) override;
     char get_char(const std::string& column) override;
     std::string debug() override;
+    Objects to_vector_of_maps() override;
 
 private:
     std::unique_ptr<sql::ResultSet> result_set_;

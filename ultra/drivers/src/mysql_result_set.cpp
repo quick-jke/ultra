@@ -73,4 +73,33 @@ std::string MySQLResultSet::debug() {
 
     return oss.str();
 }
+
+Objects MySQLResultSet::to_vector_of_maps(){
+    std::vector<std::unordered_map<std::string, std::string>> rows;
+
+    if (!result_set_) {
+        return rows;
+    }
+
+    sql::ResultSetMetaData* meta = result_set_->getMetaData();
+    int col_count = meta->getColumnCount();
+
+    while (result_set_->next()) {
+        std::unordered_map<std::string, std::string> row;
+        row.reserve(col_count);
+
+        for (int i = 1; i <= col_count; ++i) {
+            std::string col_name = meta->getColumnLabel(i);  
+            try {
+                std::string value = result_set_->getString(i);
+                row[col_name] = value;
+            } catch (const sql::SQLException& e) {
+                row[col_name] = "<ERROR: " + std::string(e.what()) + ">";
+            }
+        }
+        rows.push_back(std::move(row));
+    }
+
+    return rows;
+}
 }}// namespace quick::ultra

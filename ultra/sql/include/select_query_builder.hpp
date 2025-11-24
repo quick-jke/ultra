@@ -43,7 +43,6 @@ public:
 
     std::string build();
 
-    std::string query();
 
 private:
     const ISQLDialect* dialect_;
@@ -52,7 +51,6 @@ private:
     std::vector<std::string> where_clauses_;
     int limit_ = -1;
     int offset_ = 0;
-    std::string query_;
     std::string having_clause_;
     std::string group_by_clause_;
     std::string order_by_clause_;
