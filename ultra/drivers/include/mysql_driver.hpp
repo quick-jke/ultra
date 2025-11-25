@@ -1,5 +1,5 @@
-#ifndef DRIVER_MYSQL_DRIVER_HPP
-#define DRIVER_MYSQL_DRIVER_HPP
+#ifndef QUICK_ULTRA_DRIVERS_INCLUDE_MYSQL_DRIVER_HPP
+#define QUICK_ULTRA_DRIVERS_INCLUDE_MYSQL_DRIVER_HPP
 #include "idriver.hpp"
 #include "mysql_result_set.hpp"
 #include <memory>
@@ -23,7 +23,7 @@ public:
     void begin_transaction() override;
     void commit() override;
     void rollback() override;
-    DriverType type() const override;
+    DRIVER_TYPE type() const override;
     int get_last_insert_id() const override;
 private:
     std::unique_ptr<sql::Connection> connection_;

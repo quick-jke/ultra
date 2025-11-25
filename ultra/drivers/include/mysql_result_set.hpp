@@ -1,5 +1,5 @@
-#ifndef DRIVER_MYSQL_RESULT_SET_HPP
-#define DRIVER_MYSQL_RESULT_SET_HPP
+#ifndef QUICK_ULTRA_DRIVERS_INCLUDE_MYSQL_RESULT_SET_HPP
+#define QUICK_ULTRA_DRIVERS_INCLUDE_DRIVER_MYSQL_RESULT_SET_HPP
 #include "iresult_set.hpp"
 #include <sstream>
 #include <mysql_connection.h>

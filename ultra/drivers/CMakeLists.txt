@@ -7,6 +7,8 @@ target_include_directories(Driver
     PUBLIC 
         /usr/include/mysql-cppconn8
         include
+        enum
+        interfaces
         mysqlcppconn
         mysqlclient
         

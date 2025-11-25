@@ -96,8 +96,8 @@ void MySQLDriver::rollback() {
     connection_->setAutoCommit(true);
 }
 
-DriverType MySQLDriver::type() const {
-    return DriverType::MySQL;
+DRIVER_TYPE MySQLDriver::type() const {
+    return DRIVER_TYPE::MY_SQL;
 }
 
 int MySQLDriver::get_last_insert_id() const {
