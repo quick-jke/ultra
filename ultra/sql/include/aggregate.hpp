@@ -7,19 +7,23 @@ namespace quick::ultra::sqljke{
 
 
 struct Aggregate{
-    EAggregate type_;
+    AGGREGATE type_;
     Column col_;
     std::optional<std::string> alias_ = std::nullopt;
-    std::string aggregate_to_string(){
+    std::string to_string(){
+        std::stringstream oss;
         switch (type_){
-            case EAggregate::MIN   : return "MIN(" + col_.get() + ")" + (alias_.has_value() ? " AS " + *alias_ : "");
-            case EAggregate::MAX   : return "MAX(" + col_.get() + ")" + (alias_.has_value() ? " AS " + *alias_ : "");
-            case EAggregate::AVG   : return "AVG(" + col_.get() + ")" + (alias_.has_value() ? " AS " + *alias_ : "");
-            case EAggregate::COUNT : return "COUNT(" + col_.get() + ")" + (alias_.has_value() ? " AS " + *alias_ : "");
-            case EAggregate::SUM   : return "SUM(" + col_.get() + ")" + (alias_.has_value() ? " AS " + *alias_ : "");
-            default                : return "UNKNOWN";
+            case AGGREGATE::MIN   : { oss << "MIN("; break; }
+            case AGGREGATE::MAX   : { oss << "MAX("; break; }
+            case AGGREGATE::AVG   : { oss << "AVG("; break; }
+            case AGGREGATE::COUNT : { oss << "COUNT("; break; }
+            case AGGREGATE::SUM   : { oss << "SUM("; break; }
+            default: { return "UNKNOWN"; }
         }
+        return oss.str() + col_.get() + ")" + (alias_.has_value() ? " AS " + *alias_ : "");
+
     }
+
     Aggregate& as(const std::string& alias){ 
         alias_ = alias; 
         return *this;
@@ -32,15 +36,14 @@ struct Aggregate{
 
 
 inline Aggregate count(const Column& col = Column{.name = "*"}) {
-    return {EAggregate::COUNT, col};
+    return {AGGREGATE::COUNT, col};
 }
 inline Aggregate avg(const Column& col) {
-    return {EAggregate::AVG, col};
+    return {AGGREGATE::AVG, col};
 }
-inline Aggregate min(const Column& col) { return {EAggregate::MIN, col}; }
-inline Aggregate max(const Column& col) { return {EAggregate::MAX, col}; }
-inline Aggregate sum(const Column& col) { return {EAggregate::SUM, col}; }
-// inline Aggregate round(const Aggregate agg, int value) {return {}};
+inline Aggregate min(const Column& col) { return {AGGREGATE::MIN, col}; }
+inline Aggregate max(const Column& col) { return {AGGREGATE::MAX, col}; }
+inline Aggregate sum(const Column& col) { return {AGGREGATE::SUM, col}; }
 }
 
 #endif

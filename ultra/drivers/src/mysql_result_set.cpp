@@ -1,5 +1,6 @@
 #include "mysql_result_set.hpp"
 #include <cppconn/metadata.h>
+#include <iomanip>
 namespace quick {
 namespace ultra {
 MySQLResultSet::MySQLResultSet(sql::ResultSet* rs)
@@ -29,47 +30,96 @@ double MySQLResultSet::get_double(const std::string& column) {
 char MySQLResultSet::get_char(const std::string& column) {
     return result_set_->getString(column)[0]; 
 }
+
 std::string MySQLResultSet::debug() {
     if (!result_set_) {
         return "[empty result set]\n";
     }
 
-    std::stringstream oss;
-    
+    std::ostringstream oss;
+
     sql::ResultSetMetaData* meta = result_set_->getMetaData();
     int col_count = meta->getColumnCount();
 
-    oss << "Result set (" << col_count << " column" << (col_count != 1 ? "s" : "") << "):\n";
-    oss << "Headers: ";
-    for (int i = 1; i <= col_count; ++i) {  
-        if (i > 1) oss << ", ";
-        oss << "'" << meta->getColumnName(i) << "'";
+    if (col_count == 0) {
+        oss << "Result set: 0 columns\n--------\n(no rows)\n";
+        return oss.str();
+    }
+
+    struct RowData {
+        std::vector<std::string> cells;
+    };
+
+    std::vector<std::string> headers;
+    std::vector<size_t> col_widths(col_count, 0);
+
+    headers.reserve(col_count);
+    for (int i = 1; i <= col_count; ++i) {
+        std::string label = meta->getColumnLabel(i);
+        headers.push_back(label);
+        col_widths[i-1] = std::max(col_widths[i-1], label.length());
+    }
+
+    std::vector<RowData> rows;
+    while (result_set_->next()) {
+        RowData row;
+        row.cells.reserve(col_count);
+        for (int i = 1; i <= col_count; ++i) {
+            std::string value;
+            try {
+                value = result_set_->getString(i);
+                if (result_set_->wasNull()) {
+                    value = "NULL";
+                }
+            } catch (const sql::SQLException& e) {
+                value = "<ERR>";
+            }
+            row.cells.push_back(value);
+            col_widths[i-1] = std::max(col_widths[i-1], value.length());
+        }
+        rows.push_back(std::move(row));
+    }
+
+    for (auto& w : col_widths) {
+        w = std::max(w, size_t{3});
+    }
+
+
+    oss << '+';
+    for (size_t w : col_widths) {
+        oss << std::string(w + 2, '-') << '+';
     }
     oss << "\n";
-    oss << "--------\n";
 
-    int row_num = 0;
-    while (result_set_->next()) {
-        row_num++;
-        oss << "Row " << row_num << ":\n";
-        for (int i = 1; i <= col_count; ++i) {
-            std::string col_name = meta->getColumnLabel(i);
-            try {
-                std::string value = result_set_->getString(i);  
-                oss << col_name << " = \"" << value << "\"\n";
-            } catch (const sql::SQLException& e) {
-                oss << col_name << " = <ERROR: " << e.what() << ">\n";
-            }
+    oss << '|';
+    for (int i = 0; i < col_count; ++i) {
+        oss << ' ' << std::left << std::setw(col_widths[i]) << headers[i] << " |";
+    }
+    oss << "\n";
+
+    oss << '+';
+    for (size_t w : col_widths) {
+        oss << std::string(w + 2, '-') << '+';
+    }
+    oss << "\n";
+
+    for (const auto& row : rows) {
+        oss << '|';
+        for (int i = 0; i < col_count; ++i) {
+            oss << ' ' << std::left << std::setw(col_widths[i]) << row.cells[i] << " |";
         }
-        oss << "--------\n";
+        oss << "\n";
     }
 
-    if (row_num == 0) {
-        oss << "(no rows)\n";
-    } else {
-        oss << "Total rows: " << row_num << "\n";
+    if (!rows.empty()) {
+        oss << '+';
+        for (size_t w : col_widths) {
+            oss << std::string(w + 2, '-') << '+';
+        }
+        oss << "\n";
     }
 
+    oss << "(" << rows.size() << " row" << (rows.size() != 1 ? "s" : "") << ")\n";
 
     return oss.str();
 }

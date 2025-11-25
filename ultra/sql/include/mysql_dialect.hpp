@@ -32,7 +32,7 @@ public:
         }
     }
 
-    std::string type_clause(Type t) const override{
+    std::string type_clause(TYPE t) const override{
         switch (t)
         {
         case STRING:{
@@ -114,9 +114,15 @@ public:
         return oss.str();
     }
 
-    std::string aggregate_clause(Aggregate aggregate) const {
-        return aggregate.aggregate_to_string();
+    std::string aggregate_clause(Aggregate aggregate) const override{
+        return aggregate.to_string();
     }
+
+    std::string scalar_clause(Scalar scalar) const override{
+        return scalar.to_string();
+    }
+
+
 
 };
 }// namespace quick::ultra::sql

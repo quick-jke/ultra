@@ -14,7 +14,7 @@ void SelectQueryBuilder::set_aggregate(const Aggregate aggregate){
     aggregate_ = aggregate;
 }
 
-void SelectQueryBuilder::set_select_list(const std::vector<std::variant<Column, Aggregate>> select_list){
+void SelectQueryBuilder::set_select_list(const std::vector<std::variant<Column, Aggregate, Scalar>> select_list){
     select_list_ = select_list;
 }
 
@@ -67,6 +67,8 @@ std::string SelectQueryBuilder::build() {
                     oss << dialect_->quote_identifier(item.get());
                 } else if constexpr (std::is_same_v<T, Aggregate>) {
                     oss << dialect_->aggregate_clause(item);
+                } else if constexpr (std::is_same_v<T, Scalar>) {
+                    oss << dialect_->scalar_clause(item);
                 }
             }, select_list_[i]);
         }

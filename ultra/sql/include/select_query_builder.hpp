@@ -5,15 +5,13 @@
 #include "table.hpp"
 #include "order_dir.hpp"
 #include "aggregate.hpp"
+#include "scalar.hpp"
+
 #include <string>
 #include <sstream>
 #include <vector>
 #include <variant>
-
 namespace quick::ultra::sqljke {
-
-
-
 struct SelectQuery{
     std::vector<std::string> columns;
     std::string table_name;
@@ -29,7 +27,7 @@ public:
 
     void set_aggregate(const Aggregate aggregate);
 
-    void set_select_list(const std::vector<std::variant<Column, Aggregate>> select_list);
+    void set_select_list(const std::vector<std::variant<Column, Aggregate, Scalar>> select_list);
 
     SelectQueryBuilder& from(Table table);
 
@@ -49,7 +47,7 @@ public:
 private:
     const ISQLDialect* dialect_;
     std::vector<Column> columns_;
-    std::vector<std::variant<Column, Aggregate>> select_list_;
+    std::vector<std::variant<Column, Aggregate, Scalar>> select_list_;
     std::string table_name_;
     std::vector<std::string> where_clauses_;
     int limit_ = -1;
@@ -63,15 +61,3 @@ private:
 }// namespace quick::ultra::sql
 #endif
 
-/*
-
-auto query = std::make_unique<SelectQueryBuilder>(dialect.get());
-
-query->select({"id", "name", "email"})
-        ->from("users")
-        ->where("age > 30 AND status = 'active'")
-        ->limit(10, 5)
-        ->build();
-
-driver_->execute(query);
-*/

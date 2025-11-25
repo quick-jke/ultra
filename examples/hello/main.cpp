@@ -91,7 +91,7 @@ int main() {
     auto sql = session.select({
         one_to_one::User::AGE,
         count().as("user_count"),
-        avg(one_to_one::User::DEGREE).as("avg_degree"),
+        round(avg(one_to_one::User::DEGREE), 2).as("avg_degree"),
         min(one_to_one::User::DEGREE).as("min_degree"),
         max(one_to_one::User::DEGREE).as("max_degree"),
         sum(one_to_one::User::IS_BOOL).as("active_count")
@@ -99,9 +99,6 @@ int main() {
         .from(one_to_one::User::TABLE_NAME)
         .group_by({one_to_one::User::AGE})
         .order_by({{one_to_one::User::AGE, ORDER_DIR::ASC}})
-        // .where(Expression(one_to_one::User::AGE).in(std::vector<int>{24, 25, 26}))
-        // .order_by({{one_to_one::User::AGE, ORDER_DIR::ASC}})
-        // .having(one_to_one::User::degree_less_than(5))
         .build();
 
     std::cout << session.execute(sql)->debug();

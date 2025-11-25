@@ -79,7 +79,7 @@ void Session::drop_table() {
 //     return select_;
 // }
 
-sqljke::SelectQueryBuilder& Session::select(const std::vector<std::variant<sqljke::Column, sqljke::Aggregate>> select_list){
+sqljke::SelectQueryBuilder& Session::select(const std::vector<std::variant<sqljke::Column, sqljke::Aggregate, sqljke::Scalar>> select_list){
     select_.set_select_list(select_list);
     return select_;
 }
