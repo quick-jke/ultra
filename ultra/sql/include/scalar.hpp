@@ -6,11 +6,14 @@
 #include "escalar.hpp"
 namespace quick::ultra::sqljke{
 
-struct Scalar{
+class Scalar{
+private:
     SCALAR type_; 
     std::optional<Aggregate> inner_ = std::nullopt;
     std::optional<int> value_ = std::nullopt;
     std::optional<std::string> alias_ = std::nullopt;
+public:
+    Scalar(SCALAR type, Aggregate agg, int value) : type_(type), inner_(agg), value_(value){}
     std::string to_string(){
         std::stringstream oss;
         switch (type_){

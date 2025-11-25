@@ -5,19 +5,9 @@ namespace quick::ultra::sqljke{
 SelectQueryBuilder::SelectQueryBuilder(const ISQLDialect* dialect)
         : dialect_(dialect) {}
 
-void SelectQueryBuilder::set_columns(const std::vector<Column>& columns){
-    columns_ = columns;
-}
-
-void SelectQueryBuilder::set_aggregate(const Aggregate aggregate){
-    is_aggregate_ = true;
-    aggregate_ = aggregate;
-}
-
 void SelectQueryBuilder::set_select_list(const std::vector<std::variant<Column, Aggregate, Scalar>> select_list){
     select_list_ = select_list;
 }
-
 
 SelectQueryBuilder& SelectQueryBuilder::from(Table table) {
     table_name_ = dialect_->quote_identifier(table);
@@ -37,13 +27,11 @@ SelectQueryBuilder& SelectQueryBuilder::limit(int limit, int offset) {
 
 SelectQueryBuilder& SelectQueryBuilder::group_by(const std::vector<Column>& columns){
     group_by_clause_ = dialect_->group_by_clause(columns);
-    is_aggregate_ = true;
     return *this;
 } 
 
 SelectQueryBuilder& SelectQueryBuilder::having(Expression expression){
     having_clause_ = dialect_->having_clause(expression);
-    is_aggregate_ = true;
     return *this;
 }
 
@@ -74,7 +62,6 @@ std::string SelectQueryBuilder::build() {
         }
     }
     
-
     oss << " FROM " << table_name_;
 
     if (!where_clauses_.empty()) {
@@ -87,9 +74,11 @@ std::string SelectQueryBuilder::build() {
     if(!group_by_clause_.empty()){
         oss << " " << group_by_clause_;
     }
+
     if(!order_by_clause_.empty()){
         oss << " " << order_by_clause_;
     }
+
     if (limit_ > 0) {
         oss << " " << dialect_->limit_clause(limit_, offset_);
     }

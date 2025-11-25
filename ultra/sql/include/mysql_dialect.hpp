@@ -85,7 +85,7 @@ public:
             if (i > 0) {
                 oss << ", ";
             }
-            oss << column_dirs.at(i).first.name << "  " << order_dir_to_string(column_dirs.at(i).second);
+            oss << column_dirs.at(i).first.name() << "  " << order_dir_to_string(column_dirs.at(i).second);
         }
         return oss.str();
     }

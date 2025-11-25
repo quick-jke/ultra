@@ -23,10 +23,6 @@ class SelectQueryBuilder : public SQLQueryBuilder {
 public:
     SelectQueryBuilder(const ISQLDialect* dialect);
 
-    void set_columns(const std::vector<Column>& columns);
-
-    void set_aggregate(const Aggregate aggregate);
-
     void set_select_list(const std::vector<std::variant<Column, Aggregate, Scalar>> select_list);
 
     SelectQueryBuilder& from(Table table);
@@ -43,10 +39,8 @@ public:
 
     std::string build();
 
-
 private:
     const ISQLDialect* dialect_;
-    std::vector<Column> columns_;
     std::vector<std::variant<Column, Aggregate, Scalar>> select_list_;
     std::string table_name_;
     std::vector<std::string> where_clauses_;
@@ -55,8 +49,6 @@ private:
     std::string having_clause_;
     std::string group_by_clause_;
     std::string order_by_clause_;
-    bool is_aggregate_ = false;
-    Aggregate aggregate_;
 };
 }// namespace quick::ultra::sql
 #endif

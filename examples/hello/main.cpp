@@ -89,7 +89,7 @@ int main() {
 
     
     auto sql = session.select({
-        one_to_one::User::AGE,
+        Column(one_to_one::User::AGE).as("age_group"),
         count().as("user_count"),
         round(avg(one_to_one::User::DEGREE), 2).as("avg_degree"),
         min(one_to_one::User::DEGREE).as("min_degree"),

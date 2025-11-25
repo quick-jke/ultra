@@ -6,10 +6,13 @@
 namespace quick::ultra::sqljke{
 
 
-struct Aggregate{
+class Aggregate{
+private:
     AGGREGATE type_;
     Column col_;
     std::optional<std::string> alias_ = std::nullopt;
+public:
+    Aggregate(AGGREGATE type, Column col) : type_(type), col_(col){}
     std::string to_string(){
         std::stringstream oss;
         switch (type_){
@@ -35,7 +38,7 @@ struct Aggregate{
 };
 
 
-inline Aggregate count(const Column& col = Column{.name = "*"}) {
+inline Aggregate count(const Column& col = Column{"*"}) {
     return {AGGREGATE::COUNT, col};
 }
 inline Aggregate avg(const Column& col) {
