@@ -8,6 +8,8 @@ namespace sqljke {
 struct IRelation{
 public:
 };
+
+
 struct OneToOneRelation : public IRelation {
     std::shared_ptr<SQLTable> first_;
     std::shared_ptr<SQLTable> second_;

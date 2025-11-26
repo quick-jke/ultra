@@ -6,5 +6,11 @@ table User{
     int age;
     double degree;
     bool is_bool;
+    ONE_TO_ONE(Passport) passport;
+}
+
+table Passport{
+    PRIMARY int id;
+    int num;
 }
 

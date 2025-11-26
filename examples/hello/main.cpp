@@ -4,19 +4,15 @@
 #include "session.hpp"
 #include "build/models/one_to_one.hpp"
 
-
 using namespace quick::ultra::sqljke;
+
 int main() {
-    //init driver
     auto driver = quick::ultra::DriverFactory::create(quick::ultra::DRIVER_TYPE::MS_SQL);
     driver->connect(quick::ultra::to_connection_string("localhost", "root", "root7423", one_to_one::DATABASE_NAME));
-    //init session
     quick::ultra::Session session(driver);
 
-    //creating tables from generated file
     session.create_tables(one_to_one::TABLES);
 
-    // session.drop_database(one_to_one::DATABASE_NAME);
 
     auto users = std::vector<std::shared_ptr<one_to_one::User>>{
         // 1
@@ -74,19 +70,9 @@ int main() {
     }
 
 
-    // auto sql = session.select(one_to_one::User::COLUMNS)
-    //     .from(one_to_one::User::TABLE_NAME)
-    //     // .where(one_to_one::User::age_in({24, 25, 26}))
-    //     .where(Expression(one_to_one::User::AGE).more_than(25))
-    //     .order_by({{one_to_one::User::AGE, ORDER_DIR::ASC}})
-    //     // .having(one_to_one::User::degree_less_than(5))
-    //     .limit(3)
-    //     .build();
+    auto pass = std::make_shared<one_to_one::Passport>();
 
-    // std::cout << session.execute(sql)->debug();
-
-
-
+    // users.at(0)->set_passport(pass);
     
     auto sql = session.select({
         Column(one_to_one::User::AGE).as("age_group"),
@@ -101,19 +87,20 @@ int main() {
         .order_by({{one_to_one::User::AGE, ORDER_DIR::ASC}})
         .build();
 
-    std::cout << session.execute(sql)->debug();
+    auto objects = session.execute(sql)->to_vector_of_maps();
+
+    for(auto obj : objects){
+        for(auto [field, value] : obj){
+            std::cout << field << ":" << value << std::endl;
+        }
+        std::cout << "=================" << std::endl;
+    }
+
+    std::cout << objects.at(1)["min_degree"] << std::endl;
 
 
     
     return 0;
 }
 
-// between_and
-
-
-
-// TODO: CREATE TABLE (create_table/s)
-// TODO: INSERT INTO (save, insert_into)
-// TODO: SELECT (select, get_by_id, get_all)
-// TODO: UPDATE
 
