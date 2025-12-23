@@ -34,9 +34,8 @@ void Session::create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> table
         for(auto column : table->columns()){
             create_.add_column(column);
         }
-        auto links = table->links();
-        for(auto link : links){
-            create_.add_foreign_key(link.column, link.foreign_table, link.foreign_column);
+        for(auto link : table->links()){
+            create_.add_foreign_key(link);
         }
     }
     auto queries = create_.build_all();

@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <variant>
 #include "column.hpp"
 #include "link.hpp"
 namespace quick{
@@ -19,19 +20,16 @@ private:
 
 class SQLTable{
 public:
-	SQLTable() = default;
-    virtual const int id() const = 0;
-    virtual void set_id(int id) = 0;
-	virtual std::string table_name() const = 0;
-	virtual std::vector<quick::ultra::sqljke::Column> columns() const = 0;
-	virtual std::vector<quick::ultra::sqljke::Link> links() const = 0;
-	virtual std::vector<std::string> values() const = 0;
-    virtual std::vector<std::string> column_names() const = 0;
-	virtual ~SQLTable() = default;
-
-    virtual std::vector<std::shared_ptr<SQLTable>> get_dependent_objects() const {
-        return {}; 
-    }
+	SQLTable()                                                                   = default;
+	virtual ~SQLTable()                                                          = default;
+    virtual const int id() const                                                 = 0;
+    virtual void set_id(int id)                                                  = 0;
+    virtual std::string table_name() const                                       = 0;
+	virtual std::vector<Column> columns() const                                  = 0;
+	virtual std::vector<Link> links() const                                      = 0;
+	virtual std::vector<std::string> values() const                              = 0;
+    virtual std::vector<std::string> column_names() const                        = 0;
+    virtual std::vector<std::shared_ptr<SQLTable>> get_dependent_objects() const = 0;
 };
 }}} //namespace quick::ultra::sql
 #endif

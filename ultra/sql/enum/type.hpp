@@ -12,7 +12,9 @@ enum TYPE{
     DECIMAL,
     FLOAT,
     DOUBLE,
-    VARCHAR
+    VARCHAR,
+
+    NULLTYPE
 };
 }
 #endif

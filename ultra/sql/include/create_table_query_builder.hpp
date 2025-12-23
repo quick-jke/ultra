@@ -13,7 +13,7 @@ namespace sqljke{
 struct TableDefinition {
     std::string name;
     std::vector<Column> columns;
-    std::vector<std::tuple<std::string, std::string, std::string>> foreign_keys;
+    std::vector<Link> foreign_keys;
 };
 class CreateTableQueryBuilder : public SQLQueryBuilder {
 public:
@@ -37,9 +37,9 @@ public:
         return *this;
     }
 
-    CreateTableQueryBuilder& add_foreign_key(const std::string& column, const std::string& foreign_table, const std::string& foreign_column) {
+    CreateTableQueryBuilder& add_foreign_key(Link link) {
         if (!tables_.empty()) {
-            tables_.back().foreign_keys.emplace_back(column, foreign_table, foreign_column);
+            tables_.back().foreign_keys.emplace_back(link);
         }
         return *this;
     }
@@ -82,9 +82,9 @@ public:
             }
 
             for (const auto& fk : table.foreign_keys) {
-                oss << ",\n  FOREIGN KEY (" << dialect_->quote_identifier(std::get<0>(fk)) << ")"
-                    << " REFERENCES " << dialect_->quote_identifier(std::get<1>(fk))
-                    << " (" << dialect_->quote_identifier(std::get<2>(fk)) << ")";
+                oss << ",\n  FOREIGN KEY (" << dialect_->quote_identifier(fk.column) << ")"
+                    << " REFERENCES " << dialect_->quote_identifier(fk.foreign_table)
+                    << " (" << dialect_->quote_identifier(fk.foreign_column) << ")";
             }
 
             oss << "\n);"; 

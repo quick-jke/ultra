@@ -11,68 +11,88 @@ int main() {
     driver->connect(quick::ultra::to_connection_string("localhost", "root", "root7423", one_to_one::DATABASE_NAME));
     quick::ultra::Session session(driver);
 
-    session.create_tables(one_to_one::TABLES);
+    // session.create_tables(one_to_one::TABLES);
 
 
-    auto users = std::vector<std::shared_ptr<one_to_one::User>>{
-        // 1
-        []{
-            auto u = std::make_shared<one_to_one::User>();
-            u->set_name("antonuy"); u->set_age(34); u->set_degree(4.7); u->set_is_bool(false);
-            return u;
-        }(),
-        // 2
-        []{
-            auto u = std::make_shared<one_to_one::User>();
-            u->set_name("maria"); u->set_age(22); u->set_degree(4.2); u->set_is_bool(true);
-            return u;
-        }(),
-        // 3
-        []{
-            auto u = std::make_shared<one_to_one::User>();
-            u->set_name("ivan"); u->set_age(34); u->set_degree(3.8); u->set_is_bool(false);
-            return u;
-        }(),
-        // 4
-        []{
-            auto u = std::make_shared<one_to_one::User>();
-            u->set_name("olga"); u->set_age(22); u->set_degree(4.9); u->set_is_bool(true);
-            return u;
-        }(),
-        // 5
-        []{
-            auto u = std::make_shared<one_to_one::User>();
-            u->set_name("petr"); u->set_age(34); u->set_degree(4.7); u->set_is_bool(true);
-            return u;
-        }(),
-        // 6
-        []{
-            auto u = std::make_shared<one_to_one::User>();
-            u->set_name("anna"); u->set_age(28); u->set_degree(3.5); u->set_is_bool(false);
-            return u;
-        }(),
-        // 7
-        []{
-            auto u = std::make_shared<one_to_one::User>();
-            u->set_name("dmitry"); u->set_age(28); u->set_degree(4.0); u->set_is_bool(false);
-            return u;
-        }(),
-        // 8
-        []{
-            auto u = std::make_shared<one_to_one::User>();
-            u->set_name("elena"); u->set_age(22); u->set_degree(4.2); u->set_is_bool(false);
-            return u;
-        }()
-    };
+    // auto users = std::vector<std::shared_ptr<one_to_one::User>>{
+    //     // 1
+    //     []{
+    //         auto p = std::make_shared<one_to_one::Passport>();
+    //         p->set_num(23);
+    //         auto u = std::make_shared<one_to_one::User>();
+    //         u->set_name("antony"); u->set_age(34); u->set_degree(4.7); u->set_is_bool(false);
+    //         u->set_passport(p);
+    //         return u;
+    //     }(),
+    //     // 2
+    //     []{
+    //         auto p = std::make_shared<one_to_one::Passport>();
+    //         p->set_num(24);
+    //         auto u = std::make_shared<one_to_one::User>();
+    //         u->set_name("maria"); u->set_age(22); u->set_degree(4.2); u->set_is_bool(true);
+    //         u->set_passport(p);
+    //         return u;
+    //     }(),
+    //     // 3
+    //     []{
+    //         auto p = std::make_shared<one_to_one::Passport>();
+    //         p->set_num(25);
+    //         auto u = std::make_shared<one_to_one::User>();
+    //         u->set_name("ivan"); u->set_age(34); u->set_degree(3.8); u->set_is_bool(false);
+    //         u->set_passport(p);
+    //         return u;
+    //     }(),
+    //     // 4
+    //     []{
+    //         auto p = std::make_shared<one_to_one::Passport>();
+    //         p->set_num(26);
+    //         auto u = std::make_shared<one_to_one::User>();
+    //         u->set_name("olga"); u->set_age(22); u->set_degree(4.9); u->set_is_bool(true);
+    //         u->set_passport(p);
+    //         return u;
+    //     }(),
+    //     // 5
+    //     []{
+    //         auto p = std::make_shared<one_to_one::Passport>();
+    //         p->set_num(27);
+    //         auto u = std::make_shared<one_to_one::User>();
+    //         u->set_name("petr"); u->set_age(34); u->set_degree(4.7); u->set_is_bool(true);
+    //         u->set_passport(p);
+    //         return u;
+    //     }(),
+    //     // 6
+    //     []{
+    //         auto p = std::make_shared<one_to_one::Passport>();
+    //         p->set_num(28);
+    //         auto u = std::make_shared<one_to_one::User>();
+    //         u->set_name("anna"); u->set_age(28); u->set_degree(3.5); u->set_is_bool(false);
+    //         u->set_passport(p);
+    //         return u;
+    //     }(),
+    //     // 7
+    //     []{
+    //         auto p = std::make_shared<one_to_one::Passport>();
+    //         p->set_num(29);
+    //         auto u = std::make_shared<one_to_one::User>();
+    //         u->set_name("dmitry"); u->set_age(28); u->set_degree(4.0); u->set_is_bool(false);
+    //         u->set_passport(p);
+    //         return u;
+    //     }(),
+    //     // 8
+    //     []{
+    //         auto p = std::make_shared<one_to_one::Passport>();
+    //         p->set_num(30);
+    //         auto u = std::make_shared<one_to_one::User>();
+    //         u->set_name("elena"); u->set_age(22); u->set_degree(4.2); u->set_is_bool(false);
+    //         u->set_passport(p);
+    //         return u;
+    //     }()
+    // };
 
-    for(const auto& user : users){
-        session.save(user);
-    }
+    // for(const auto& user : users){
+    //     session.save(user);
+    // }
 
-
-    auto pass = std::make_shared<one_to_one::Passport>();
-
-    // users.at(0)->set_passport(pass);
     
     auto sql = session.select({
         Column(one_to_one::User::AGE).as("age_group"),
@@ -87,16 +107,8 @@ int main() {
         .order_by({{one_to_one::User::AGE, ORDER_DIR::ASC}})
         .build();
 
-    auto objects = session.execute(sql)->to_vector_of_maps();
+    std::cout << session.execute(sql)->debug() << std::endl;
 
-    for(auto obj : objects){
-        for(auto [field, value] : obj){
-            std::cout << field << ":" << value << std::endl;
-        }
-        std::cout << "=================" << std::endl;
-    }
-
-    std::cout << objects.at(1)["min_degree"] << std::endl;
 
 
     
