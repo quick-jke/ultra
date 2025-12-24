@@ -11,77 +11,66 @@ int main() {
     driver->connect(quick::ultra::to_connection_string("localhost", "root", "root7423", one_to_one::DATABASE_NAME));
     quick::ultra::Session session(driver);
 
+
+
+
     // session.create_tables(one_to_one::TABLES);
 
+    // auto p = std::make_shared<one_to_one::Passport>();
+    // p->set_num(23);
 
     // auto users = std::vector<std::shared_ptr<one_to_one::User>>{
     //     // 1
-    //     []{
-    //         auto p = std::make_shared<one_to_one::Passport>();
-    //         p->set_num(23);
+    //     [p]{
     //         auto u = std::make_shared<one_to_one::User>();
     //         u->set_name("antony"); u->set_age(34); u->set_degree(4.7); u->set_is_bool(false);
     //         u->set_passport(p);
     //         return u;
     //     }(),
     //     // 2
-    //     []{
-    //         auto p = std::make_shared<one_to_one::Passport>();
-    //         p->set_num(24);
+    //     [p]{
     //         auto u = std::make_shared<one_to_one::User>();
     //         u->set_name("maria"); u->set_age(22); u->set_degree(4.2); u->set_is_bool(true);
     //         u->set_passport(p);
     //         return u;
     //     }(),
     //     // 3
-    //     []{
-    //         auto p = std::make_shared<one_to_one::Passport>();
-    //         p->set_num(25);
+    //     [p]{
     //         auto u = std::make_shared<one_to_one::User>();
     //         u->set_name("ivan"); u->set_age(34); u->set_degree(3.8); u->set_is_bool(false);
     //         u->set_passport(p);
     //         return u;
     //     }(),
     //     // 4
-    //     []{
-    //         auto p = std::make_shared<one_to_one::Passport>();
-    //         p->set_num(26);
+    //     [p]{
     //         auto u = std::make_shared<one_to_one::User>();
     //         u->set_name("olga"); u->set_age(22); u->set_degree(4.9); u->set_is_bool(true);
     //         u->set_passport(p);
     //         return u;
     //     }(),
     //     // 5
-    //     []{
-    //         auto p = std::make_shared<one_to_one::Passport>();
-    //         p->set_num(27);
+    //     [p]{
     //         auto u = std::make_shared<one_to_one::User>();
     //         u->set_name("petr"); u->set_age(34); u->set_degree(4.7); u->set_is_bool(true);
     //         u->set_passport(p);
     //         return u;
     //     }(),
     //     // 6
-    //     []{
-    //         auto p = std::make_shared<one_to_one::Passport>();
-    //         p->set_num(28);
+    //     [p]{
     //         auto u = std::make_shared<one_to_one::User>();
     //         u->set_name("anna"); u->set_age(28); u->set_degree(3.5); u->set_is_bool(false);
     //         u->set_passport(p);
     //         return u;
     //     }(),
     //     // 7
-    //     []{
-    //         auto p = std::make_shared<one_to_one::Passport>();
-    //         p->set_num(29);
+    //     [p]{
     //         auto u = std::make_shared<one_to_one::User>();
     //         u->set_name("dmitry"); u->set_age(28); u->set_degree(4.0); u->set_is_bool(false);
     //         u->set_passport(p);
     //         return u;
     //     }(),
     //     // 8
-    //     []{
-    //         auto p = std::make_shared<one_to_one::Passport>();
-    //         p->set_num(30);
+    //     [p]{
     //         auto u = std::make_shared<one_to_one::User>();
     //         u->set_name("elena"); u->set_age(22); u->set_degree(4.2); u->set_is_bool(false);
     //         u->set_passport(p);
@@ -94,23 +83,32 @@ int main() {
     // }
 
     
-    auto sql = session.select({
-        Column(one_to_one::User::AGE).as("age_group"),
-        count().as("user_count"),
-        round(avg(one_to_one::User::DEGREE), 2).as("avg_degree"),
-        min(one_to_one::User::DEGREE).as("min_degree"),
-        max(one_to_one::User::DEGREE).as("max_degree"),
-        sum(one_to_one::User::IS_BOOL).as("active_count")
-    })
-        .from(one_to_one::User::TABLE_NAME)
-        .group_by({one_to_one::User::AGE})
-        .order_by({{one_to_one::User::AGE, ORDER_DIR::ASC}})
-        .build();
+    // auto sql = session.select({
+    //     Column(one_to_one::User::AGE).as("age_group"),
+    //     count().as("user_count"),
+    //     round(avg(one_to_one::User::DEGREE), 2).as("avg_degree"),
+    //     min(one_to_one::User::DEGREE).as("min_degree"),
+    //     max(one_to_one::User::DEGREE).as("max_degree"),
+    //     sum(one_to_one::User::IS_BOOL).as("active_count")
+    // })
+    //     .from(one_to_one::User::TABLE_NAME)
+    //     .group_by({one_to_one::User::AGE})
+    //     .order_by({{one_to_one::User::AGE, ORDER_DIR::ASC}})
+    //     .build();
 
-    std::cout << session.execute(sql)->debug() << std::endl;
+    // std::cout << session.execute(sql)->debug() << std::endl;
 
 
 
+    auto u = session.get_by_id<one_to_one::User>(2);  
+
+    auto p = session.get_by_id<one_to_one::Passport>(u->passport_id());
+
+    p->set_num(20);
+
+    u->set_passport(p);
+
+    session.save(u);
     
     return 0;
 }

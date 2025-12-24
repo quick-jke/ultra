@@ -30,7 +30,7 @@ public:
 
         auto select = std::make_unique<sqljke::SelectQueryBuilder>(dialect_.get());
 
-        std::string sql = select->from(TBL().table_name()).where("id = " + std::to_string(id)).build();
+        std::string sql = select->from(TBL().table_name()).where(sqljke::Expression("id", sqljke::SIGN::EQUAL, std::to_string(id))).build();
 
 #ifdef DEBUG
         std::cout << "Executing SQL: " << sql << std::endl;
@@ -50,6 +50,7 @@ public:
             return nullptr;
         }
     }
+
     
     template <typename TBL>
     std::vector<std::shared_ptr<TBL>> get_all(std::vector<sqljke::Expression> where = {}, int limit = -1, int offset = -1) {
@@ -98,16 +99,14 @@ public:
 
     template <typename TBL>
     void save(const std::shared_ptr<TBL>& obj) {
-        static_assert(
-            std::is_base_of_v<sqljke::SQLTable, TBL>,
-            "TBL must derive from SQLTable"
-        );
-
+        static_assert(std::is_base_of_v<sqljke::SQLTable, TBL>, "TBL must derive from SQLTable");
         if (!obj) return;
 
         for (const auto& dep : obj->get_dependent_objects()) {
-            if (dep->id() == 0) {
+            if (dep) {
                 save(dep); 
+            }else{
+                std::cout << "unknown" << std::endl;
             }
         }
 
@@ -120,8 +119,6 @@ public:
     
 
     sqljke::CreateTableQueryBuilder& create_table(const std::string& table_name);
-    // sqljke::SelectQueryBuilder& select(const std::vector<sqljke::Column>& columns);
-    // sqljke::SelectQueryBuilder& select(const sqljke::Aggregate& aggregate);
     sqljke::SelectQueryBuilder& select(const std::vector<std::variant<sqljke::Column, sqljke::Aggregate, sqljke::Scalar>> select_list);
     sqljke::UpdateQueryBuilder& update(const std::string& table_name);
     sqljke::InsertQueryBuilder& insert_into(const std::string& table_name);

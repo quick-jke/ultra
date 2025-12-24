@@ -60,6 +60,8 @@ std::string SelectQueryBuilder::build() {
                 }
             }, select_list_[i]);
         }
+    }else{
+        oss << " * ";
     }
     
     oss << " FROM " << table_name_;
@@ -86,7 +88,6 @@ std::string SelectQueryBuilder::build() {
     if(!having_clause_.empty()){
         oss << " " << having_clause_;
     }
-    std::cout << "[DEBUG:QUERY] " << oss.str() << std::endl;
     return oss.str();
 }
 
