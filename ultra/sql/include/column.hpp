@@ -16,12 +16,14 @@ private:
 public:
     Column(std::string name, TYPE type, bool is_primary_key, bool is_auto_increment, bool is_nullable, std::string default_value)
         : name_(name), type_(type), is_primary_key_(is_primary_key), is_auto_increment_(is_auto_increment), is_nullable_(is_nullable), default_value_(default_value) {}
+    
     Column(std::string name) : name_(name) {}
+
     Column& as(std::string alias) {
         alias_ = alias;
         return *this;
     }
-    const std::string& get() {
+    std::string get() const {
         return name_;
     }
     std::string name() const {

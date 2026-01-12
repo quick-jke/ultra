@@ -9,7 +9,8 @@ Session::Session(std::shared_ptr<IDriver> driver)
       select_(dialect_.get()),       
       create_(dialect_.get()),      
       insert_(dialect_.get()),
-      update_(dialect_.get())       
+      update_(dialect_.get()),
+      delete_(dialect_.get())   
 {
     switch (driver_->type()) {
         case DRIVER_TYPE::MY_SQL:
@@ -24,6 +25,7 @@ Session::Session(std::shared_ptr<IDriver> driver)
     create_ = sqljke::CreateTableQueryBuilder(dialect_.get());
     insert_ = sqljke::InsertQueryBuilder(dialect_.get());
     update_ = sqljke::UpdateQueryBuilder(dialect_.get());
+    delete_ = sqljke::DeleteQueryBuilder(dialect_.get());
 }
 
 void Session::create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> tables) {
@@ -88,6 +90,13 @@ sqljke::UpdateQueryBuilder& Session::update(const std::string& table_name){
     update_.set_table(table_name);
     return update_;
 }
+
+sqljke::DeleteQueryBuilder& Session::delete_from(const sqljke::Table& table)
+{
+    delete_.set_table(table);
+    return delete_;
+}
+
 
 void Session::drop_database(const std::string& database_name){
     execute("drop database " + database_name + ";");

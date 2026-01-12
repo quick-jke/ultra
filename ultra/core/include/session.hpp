@@ -7,6 +7,7 @@
 #include "select_query_builder.hpp"
 #include "insert_query_builder.hpp"
 #include "update_query_builder.hpp"
+#include "delete_query_builder.hpp"
 #include "sql_dialect.hpp"
 #include "mysql_result_set.hpp"
 #include "relation.hpp"
@@ -121,14 +122,15 @@ public:
     sqljke::CreateTableQueryBuilder& create_table(const std::string& table_name);
     sqljke::SelectQueryBuilder& select(const std::vector<std::variant<sqljke::Column, sqljke::Aggregate, sqljke::Scalar>> select_list);
     sqljke::UpdateQueryBuilder& update(const std::string& table_name);
+    sqljke::DeleteQueryBuilder& delete_from(const sqljke::Table& table);
     sqljke::InsertQueryBuilder& insert_into(const std::string& table_name);
+
 
     void create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> tables);
 
     ResultSetPtr execute(const std::string& sql);
 
     //future
-    void delete_from();
     void drop_table();
     void table_exists();
     void truncate_table();
@@ -143,7 +145,7 @@ private:
     sqljke::CreateTableQueryBuilder create_;
     sqljke::InsertQueryBuilder insert_;
     sqljke::UpdateQueryBuilder update_;
-
+    sqljke::DeleteQueryBuilder delete_;
 
     template <typename TBL>
     void do_insert(const std::shared_ptr<TBL>& obj) {

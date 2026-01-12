@@ -11,7 +11,7 @@ SIGN Expression::sign() { return sign_; }
 std::string Expression::value() { return value_; }
 
 
-std::string Expression::get() {
+std::string Expression::get() const {
     switch (sign_) {
         case SIGN::IS_NULL:       return field_ + " IS NULL";
         case SIGN::IS_NOT_NULL:   return field_ + " IS NOT NULL";

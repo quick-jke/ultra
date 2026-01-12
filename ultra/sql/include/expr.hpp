@@ -25,11 +25,11 @@ public:
     SIGN sign();
     std::string value();
 
-    std::string get();
+    std::string get() const;
 
 //-------------------
 public:
-    explicit Expression(Column column){
+    explicit Expression(const Column& column){
         field_ = column.get();
     }
 
