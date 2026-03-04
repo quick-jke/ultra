@@ -8,7 +8,7 @@ using namespace quick::ultra::sqljke;
 
 int main() {
     auto driver = quick::ultra::DriverFactory::create(quick::ultra::DRIVER_TYPE::MS_SQL);
-    driver->connect(quick::ultra::to_connection_string("localhost", "root", "root7423", one_to_one::DATABASE_NAME));
+    driver->connect(quick::ultra::to_connection_string("localhost", "root", "dev_password", one_to_one::DATABASE_NAME));
     quick::ultra::Session session(driver);
 
 

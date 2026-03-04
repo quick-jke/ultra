@@ -23,6 +23,14 @@
 - CMake (рекомендуется 3.14+)
 - Компилятор с поддержкой C++17
 - Библиотеку MySQL Connector/C++ (или совместимую)
+```bash
+sudo apt install libmysqlcppconn8-dev libmysqlclient-dev -y
+```
+или
+```bash
+sudo apt install libmysqlcppconn-dev libmysqlclient-dev -y
+```
+
 
 ### Сборка
 
@@ -32,3 +40,4 @@ cd ultra
 mkdir build && cd build
 cmake ..
 make
+```
