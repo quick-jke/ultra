@@ -2,6 +2,7 @@
 #define QUICK_ULTRA_SQL_INTERFACE_IDIALECT_HPP
 #include <string>
 #include <vector>
+#include <optional>
 #include "expr.hpp"
 #include "type.hpp"
 #include "column.hpp"
@@ -12,6 +13,18 @@
 namespace quick{
 namespace ultra{
 namespace sqljke {
+
+struct SelectQueryIR {
+    std::vector<std::variant<Column, Aggregate, Scalar>> select_list;
+    std::string table_name; 
+    std::vector<std::string> where_clauses;
+    std::string group_by_columns;
+    std::string order_by_columns;
+    std::optional<std::pair<int, int>> limit_offset; 
+    std::optional<std::string> having_clause;
+};
+
+
 class ISQLDialect {
 public:
     virtual std::string scalar_clause(Scalar scalar) const = 0; 
@@ -25,7 +38,9 @@ public:
     virtual std::string auto_increment_clause() const = 0;
     virtual std::string if_not_exists_clause() const = 0;
     virtual std::string type_clause(TYPE t) const = 0;
+    virtual std::string compile_select(const SelectQueryIR& ir) const = 0;
     virtual ~ISQLDialect() = default;
+    
 };
 }}}// namespace quick::ultra::sql
 #endif

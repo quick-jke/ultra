@@ -78,9 +78,9 @@ int main() {
         }()
     };
 
-    for(const auto& user : users){
-        session.save(user);
-    }
+    // for(const auto& user : users){
+    //     session.save(user);
+    // }
 
     auto sql = session
         .delete_from(one_to_one::User::TABLE_NAME)

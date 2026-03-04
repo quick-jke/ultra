@@ -89,6 +89,7 @@ public:
         }
         return oss.str();
     }
+
     std::string group_by_clause(std::vector<Column> columns) const override {
         if (columns.empty()) {
             return "";
@@ -104,6 +105,7 @@ public:
         }
         return oss.str();
     }
+    
     std::string having_clause(Expression expression) const {
         return "HAVING " + expression.get();
     }
@@ -121,6 +123,64 @@ public:
     std::string scalar_clause(Scalar scalar) const override{
         return scalar.to_string();
     }
+
+    std::string compile_select(const SelectQueryIR& ir) const override {
+        std::ostringstream oss;
+        oss << "SELECT ";
+
+        // 1. SELECT список
+        if (!ir.select_list.empty()) {
+            for (size_t i = 0; i < ir.select_list.size(); ++i) {
+                if (i > 0) oss << ", ";
+                std::visit([&oss, this](auto item) {
+                    using T = std::decay_t<decltype(item)>;
+                    if constexpr (std::is_same_v<T, Column>) {
+                        oss << quote_identifier(item.get());
+                    } else if constexpr (std::is_same_v<T, Aggregate>) {
+                        oss << aggregate_clause(item);
+                    } else if constexpr (std::is_same_v<T, Scalar>) {
+                        oss << scalar_clause(item);
+                    }
+                }, ir.select_list[i]);
+            }
+        } else {
+            oss << "*";
+        }
+        
+        // 2. FROM
+        oss << " FROM " << ir.table_name;
+
+        // 3. WHERE
+        if (!ir.where_clauses.empty()) {
+            oss << " WHERE ";
+            for (size_t i = 0; i < ir.where_clauses.size(); ++i) {
+                if (i > 0) oss << " AND ";
+                oss << ir.where_clauses[i];
+            }
+        }
+
+        // 4. GROUP BY
+        if (!ir.group_by_columns.empty()) {
+            oss << " " << ir.group_by_columns;
+        }
+        // 5. HAVING 
+        if (ir.having_clause.has_value()) { 
+            oss << " HAVING " << ir.having_clause.value();
+        }
+
+        // 6. ORDER BY
+        if (!ir.order_by_columns.empty()) {
+            oss << " " << ir.order_by_columns;
+        }
+
+        // 7. LIMIT 
+        if (ir.limit_offset.has_value() && ir.limit_offset->first > 0) {
+            oss << " " << limit_clause(ir.limit_offset->first, ir.limit_offset->second);
+        }
+        
+        return oss.str();
+    }
+
 
 
 

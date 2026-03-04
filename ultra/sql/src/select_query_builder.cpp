@@ -41,54 +41,21 @@ SelectQueryBuilder& SelectQueryBuilder::order_by(const std::vector<std::pair<Col
 } 
 
 std::string SelectQueryBuilder::build() {
-    std::ostringstream oss;
-    oss << "SELECT ";
 
-    if (!select_list_.empty()) {
-        for (size_t i = 0; i < select_list_.size(); ++i) {
-            if (i > 0) oss << ", ";
-
-            std::visit([&oss, this](auto item) {
-                using T = std::decay_t<decltype(item)>;
-
-                if constexpr (std::is_same_v<T, Column>) {
-                    oss << dialect_->quote_identifier(item.get());
-                } else if constexpr (std::is_same_v<T, Aggregate>) {
-                    oss << dialect_->aggregate_clause(item);
-                } else if constexpr (std::is_same_v<T, Scalar>) {
-                    oss << dialect_->scalar_clause(item);
-                }
-            }, select_list_[i]);
-        }
-    }else{
-        oss << " * ";
-    }
-    
-    oss << " FROM " << table_name_;
-
-    if (!where_clauses_.empty()) {
-        oss << " WHERE ";
-        for (size_t i = 0; i < where_clauses_.size(); ++i) {
-            if (i > 0) oss << " AND ";
-            oss << where_clauses_[i];
-        }
-    }
-    if(!group_by_clause_.empty()){
-        oss << " " << group_by_clause_;
-    }
-
-    if(!order_by_clause_.empty()){
-        oss << " " << order_by_clause_;
-    }
-
+    SelectQueryIR ir;
+    ir.select_list = select_list_;
+    ir.table_name = table_name_; 
+    ir.where_clauses = where_clauses_;
+    ir.group_by_columns = group_by_clause_;
+    ir.order_by_columns = order_by_clause_;
     if (limit_ > 0) {
-        oss << " " << dialect_->limit_clause(limit_, offset_);
+        ir.limit_offset = std::make_pair(limit_, offset_);
+    } else {
+        ir.limit_offset = std::nullopt;
     }
+    ir.having_clause = having_clause_.empty() ? std::nullopt : std::make_optional(having_clause_);
     
-    if(!having_clause_.empty()){
-        oss << " " << having_clause_;
-    }
-    return oss.str();
+    
 }
 
 
