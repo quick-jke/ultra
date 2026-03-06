@@ -1,4 +1,5 @@
 #include "select_query_builder.hpp"
+#include "select_query_ir.hpp"
 #include <iostream>
 namespace quick::ultra::sqljke{
 
@@ -54,7 +55,7 @@ std::string SelectQueryBuilder::build() {
         ir.limit_offset = std::nullopt;
     }
     ir.having_clause = having_clause_.empty() ? std::nullopt : std::make_optional(having_clause_);
-    
+    return dialect_->compile_select(ir);
     
 }
 

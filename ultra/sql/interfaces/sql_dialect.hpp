@@ -10,19 +10,12 @@
 #include "table.hpp"
 #include "aggregate.hpp"
 #include "scalar.hpp"
+#include "select_query_ir.hpp"
 namespace quick{
 namespace ultra{
 namespace sqljke {
 
-struct SelectQueryIR {
-    std::vector<std::variant<Column, Aggregate, Scalar>> select_list;
-    std::string table_name; 
-    std::vector<std::string> where_clauses;
-    std::string group_by_columns;
-    std::string order_by_columns;
-    std::optional<std::pair<int, int>> limit_offset; 
-    std::optional<std::string> having_clause;
-};
+
 
 
 class ISQLDialect {
