@@ -38,7 +38,8 @@ sudo apt install libmysqlcppconn-dev libmysqlclient-dev -y
 ```bash
 git clone https://github.com/quick-jke/ultra.git
 cd ultra
-mkdir build && cd build
+mkdir build && cd build && mkdir models
+jkecmpl --def_path=../examples/models/one_to_one.def --cpp_out=models
 cmake ..
 make
 ```
