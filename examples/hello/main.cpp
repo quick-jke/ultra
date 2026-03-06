@@ -8,7 +8,7 @@ using namespace quick::ultra::sqljke;
 
 int main() {
     auto driver = quick::ultra::DriverFactory::create(quick::ultra::DRIVER_TYPE::MS_SQL);
-    driver->connect(quick::ultra::to_connection_string("localhost", "root", "dev_password", one_to_one::DATABASE_NAME));
+    driver->connect(quick::ultra::to_connection_string("localhost", "root", "rootjke7423", one_to_one::DATABASE_NAME));
     quick::ultra::Session session(driver);
 
 
@@ -78,19 +78,21 @@ int main() {
         }()
     };
 
-    // for(const auto& user : users){
-    //     session.save(user);
-    // }
+    for(const auto& user : users){
+        session.save(user);
+    }
 
-    auto sql = session
-        .delete_from(one_to_one::User::TABLE_NAME)
-        .where(Expression(one_to_one::User::ID).more_than(8))
-        .build();
+    // auto sql = session
+    //     .delete_from(one_to_one::User::TABLE_NAME)
+    //     .where(Expression(one_to_one::User::ID).more_than(8))
+    //     .build();
         
-    std::cout << "[DELETE]" << sql << std::endl;
     // session.execute(sql);
+
+    // auto delete_sql = session.delete_from(one_to_one::User::TABLE_NAME).build();
+    // session.execute(delete_sql);
     
-    sql = session.select({
+    auto sql = session.select({
         Column(one_to_one::User::AGE).as("age_group"),
         count().as("user_count"),
         round(avg(one_to_one::User::DEGREE), 2).as("avg_degree"),

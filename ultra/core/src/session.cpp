@@ -44,7 +44,7 @@ void Session::create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> table
 
     for (const auto& sql : queries) {
 #ifdef DEBUG
-        std::cout << sql << std::endl;
+        // std::cout << sql << std::endl;
 #endif
         driver_->execute(sql);
     }
