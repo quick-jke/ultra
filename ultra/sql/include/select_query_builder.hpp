@@ -12,12 +12,6 @@
 #include <vector>
 #include <variant>
 namespace quick::ultra::sqljke {
-struct SelectQuery{
-    std::vector<std::string> columns;
-    std::string table_name;
-    std::string where;
-    std::variant<int, std::pair<int, int>> limit;
-};
 
 class SelectQueryBuilder : public SQLQueryBuilder {
 public:

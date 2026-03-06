@@ -12,6 +12,7 @@
 #include "mysql_result_set.hpp"
 #include "relation.hpp"
 #include "aggregate.hpp"
+#include "status.hpp"
 #define DEBUG
 namespace quick {
 namespace ultra {
@@ -25,83 +26,15 @@ class Session {
 public:
     explicit Session(std::shared_ptr<IDriver> driver);
 
-    template <typename TBL>
-    std::shared_ptr<TBL> get_by_id(int id) {
-        static_assert(std::is_base_of_v<quick::ultra::sqljke::SQLTable, TBL>, "Template argument must derive from SQLTable");
+    ResultSetPtr execute(const std::string& sql);
 
-        auto select = std::make_unique<sqljke::SelectQueryBuilder>(dialect_.get());
-
-        std::string sql = select->from(TBL().table_name()).where(sqljke::Expression("id", sqljke::SIGN::EQUAL, std::to_string(id))).build();
-
-#ifdef DEBUG
-        std::cout << "Executing SQL: " << sql << std::endl;
-#endif
-        try {
-            ResultSetPtr result = driver_->query(sql);
-
-            if (!result || !result->next()) {
-                return nullptr;
-            }
-
-            auto obj = std::make_shared<TBL>(*result);
-            return obj;
-
-        } catch (const std::exception& e) {
-            std::cerr << "Exception during get(): " << e.what() << std::endl;
-            return nullptr;
-        }
-    }
-
-    
-    template <typename TBL>
-    std::vector<std::shared_ptr<TBL>> get_all(std::vector<sqljke::Expression> where = {}, int limit = -1, int offset = -1) {
-        static_assert(std::is_base_of_v<sqljke::SQLTable, TBL>, "Template argument must derive from SQLTable");
-
-        auto select = std::make_unique<sqljke::SelectQueryBuilder>(dialect_.get());
-        std::string table_name = TBL::TABLE_NAME;
-        auto sql_builder = select->from(table_name);
-
-        if (!where.empty()) {
-            for(auto cl : where){
-                sql_builder = sql_builder.where(cl);
-            }
-        }
-
-        if (limit > 0) {
-            sql_builder = sql_builder.limit(limit);
-            if (offset > 0) {
-                sql_builder = sql_builder.limit(limit, offset);
-            }
-        }
-
-        std::string sql = sql_builder.build();
-
-#ifdef DEBUG
-        std::cout << "Executing SQL: " << sql << std::endl;
-#endif
-
-        std::vector<std::shared_ptr<TBL>> result;
-
-        try {
-            ResultSetPtr rs = driver_->query(sql);
-            if (!rs) return result;
-
-            while (rs->next()) {
-                auto obj = std::make_shared<TBL>(*rs); 
-                result.push_back(obj);
-            }
-
-        } catch (const std::exception& e) {
-            std::cerr << "Exception during get_all(): " << e.what() << std::endl;
-        }
-
-        return result;
-    }
+    Status create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> tables);
+    sqljke::CreateTableQueryBuilder& create_table(const std::string& table_name);
 
     template <typename TBL>
-    void save(const std::shared_ptr<TBL>& obj) {
+    Status save(const std::shared_ptr<TBL>& obj) {
         static_assert(std::is_base_of_v<sqljke::SQLTable, TBL>, "TBL must derive from SQLTable");
-        if (!obj) return;
+        if (!obj) return FAIL;
 
         for (const auto& dep : obj->get_dependent_objects()) {
             if (dep) {
@@ -116,25 +49,28 @@ public:
         } else {
             do_insert(obj);
         }
+        return OK;
     }
-    
-
-    sqljke::CreateTableQueryBuilder& create_table(const std::string& table_name);
-    sqljke::SelectQueryBuilder& select(const std::vector<std::variant<sqljke::Column, sqljke::Aggregate, sqljke::Scalar>> select_list);
-    sqljke::UpdateQueryBuilder& update(const std::string& table_name);
-    sqljke::DeleteQueryBuilder& delete_from(const sqljke::Table& table);
     sqljke::InsertQueryBuilder& insert_into(const std::string& table_name);
 
+    template <typename TBL>
+    std::variant<std::shared_ptr<TBL>, std::vector<std::shared_ptr<TBL>>, Status> get() {
+        return FAIL;
+    }
+    sqljke::SelectQueryBuilder& select(const std::vector<std::variant<sqljke::Column, sqljke::Aggregate, sqljke::Scalar>> select_list);
 
-    void create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> tables);
+    template <typename TBL>
+    Status refresh() {
+        return FAIL;
+    }
+    sqljke::UpdateQueryBuilder& update(const std::string& table_name);
 
-    ResultSetPtr execute(const std::string& sql);
+    template <typename TBL>
+    Status del() {
+        return FAIL;
+    }
+    sqljke::DeleteQueryBuilder& delete_from(const sqljke::Table& table);
 
-    //future
-    void drop_table();
-    void table_exists();
-    void truncate_table();
-    void drop_database(const std::string& database_name);
     
 
 private:
@@ -198,6 +134,6 @@ private:
     }
 };
 
-}}// namespace quick::ultra
+}}
 
 #endif

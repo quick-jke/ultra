@@ -28,7 +28,7 @@ Session::Session(std::shared_ptr<IDriver> driver)
     delete_ = sqljke::DeleteQueryBuilder(dialect_.get());
 }
 
-void Session::create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> tables) {
+Status Session::create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> tables) {
 
     create_.set_if_not_exists();
     for(auto& table : tables){
@@ -43,14 +43,13 @@ void Session::create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> table
     auto queries = create_.build_all();
 
     for (const auto& sql : queries) {
-#ifdef DEBUG
-        // std::cout << sql << std::endl;
-#endif
         driver_->execute(sql);
     }
+
+    return OK;
 }
 
-ResultSetPtr Session::execute(const std::string& sql){
+ResultSetPtr Session::execute(const std::string& sql) {
     try{
         auto result = driver_->query(sql);
         if (!result) {
@@ -65,41 +64,29 @@ ResultSetPtr Session::execute(const std::string& sql){
     }
 }
 
-void Session::drop_table() {
-    // auto query = std::make_unique<DropTableQueryBuilder>(dialect_.get());
-    // std::string sql = builder->drop_table("users").if_exists().build();
-    // driver_->execute(sql);
-}
-
-sqljke::SelectQueryBuilder& Session::select(const std::vector<std::variant<sqljke::Column, sqljke::Aggregate, sqljke::Scalar>> select_list){
+sqljke::SelectQueryBuilder& Session::select(const std::vector<std::variant<sqljke::Column, sqljke::Aggregate, sqljke::Scalar>> select_list) {
     select_.set_select_list(select_list);
     return select_;
 }
 
-sqljke::CreateTableQueryBuilder& Session::create_table(const std::string& table_name){
+sqljke::CreateTableQueryBuilder& Session::create_table(const std::string& table_name) {
     create_.set_table_name(table_name);
     return create_;
 }
 
-sqljke::InsertQueryBuilder& Session::insert_into(const std::string& table_name){
+sqljke::InsertQueryBuilder& Session::insert_into(const std::string& table_name) {
     insert_.set_table(table_name);
     return insert_;
 }
 
-sqljke::UpdateQueryBuilder& Session::update(const std::string& table_name){
+sqljke::UpdateQueryBuilder& Session::update(const std::string& table_name) {
     update_.set_table(table_name);
     return update_;
 }
 
-sqljke::DeleteQueryBuilder& Session::delete_from(const sqljke::Table& table)
-{
+sqljke::DeleteQueryBuilder& Session::delete_from(const sqljke::Table& table) {
     delete_.set_table(table);
     return delete_;
-}
-
-
-void Session::drop_database(const std::string& database_name){
-    execute("drop database " + database_name + ";");
 }
 
 

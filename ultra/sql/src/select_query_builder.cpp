@@ -55,7 +55,11 @@ std::string SelectQueryBuilder::build() {
         ir.limit_offset = std::nullopt;
     }
     ir.having_clause = having_clause_.empty() ? std::nullopt : std::make_optional(having_clause_);
-    return dialect_->compile_select(ir);
+
+    auto sql = dialect_->compile_select(ir);
+
+    std::cout << sql << std::endl;
+    return sql;
     
 }
 

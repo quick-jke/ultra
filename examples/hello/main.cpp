@@ -11,9 +11,6 @@ int main() {
     driver->connect(quick::ultra::to_connection_string("localhost", "root", "rootjke7423", one_to_one::DATABASE_NAME));
     quick::ultra::Session session(driver);
 
-
-
-
     session.create_tables(one_to_one::TABLES);
 
     auto p = std::make_shared<one_to_one::Passport>();
@@ -78,20 +75,10 @@ int main() {
         }()
     };
 
-    for(const auto& user : users){
-        session.save(user);
-    }
+    // for(const auto& user : users){
+    //     session.save(user);
+    // }
 
-    // auto sql = session
-    //     .delete_from(one_to_one::User::TABLE_NAME)
-    //     .where(Expression(one_to_one::User::ID).more_than(8))
-    //     .build();
-        
-    // session.execute(sql);
-
-    // auto delete_sql = session.delete_from(one_to_one::User::TABLE_NAME).build();
-    // session.execute(delete_sql);
-    
     auto sql = session.select({
         Column(one_to_one::User::AGE).as("age_group"),
         count().as("user_count"),
@@ -107,18 +94,10 @@ int main() {
 
     std::cout << session.execute(sql)->debug() << std::endl;
 
-    // auto u = session.get_by_id<one_to_one::User>(2);  
 
-    // auto p = session.get_by_id<one_to_one::Passport>(u->passport_id());
-
-    // p->set_num(20);
-
-    // u->set_passport(p);
-
-    // session.save(u);
-    
     return 0;
 
 }
+
 
 
