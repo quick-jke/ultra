@@ -35,34 +35,34 @@ public:
     std::string type_clause(TYPE t) const override{
         switch (t)
         {
-        case STRING:{
+        case TYPE::STRING:{
             return "VARCHAR(255)";
         }
-        case INT:{
+        case TYPE::INT:{
             return "INT";
         }
-        case BIGINT:{
+        case TYPE::BIGINT:{
             return "BIGINT";
         }
-        case SMALLINT:{
+        case TYPE::SMALLINT:{
             return "SMALLINT";
         }
-        case TINYINT:{
+        case TYPE::TINYINT:{
             return "TINYINT";
         }
-        case DECIMAL:{
+        case TYPE::DECIMAL:{
             return "DECIMAL";
         }
-        case FLOAT:{
+        case TYPE::FLOAT:{
             return "FLOAT";
         }
-        case DOUBLE:{
+        case TYPE::DOUBLE:{
             return "DOUBLE";
         }    
-        case VARCHAR:{
+        case TYPE::VARCHAR:{
             return "VARCHAR(255)";
         }    
-        case BOOL:{
+        case TYPE::BOOL:{
             return "BOOL";
         }
         default:
@@ -182,25 +182,17 @@ public:
     }
 
 
-
+    std::string compile_insert() const {
+        return "";
+    }
+    std::string compile_drop() const {
+        return "";
+    }
+    std::string compile_update() const {
+        return "";
+    }
 
 };
-}// namespace quick::ultra::sql
+}
 #endif
 
-/*
-    MORE_THAN,
-    LESS_THAN,
-    MORE_OR_EQUAL,
-    LESS_OR_EQUAL,
-    EQUAL,
-    NOT_EQUAL,
-
-    LIKE,
-
-    IS_TRUE,
-    IS_FALSE,
-
-    IS_NULL,
-    IS_NOT_NULL
-*/

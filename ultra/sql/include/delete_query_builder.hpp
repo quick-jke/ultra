@@ -7,39 +7,13 @@ namespace quick::ultra::sqljke {
 
 class DeleteQueryBuilder : public SQLQueryBuilder {
 public:
-    explicit DeleteQueryBuilder(const ISQLDialect* dialect)
-        : dialect_(dialect) {}
+    explicit DeleteQueryBuilder(const ISQLDialect* dialect) : dialect_(dialect) {}
 
-    DeleteQueryBuilder& set_table(Table table)
-    {
-        table_name_ = dialect_->quote_identifier(table);
-        return *this;
-    }
+    DeleteQueryBuilder& set_table(Table table);
 
-    DeleteQueryBuilder& where(const Expression& expression)
-    {
-        where_clauses_.push_back(expression.get());
-        return *this;
-    }
+    DeleteQueryBuilder& where(const Expression& expression);
 
-    std::string build()
-    {
-        std::stringstream oss;
-
-        oss << "DELETE FROM ";
-
-        oss << table_name_;
-
-        if (!where_clauses_.empty()) {
-            oss << " WHERE ";
-            for (size_t i = 0; i < where_clauses_.size(); ++i) {
-                if (i > 0) oss << " AND ";
-                oss << where_clauses_[i];
-            }
-        }
-
-        return oss.str();
-    }
+    std::string build();
 
 private:
     const ISQLDialect* dialect_;

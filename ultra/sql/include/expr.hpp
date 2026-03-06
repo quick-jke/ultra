@@ -8,13 +8,8 @@
 namespace quick::ultra::sqljke{
 std::string signToString(SIGN sign);
 
-class Expression
-{
-private:
-    std::string field_;
-    SIGN sign_;
-    std::string value_;
-    std::string value2_;
+class Expression {
+
 public:
     Expression(std::string field, SIGN sign, std::string value1, std::string value2);
     Expression(std::string field, SIGN sign, std::string value);
@@ -24,7 +19,6 @@ public:
     std::string field();
     SIGN sign();
     std::string value();
-
     std::string get() const;
 
 //-------------------
@@ -129,6 +123,12 @@ public:
         value_ = oss.str();
         return *this;
     }
+
+private:
+    std::string field_;
+    SIGN sign_;
+    std::string value_;
+    std::string value2_;
 
 };
 

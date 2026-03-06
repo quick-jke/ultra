@@ -3,19 +3,16 @@
 #include <iostream>
 namespace quick::ultra::sqljke{
 
-SelectQueryBuilder::SelectQueryBuilder(const ISQLDialect* dialect)
-        : dialect_(dialect) {}
-
 void SelectQueryBuilder::set_select_list(const std::vector<std::variant<Column, Aggregate, Scalar>> select_list){
     select_list_ = select_list;
 }
 
-SelectQueryBuilder& SelectQueryBuilder::from(Table table) {
+SelectQueryBuilder& SelectQueryBuilder::from(const Table& table) {
     table_name_ = dialect_->quote_identifier(table);
     return *this;
 }
 
-SelectQueryBuilder& SelectQueryBuilder::where(Expression expression) {
+SelectQueryBuilder& SelectQueryBuilder::where(const Expression& expression) {
     where_clauses_.push_back(expression.get());
     return *this;
 }
@@ -31,7 +28,7 @@ SelectQueryBuilder& SelectQueryBuilder::group_by(const std::vector<Column>& colu
     return *this;
 } 
 
-SelectQueryBuilder& SelectQueryBuilder::having(Expression expression){
+SelectQueryBuilder& SelectQueryBuilder::having(const Expression& expression){
     having_clause_ = dialect_->having_clause(expression);
     return *this;
 }
@@ -41,7 +38,7 @@ SelectQueryBuilder& SelectQueryBuilder::order_by(const std::vector<std::pair<Col
     return *this;
 } 
 
-std::string SelectQueryBuilder::build() {
+std::string SelectQueryBuilder::build() const {
 
     SelectQueryIR ir;
     ir.select_list = select_list_;

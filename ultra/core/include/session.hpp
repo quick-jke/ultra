@@ -31,6 +31,13 @@ public:
     Status create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> tables);
     sqljke::CreateTableQueryBuilder& create_table(const std::string& table_name);
 
+    Status destroy(){
+        return FAIL;
+    }
+    Status drop_table(const sqljke::Table& table){
+        return FAIL;
+    }
+
     template <typename TBL>
     Status save(const std::shared_ptr<TBL>& obj) {
         static_assert(std::is_base_of_v<sqljke::SQLTable, TBL>, "TBL must derive from SQLTable");
@@ -70,6 +77,7 @@ public:
         return FAIL;
     }
     sqljke::DeleteQueryBuilder& delete_from(const sqljke::Table& table);
+
 
     
 

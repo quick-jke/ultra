@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <utility>
 #include "expr.hpp"
 #include "type.hpp"
 #include "column.hpp"
@@ -32,6 +33,13 @@ public:
     virtual std::string if_not_exists_clause() const = 0;
     virtual std::string type_clause(TYPE t) const = 0;
     virtual std::string compile_select(const SelectQueryIR& ir) const = 0;
+    virtual std::string compile_insert() const = 0;
+    virtual std::string compile_drop() const = 0;
+    virtual std::string compile_update() const = 0;
+
+    // virtual std::string set(const std::vector<Column&>& columns, const std::vector<std::string>& values) const = 0;
+    // virtual std::string set(std::pair<const Column&, std::string> column_value) const = 0;
+
     virtual ~ISQLDialect() = default;
     
 };

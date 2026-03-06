@@ -7,9 +7,7 @@
 #include <sstream>
 #include <vector>
 #include <tuple>
-namespace quick {
-namespace ultra {
-namespace sqljke{
+namespace quick::ultra::sqljke{
 struct TableDefinition {
     std::string name;
     std::vector<Column> columns;
@@ -17,102 +15,22 @@ struct TableDefinition {
 };
 class CreateTableQueryBuilder : public SQLQueryBuilder {
 public:
-    explicit CreateTableQueryBuilder(const ISQLDialect* dialect)
-        : dialect_(dialect), if_not_exists_(false) {}
+    explicit CreateTableQueryBuilder(const ISQLDialect* dialect) : dialect_(dialect), if_not_exists_(false) {}
 
+    void set_table_name(const std::string& table_name);
 
-    void set_table_name(const std::string& table_name){
-        tables_.push_back({table_name, {}, {}});
-    }
+    CreateTableQueryBuilder& set_if_not_exists(bool enable = true);
 
-    CreateTableQueryBuilder& set_if_not_exists(bool enable = true) {
-        if_not_exists_ = enable;
-        return *this;
-    }
+    CreateTableQueryBuilder& add_column(const Column& column);
 
-    CreateTableQueryBuilder& add_column(const Column& column) {
-        if (!tables_.empty() ) {
-            tables_.back().columns.push_back(column);
-        }
-        return *this;
-    }
+    CreateTableQueryBuilder& add_foreign_key(Link link);
 
-    CreateTableQueryBuilder& add_foreign_key(Link link) {
-        if (!tables_.empty()) {
-            tables_.back().foreign_keys.emplace_back(link);
-        }
-        return *this;
-    }
-
-    std::vector<std::string> build_all() const {
-        std::vector<std::string> queries;
-
-        for (const auto& table : tables_) {
-            std::ostringstream oss;
-            oss << "CREATE TABLE ";
-
-            if (if_not_exists_) {
-                oss << dialect_->if_not_exists_clause() << " ";
-            }
-
-            oss << dialect_->quote_identifier(table.name) << " (\n";
-
-            for (size_t i = 0; i < table.columns.size(); ++i) {
-                auto col = table.columns[i];
-                if (i > 0) oss << ",\n";
-                oss << "  " << dialect_->quote_identifier(col.name()) << " " << dialect_->type_clause(col.type());
-
-                if (!col.is_nullable()) oss << " NOT NULL";
-                if (col.is_primary_key()) oss << " PRIMARY KEY";
-                if (col.is_auto_increment()) oss << " " << dialect_->auto_increment_clause();
-                
-                if (!col.default_value().empty()) {
-                    oss << " DEFAULT ";
-                    switch(col.type()){
-                        case STRING:{
-                            oss << "'" << col.default_value() << "'";
-                            break;
-                        }
-                        default:{
-                            oss << col.default_value();
-                            break;
-                        }
-                    }
-                }
-            }
-
-            for (const auto& fk : table.foreign_keys) {
-                oss << ",\n  FOREIGN KEY (" << dialect_->quote_identifier(fk.column) << ")"
-                    << " REFERENCES " << dialect_->quote_identifier(fk.foreign_table)
-                    << " (" << dialect_->quote_identifier(fk.foreign_column) << ")";
-            }
-
-            oss << "\n);"; 
-            queries.push_back(oss.str());
-        }
-
-        return queries;
-    }
+    std::vector<std::string> build_all() const;
 
 private:
     const ISQLDialect* dialect_;
     std::vector<TableDefinition> tables_;
     bool if_not_exists_;
 };
-}}} // namespace quick::ultra::sql
+}
 #endif
-
-
-
-
-/*
-auto query = std::make_unique<CreateTableQueryBuilder>(dialect.get());
-
-query->setIfNotExists()  
-        ->addTable("users")
-        ->addColumn(Column{"id", "INT", true, true, false, ""})
-        ->addColumn(Column{"name", "VARCHAR(255)", false, false, true, "'default'"})
-        ->build();
-
-driver_->execute(query);
-*/
