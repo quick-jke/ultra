@@ -3,7 +3,7 @@
 namespace quick::ultra::sqljke{
 
 InsertQueryBuilder& InsertQueryBuilder::set_table(const std::string& table_name){
-    table_name_ = dialect_->quote_identifier(table_name);
+    table_name_ = dialect_->quote_table(table_name);
     return *this;
 }
 
@@ -28,7 +28,7 @@ std::string InsertQueryBuilder::build() const {
     oss << "("; 
     for (size_t i = 0; i < columns_.size(); ++i) {
         if (i > 0) oss << ", ";
-        oss << dialect_->quote_identifier(columns_[i]);
+        oss << dialect_->quote_column(columns_[i]);
     }
     oss << ") VALUES ";
 

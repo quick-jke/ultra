@@ -36,12 +36,12 @@ std::vector<std::string> CreateTableQueryBuilder::build_all() const {
             oss << dialect_->if_not_exists_clause() << " ";
         }
 
-        oss << dialect_->quote_identifier(table.name) << " (\n";
+        oss << dialect_->quote_table(table.name) << " (\n";
 
         for (size_t i = 0; i < table.columns.size(); ++i) {
             auto col = table.columns[i];
             if (i > 0) oss << ",\n";
-            oss << "  " << dialect_->quote_identifier(col.name()) << " " << dialect_->type_clause(col.type());
+            oss << "  " << dialect_->quote_column(col.name()) << " " << dialect_->type_clause(col.type());
 
             if (!col.is_nullable()) oss << " NOT NULL";
             if (col.is_primary_key()) oss << " PRIMARY KEY";
@@ -63,9 +63,9 @@ std::vector<std::string> CreateTableQueryBuilder::build_all() const {
         }
 
         for (const auto& fk : table.foreign_keys) {
-            oss << ",\n  FOREIGN KEY (" << dialect_->quote_identifier(fk.column) << ")"
-                << " REFERENCES " << dialect_->quote_identifier(fk.foreign_table)
-                << " (" << dialect_->quote_identifier(fk.foreign_column) << ")";
+            oss << ",\n  FOREIGN KEY (" << dialect_->quote_column(fk.column) << ")"
+                << " REFERENCES " << dialect_->quote_table(fk.foreign_table)
+                << " (" << dialect_->quote_column(fk.foreign_column) << ")";
         }
 
         oss << "\n);"; 

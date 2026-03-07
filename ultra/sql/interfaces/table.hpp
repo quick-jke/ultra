@@ -13,7 +13,7 @@ namespace sqljke {
 class Table{
 public:
     Table(const std::string name) : name_(name){}
-    std::string get() { return name_; }
+    std::string get() const { return name_; }
 private:
     std::string name_;
 };

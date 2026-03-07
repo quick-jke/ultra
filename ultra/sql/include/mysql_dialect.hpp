@@ -20,8 +20,12 @@ public:
         }
     }
 
-    std::string quote_identifier(Table table) const override {
+    std::string quote_table(const Table& table) const override {
         return "`" + table.get() + "`";
+    }
+
+    std::string quote_column(const Column& column) const override {
+        return "`" + column.get() + "`";
     }
 
     std::string limit_clause(int limit, int offset = 0) const override {
@@ -101,7 +105,7 @@ public:
             if (i > 0) {
                 oss << ", ";
             }
-            oss << quote_identifier(columns[i].get());  
+            oss << quote_column(columns[i].get());  
         }
         return oss.str();
     }
@@ -111,9 +115,7 @@ public:
     }
 
     std::string where_clause(Expression expression) const {
-        std::stringstream oss;
-        oss << expression.field() << read_expression(expression);
-        return oss.str();
+        return expression.get();
     }
 
     std::string aggregate_clause(Aggregate aggregate) const override{
@@ -128,14 +130,13 @@ public:
         std::ostringstream oss;
         oss << "SELECT ";
 
-        // 1. SELECT список
         if (!ir.select_list.empty()) {
             for (size_t i = 0; i < ir.select_list.size(); ++i) {
                 if (i > 0) oss << ", ";
                 std::visit([&oss, this](auto item) {
                     using T = std::decay_t<decltype(item)>;
                     if constexpr (std::is_same_v<T, Column>) {
-                        oss << quote_identifier(item.get());
+                        oss << quote_column(item);
                     } else if constexpr (std::is_same_v<T, Aggregate>) {
                         oss << aggregate_clause(item);
                     } else if constexpr (std::is_same_v<T, Scalar>) {
@@ -147,33 +148,28 @@ public:
             oss << "*";
         }
         
-        // 2. FROM
-        oss << " FROM " << ir.table_name;
+        oss << " FROM " << quote_table(*ir.table);
 
-        // 3. WHERE
         if (!ir.where_clauses.empty()) {
             oss << " WHERE ";
             for (size_t i = 0; i < ir.where_clauses.size(); ++i) {
                 if (i > 0) oss << " AND ";
-                oss << ir.where_clauses[i];
+                oss << where_clause(ir.where_clauses[i]);
             }
         }
 
-        // 4. GROUP BY
-        if (!ir.group_by_columns.empty()) {
-            oss << " " << ir.group_by_columns;
-        }
-        // 5. HAVING 
-        if (ir.having_clause.has_value()) { 
-            oss << " HAVING " << ir.having_clause.value();
+        if (ir.group_by_columns.has_value()) {
+            oss << " " << group_by_clause(ir.group_by_columns.value());
         }
 
-        // 6. ORDER BY
-        if (!ir.order_by_columns.empty()) {
-            oss << " " << ir.order_by_columns;
+        if (ir.having_clause.has_value()) {
+            oss << " HAVING " << having_clause(ir.having_clause.value());
         }
 
-        // 7. LIMIT 
+        if (ir.order_by_columns.has_value()) {
+            oss << " " << order_by_clause(ir.order_by_columns.value());
+        }
+
         if (ir.limit_offset.has_value() && ir.limit_offset->first > 0) {
             oss << " " << limit_clause(ir.limit_offset->first, ir.limit_offset->second);
         }
@@ -188,8 +184,42 @@ public:
     std::string compile_drop() const {
         return "";
     }
-    std::string compile_update() const {
-        return "";
+    std::string compile_update(const UpdateQueryIR& ir) const override {
+        if (ir.table == nullptr) {
+            throw std::runtime_error("Table is not set in UPDATE query");
+        }
+
+        if (ir.column_value_map.empty()) {
+            throw std::runtime_error("No columns to update in UPDATE query");
+        }
+
+        std::ostringstream oss;
+        
+        oss << "UPDATE " << quote_table(*ir.table) << " SET ";
+
+        bool first = true;
+        for (const auto& [column_ptr, value] : ir.column_value_map) {
+            if (column_ptr == nullptr) {
+                continue; 
+            }
+            
+            if (!first) {
+                oss << ", ";
+            }
+            oss << quote_column(*column_ptr) << " = '" << value << "'";
+            first = false;
+        }
+
+        if (!ir.where_clauses.empty()) {
+            oss << " WHERE ";
+            for (size_t i = 0; i < ir.where_clauses.size(); ++i) {
+                if (i > 0) oss << " AND ";
+                oss << this->where_clause(ir.where_clauses[i]);
+            }
+        }
+
+        oss << ";";
+        return oss.str();
     }
 
 };

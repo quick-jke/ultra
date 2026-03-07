@@ -12,6 +12,7 @@
 #include "aggregate.hpp"
 #include "scalar.hpp"
 #include "select_query_ir.hpp"
+#include "update_query_ir.hpp"
 namespace quick{
 namespace ultra{
 namespace sqljke {
@@ -26,7 +27,8 @@ public:
     virtual std::string order_by_clause(const std::vector<std::pair<Column, ORDER_DIR>>& column_dirs) const = 0;
     virtual std::string group_by_clause(std::vector<Column> columns) const = 0;
     virtual std::string having_clause(Expression expression) const = 0;
-    virtual std::string quote_identifier(Table table) const = 0;
+    virtual std::string quote_table(const Table& table) const = 0;
+    virtual std::string quote_column(const Column& column) const = 0;
     virtual std::string where_clause(Expression expr) const = 0;
     virtual std::string limit_clause(int limit, int offset = 0) const = 0;
     virtual std::string auto_increment_clause() const = 0;
@@ -35,11 +37,7 @@ public:
     virtual std::string compile_select(const SelectQueryIR& ir) const = 0;
     virtual std::string compile_insert() const = 0;
     virtual std::string compile_drop() const = 0;
-    virtual std::string compile_update() const = 0;
-
-    // virtual std::string set(const std::vector<Column&>& columns, const std::vector<std::string>& values) const = 0;
-    // virtual std::string set(std::pair<const Column&, std::string> column_value) const = 0;
-
+    virtual std::string compile_update(const UpdateQueryIR& ir) const = 0;
     virtual ~ISQLDialect() = default;
     
 };

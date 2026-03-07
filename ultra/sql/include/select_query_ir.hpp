@@ -12,12 +12,14 @@ namespace quick::ultra::sqljke{
 
 struct SelectQueryIR {
     std::vector<std::variant<Column, Aggregate, Scalar>> select_list;
-    std::string table_name; 
-    std::vector<std::string> where_clauses;
-    std::string group_by_columns;
-    std::string order_by_columns;
+    const Table* table = nullptr;
+    std::vector<Expression> where_clauses;  
+    
+    std::optional<std::vector<Column>> group_by_columns;
+    std::optional<std::vector<std::pair<Column, ORDER_DIR>>> order_by_columns;
+    
     std::optional<std::pair<int, int>> limit_offset; 
-    std::optional<std::string> having_clause;
+    std::optional<Expression> having_clause;  
 };
 }
 #endif

@@ -8,12 +8,12 @@ void SelectQueryBuilder::set_select_list(const std::vector<std::variant<Column, 
 }
 
 SelectQueryBuilder& SelectQueryBuilder::from(const Table& table) {
-    table_name_ = dialect_->quote_identifier(table);
+    table_ = &table;
     return *this;
 }
 
 SelectQueryBuilder& SelectQueryBuilder::where(const Expression& expression) {
-    where_clauses_.push_back(expression.get());
+    where_clauses_.push_back(expression);  
     return *this;
 }
 
@@ -24,17 +24,17 @@ SelectQueryBuilder& SelectQueryBuilder::limit(int limit, int offset) {
 }
 
 SelectQueryBuilder& SelectQueryBuilder::group_by(const std::vector<Column>& columns){
-    group_by_clause_ = dialect_->group_by_clause(columns);
+    group_by_columns_ = columns;
     return *this;
 } 
 
 SelectQueryBuilder& SelectQueryBuilder::having(const Expression& expression){
-    having_clause_ = dialect_->having_clause(expression);
+    having_clause_ = expression;
     return *this;
 }
 
 SelectQueryBuilder& SelectQueryBuilder::order_by(const std::vector<std::pair<Column, ORDER_DIR>>& column_dirs){
-    order_by_clause_ = dialect_->order_by_clause(column_dirs);
+    order_by_columns_ = column_dirs;
     return *this;
 } 
 
@@ -42,22 +42,32 @@ std::string SelectQueryBuilder::build() const {
 
     SelectQueryIR ir;
     ir.select_list = select_list_;
-    ir.table_name = table_name_; 
+    ir.table = table_;
     ir.where_clauses = where_clauses_;
-    ir.group_by_columns = group_by_clause_;
-    ir.order_by_columns = order_by_clause_;
+    ir.group_by_columns = group_by_columns_;
+    ir.order_by_columns = order_by_columns_;      
+    ir.having_clause = having_clause_;            
+    
     if (limit_ > 0) {
         ir.limit_offset = std::make_pair(limit_, offset_);
-    } else {
-        ir.limit_offset = std::nullopt;
     }
-    ir.having_clause = having_clause_.empty() ? std::nullopt : std::make_optional(having_clause_);
-
+    
     auto sql = dialect_->compile_select(ir);
 
     std::cout << sql << std::endl;
     return sql;
     
+}
+
+void SelectQueryBuilder::reset() {
+    select_list_.clear();
+    table_ = nullptr;
+    where_clauses_.clear();
+    group_by_columns_ = std::nullopt;
+    order_by_columns_ = std::nullopt;
+    having_clause_ = std::nullopt;
+    limit_ = -1;
+    offset_ = 0;
 }
 
 

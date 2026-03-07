@@ -65,6 +65,7 @@ ResultSetPtr Session::execute(const std::string& sql) {
 }
 
 sqljke::SelectQueryBuilder& Session::select(const std::vector<std::variant<sqljke::Column, sqljke::Aggregate, sqljke::Scalar>> select_list) {
+    select_.reset();  
     select_.set_select_list(select_list);
     return select_;
 }
@@ -79,7 +80,8 @@ sqljke::InsertQueryBuilder& Session::insert_into(const std::string& table_name) 
     return insert_;
 }
 
-sqljke::UpdateQueryBuilder& Session::update(const std::string& table_name) {
+sqljke::UpdateQueryBuilder& Session::update(const sqljke::Table& table_name) {
+    update_.reset();  
     update_.set_table(table_name);
     return update_;
 }
@@ -90,4 +92,4 @@ sqljke::DeleteQueryBuilder& Session::delete_from(const sqljke::Table& table) {
 }
 
 
-}}// namespace quick::ultra
+}} // namespace quick::ultra

@@ -13,6 +13,7 @@
 #include "relation.hpp"
 #include "aggregate.hpp"
 #include "status.hpp"
+#include "table.hpp"
 #define DEBUG
 namespace quick {
 namespace ultra {
@@ -70,7 +71,7 @@ public:
     Status refresh() {
         return FAIL;
     }
-    sqljke::UpdateQueryBuilder& update(const std::string& table_name);
+    sqljke::UpdateQueryBuilder& update(const sqljke::Table& table_name);
 
     template <typename TBL>
     Status del() {

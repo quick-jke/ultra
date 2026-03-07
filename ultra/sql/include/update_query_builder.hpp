@@ -6,30 +6,31 @@
 #include "sql_query_builder.hpp"
 #include "sql_dialect.hpp"
 #include <sstream>
+#include "update_query_ir.hpp"
 
 namespace quick::ultra::sqljke{
 
 class UpdateQueryBuilder : public SQLQueryBuilder{
 public:
-    explicit UpdateQueryBuilder(const ISQLDialect* dialect) : dialect_(dialect){}
+    explicit UpdateQueryBuilder(const ISQLDialect* dialect) : dialect_(dialect), table_(nullptr){}
 
     UpdateQueryBuilder& set_table(const Table& table);
 
-    UpdateQueryBuilder& set(const std::vector<std::string>& columns, const std::vector<std::string>& values);
+    UpdateQueryBuilder& set(const std::vector<Column>& columns, const std::vector<std::string>& values);
     
-    UpdateQueryBuilder& set(const std::string& column, const std::string& value);
-
-    UpdateQueryBuilder& add_column_value(std::pair<std::string, std::string> pair);
+    UpdateQueryBuilder& set(const Column& column, const std::string& value);
     
     UpdateQueryBuilder& where(const Expression& expression);
 
     std::string build() const;
 
+    void reset();
+
 private:
     const ISQLDialect* dialect_;
-    std::string table_name_;
-    std::map<std::string, std::string> column_value_map_;
-    std::vector<std::string> where_clauses_;
+    const Table* table_; 
+    std::map<const Column*, std::string> column_value_map_; 
+    std::vector<Expression> where_clauses_; 
 };
 
 

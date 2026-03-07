@@ -3,7 +3,7 @@
 namespace quick::ultra::sqljke{
 
 DeleteQueryBuilder& DeleteQueryBuilder::set_table(Table table) {
-    table_name_ = dialect_->quote_identifier(table);
+    table_name_ = dialect_->quote_table(table);
     return *this;
 }
 

@@ -95,6 +95,13 @@ int main() {
     std::cout << session.execute(sql)->debug() << std::endl;
 
 
+    // auto update_sql = session.update(one_to_one::User::TABLE_NAME).set(one_to_one::User::IS_BOOL, "1").where(Expression(one_to_one::User::IS_BOOL).equal(0)).build();
+    // session.execute(update_sql);
+
+    // auto select_sql = session.select({}).from(one_to_one::User::TABLE_NAME).build();
+    // std::cout << session.execute(select_sql)->debug() << std::endl;
+
+
     return 0;
 
 }
