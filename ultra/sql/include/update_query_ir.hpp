@@ -10,6 +10,12 @@ struct UpdateQueryIR {
     const Table* table = nullptr;
     std::map<const Column*, std::string> column_value_map;
     std::vector<Expression> where_clauses;
+    UpdateQueryIR(){reset();}
+    void reset() {
+        table = nullptr; 
+        column_value_map.clear(); 
+        where_clauses.clear(); 
+    }
 };
 }
 

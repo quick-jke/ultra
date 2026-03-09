@@ -20,6 +20,18 @@ struct SelectQueryIR {
     
     std::optional<std::pair<int, int>> limit_offset; 
     std::optional<Expression> having_clause;  
+
+    SelectQueryIR(){reset();}
+
+    void reset(){
+        select_list.clear();
+        table = nullptr;
+        where_clauses.clear();
+        group_by_columns = std::nullopt;
+        order_by_columns = std::nullopt;
+        having_clause = std::nullopt;
+        limit_offset = {-1, 0};
+    }
 };
 }
 #endif

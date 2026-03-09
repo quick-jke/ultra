@@ -12,7 +12,11 @@ namespace quick::ultra::sqljke{
 
 class UpdateQueryBuilder : public SQLQueryBuilder{
 public:
-    explicit UpdateQueryBuilder(const ISQLDialect* dialect) : dialect_(dialect), table_(nullptr){}
+    explicit UpdateQueryBuilder(const ISQLDialect* dialect) {
+        dialect_ = dialect;
+        ir_ = new UpdateQueryIR();
+        ir_->table = nullptr;
+    }
 
     UpdateQueryBuilder& set_table(const Table& table);
 
@@ -28,9 +32,7 @@ public:
 
 private:
     const ISQLDialect* dialect_;
-    const Table* table_; 
-    std::map<const Column*, std::string> column_value_map_; 
-    std::vector<Expression> where_clauses_; 
+    UpdateQueryIR* ir_;
 };
 
 

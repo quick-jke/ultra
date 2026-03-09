@@ -4,7 +4,7 @@
 namespace quick::ultra::sqljke{
 
 UpdateQueryBuilder& UpdateQueryBuilder::set_table(const Table& table){
-    table_ = &table;
+    ir_->table = &table;
     return *this;
 }
 
@@ -14,41 +14,30 @@ UpdateQueryBuilder& UpdateQueryBuilder::set(const std::vector<Column>& columns, 
     }
 
     for (size_t i = 0; i < columns.size(); ++i) {
-        column_value_map_[&columns[i]] = values[i];
+        ir_->column_value_map[&columns[i]] = values[i];
     }
 
     return *this;
 }
 
 UpdateQueryBuilder& UpdateQueryBuilder::set(const Column& column, const std::string& value) {
-    column_value_map_[&column] = value;
+    ir_->column_value_map[&column] = value;
     return *this;
 }
 
 UpdateQueryBuilder& UpdateQueryBuilder::where(const Expression& expression) {
-    where_clauses_.push_back(expression);
+    ir_->where_clauses.push_back(expression);
     return *this;
 }
 
 std::string UpdateQueryBuilder::build() const {
-
-    UpdateQueryIR ir;
-    ir.table = table_;
-    ir.where_clauses = where_clauses_;
-    ir.column_value_map = column_value_map_;
-
-    auto sql = dialect_->compile_update(ir);
-
+    auto sql = dialect_->compile_update(*ir_);
     std::cout << sql << std::endl;
-
     return sql;
-
 }
 
 void UpdateQueryBuilder::reset() {
-    table_ = nullptr; 
-    column_value_map_.clear(); 
-    where_clauses_.clear(); 
+    ir_->reset();
 }
 
 }

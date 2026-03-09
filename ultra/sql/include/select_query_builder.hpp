@@ -15,7 +15,10 @@ namespace quick::ultra::sqljke {
 
 class SelectQueryBuilder : public SQLQueryBuilder {
 public:
-    explicit SelectQueryBuilder(const ISQLDialect* dialect) : dialect_(dialect){}
+    explicit SelectQueryBuilder(const ISQLDialect* dialect) {
+        dialect_ = dialect;
+        ir_ = new SelectQueryIR();
+    }
 
     void set_select_list(const std::vector<std::variant<Column, Aggregate, Scalar>> select_list);
 
@@ -37,14 +40,7 @@ public:
 
 private:
     const ISQLDialect* dialect_;
-    std::vector<std::variant<Column, Aggregate, Scalar>> select_list_;
-    const Table* table_;
-    std::vector<Expression> where_clauses_;  
-    std::optional<std::vector<Column>> group_by_columns_ = std::nullopt;   
-    std::optional<std::vector<std::pair<Column, ORDER_DIR>>> order_by_columns_ = std::nullopt; 
-    std::optional<Expression> having_clause_ = std::nullopt; 
-    int limit_ = -1;
-    int offset_ = 0;
+    SelectQueryIR* ir_;
 };
 }
 #endif
