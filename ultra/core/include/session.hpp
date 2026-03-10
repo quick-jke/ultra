@@ -52,11 +52,13 @@ public:
             }
         }
 
-        if (obj->id() != 0) {
-            do_update(obj);
-        } else {
-            do_insert(obj);
-        }
+        // if (obj->id() != 0) {
+        //     do_update(obj);
+        // } else {
+        //     do_insert(obj);
+        // }
+
+        do_insert(obj);
         return OK;
     }
     sqljke::InsertQueryBuilder& insert_into(const std::string& table_name);
@@ -127,7 +129,8 @@ private:
                 update_builder.set(cols[i], vals[i]);
             }
 
-            std::string sql = update_builder.where("id = " + std::to_string(obj->id())).build();
+            // std::string sql = update_builder.where("id = " + std::to_string(obj->id())).build();
+            std::string sql = update_builder.where(sqljke::Expression(obj->id()).equal(std::to_string(obj->id()))).build();
 
             std::cout << "Executing SQL: " << sql << std::endl;
 

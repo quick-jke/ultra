@@ -40,7 +40,7 @@ Status Session::create_tables(std::vector<std::shared_ptr<sqljke::SQLTable>> tab
             create_.add_foreign_key(link);
         }
     }
-    auto queries = create_.build_all();
+    auto queries = create_.build();
 
     for (const auto& sql : queries) {
         driver_->execute(sql);

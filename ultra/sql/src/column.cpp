@@ -1,7 +1,7 @@
 #include "column.hpp"
 namespace quick::ultra::sqljke{
-Column::Column(std::string name, TYPE type, bool is_primary_key, bool is_auto_increment, bool is_nullable, std::string default_value)
-        : name_(name), type_(type), is_primary_key_(is_primary_key), is_auto_increment_(is_auto_increment), is_nullable_(is_nullable), default_value_(default_value) {}
+Column::Column(std::string name, TYPE type, bool is_primary_key, bool is_auto_increment, bool is_nullable, bool is_unique, std::string default_value)
+        : name_(name), type_(type), is_primary_key_(is_primary_key), is_auto_increment_(is_auto_increment), is_nullable_(is_nullable), is_unique_(is_unique), default_value_(default_value) {}
     
 Column::Column(std::string name) : name_(name) {}
 

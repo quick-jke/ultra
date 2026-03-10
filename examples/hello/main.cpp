@@ -8,7 +8,7 @@ using namespace quick::ultra::sqljke;
 
 int main() {
     auto driver = quick::ultra::DriverFactory::create(quick::ultra::DRIVER_TYPE::MS_SQL);
-    driver->connect(quick::ultra::to_connection_string("localhost", "root", "rootjke7423", one_to_one::DATABASE_NAME));
+    driver->connect(quick::ultra::to_connection_string("localhost", "root", /*"rootjke7423"*/ "dev_password", one_to_one::DATABASE_NAME, 3306));
     quick::ultra::Session session(driver);
 
     session.create_tables(one_to_one::TABLES);
@@ -75,9 +75,9 @@ int main() {
         }()
     };
 
-    // for(const auto& user : users){
-    //     session.save(user);
-    // }
+    for(const auto& user : users){
+        session.save(user);
+    }
 
     auto sql = session.select({
         Column(one_to_one::User::AGE).as("age_group"),

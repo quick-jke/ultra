@@ -25,7 +25,7 @@ public:
 
     CreateTableQueryBuilder& add_foreign_key(Link link);
 
-    std::vector<std::string> build_all() const;
+    std::vector<std::string> build() const;
 
 private:
     const ISQLDialect* dialect_;

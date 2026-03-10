@@ -25,7 +25,7 @@ CreateTableQueryBuilder& CreateTableQueryBuilder::add_foreign_key(Link link) {
     return *this;
 }
 
-std::vector<std::string> CreateTableQueryBuilder::build_all() const {
+std::vector<std::string> CreateTableQueryBuilder::build() const {
     std::vector<std::string> queries;
 
     for (const auto& table : tables_) {
@@ -45,6 +45,7 @@ std::vector<std::string> CreateTableQueryBuilder::build_all() const {
 
             if (!col.is_nullable()) oss << " NOT NULL";
             if (col.is_primary_key()) oss << " PRIMARY KEY";
+            if (col.is_unique()) oss << " UNIQUE";
             if (col.is_auto_increment()) oss << " " << dialect_->auto_increment_clause();
             
             if (!col.default_value().empty()) {

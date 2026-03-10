@@ -15,8 +15,8 @@ private:
     std::string default_value_;
     std::optional<std::string> alias_ = std::nullopt;
 public:
-    Column(std::string name, TYPE type, bool is_primary_key, bool is_auto_increment, bool is_nullable, std::string default_value);
-    
+    Column(std::string name, TYPE type, bool is_primary_key, bool is_auto_increment, bool is_nullable, bool is_unique, std::string default_value);
+
     Column(std::string name);
 
     Column& as(std::string alias);
