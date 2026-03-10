@@ -3,19 +3,19 @@
 #include "sql_query_builder.hpp"
 #include "sql_dialect.hpp"
 #include "column.hpp"
+#include "create_table_query_ir.hpp"
 #include <string>
 #include <sstream>
 #include <vector>
 #include <tuple>
 namespace quick::ultra::sqljke{
-struct TableDefinition {
-    std::string name;
-    std::vector<Column> columns;
-    std::vector<Link> foreign_keys;
-};
 class CreateTableQueryBuilder : public SQLQueryBuilder {
 public:
-    explicit CreateTableQueryBuilder(const ISQLDialect* dialect) : dialect_(dialect), if_not_exists_(false) {}
+    explicit CreateTableQueryBuilder(const ISQLDialect* dialect) {
+        dialect_ = dialect;
+        ir_ = new CreateTableIR();
+        ir_->if_not_exists_ = false;
+    }
 
     void set_table_name(const std::string& table_name);
 
@@ -29,8 +29,7 @@ public:
 
 private:
     const ISQLDialect* dialect_;
-    std::vector<TableDefinition> tables_;
-    bool if_not_exists_;
+    CreateTableIR* ir_;
 };
 }
 #endif

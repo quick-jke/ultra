@@ -13,6 +13,7 @@
 #include "scalar.hpp"
 #include "select_query_ir.hpp"
 #include "update_query_ir.hpp"
+#include "create_table_query_ir.hpp"
 namespace quick{
 namespace ultra{
 namespace sqljke {
@@ -38,6 +39,7 @@ public:
     virtual std::string compile_insert() const = 0;
     virtual std::string compile_drop() const = 0;
     virtual std::string compile_update(const UpdateQueryIR& ir) const = 0;
+    virtual std::vector<std::string> compile_create_table(const CreateTableIR& ir) const = 0;
     virtual ~ISQLDialect() = default;
     
 };

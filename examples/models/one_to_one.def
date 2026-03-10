@@ -2,7 +2,7 @@ database one_to_one;
 
 table User{
     PRIMARY int id;
-    string name;
+    NOT_NULL string name;
     int age;
     double degree;
     bool is_bool;
@@ -11,6 +11,6 @@ table User{
 
 table Passport{
     PRIMARY int id;
-    int num;
+    UNIQUE int num;
 }
 

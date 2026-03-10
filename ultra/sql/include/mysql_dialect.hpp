@@ -222,6 +222,57 @@ public:
         return oss.str();
     }
 
+
+    std::vector<std::string> compile_create_table(const CreateTableIR& ir) const {
+        std::vector<std::string> queries;
+
+        for (const auto& table : ir.tables) {
+            std::ostringstream oss;
+            oss << "CREATE TABLE ";
+
+            if (ir.if_not_exists_) {
+                oss << if_not_exists_clause() << " ";
+            }
+
+            oss << quote_table(table.name) << " (\n";
+
+            for (size_t i = 0; i < table.columns.size(); ++i) {
+                auto col = table.columns[i];
+                if (i > 0) oss << ",\n";
+                oss << "  " << quote_column(col.name()) << " " << type_clause(col.type());
+
+                if (!col.is_nullable()) oss << " NOT NULL";
+                if (col.is_primary_key()) oss << " PRIMARY KEY";
+                if (col.is_unique()) oss << " UNIQUE";
+                if (col.is_auto_increment()) oss << " " << auto_increment_clause();
+                
+                if (!col.default_value().empty()) {
+                    oss << " DEFAULT ";
+                    switch(col.type()){
+                        case TYPE::STRING:{
+                            oss << "'" << col.default_value() << "'";
+                            break;
+                        }
+                        default:{
+                            oss << col.default_value();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            for (const auto& fk : table.foreign_keys) {
+                oss << ",\n  FOREIGN KEY (" << quote_column(fk.column) << ")"
+                    << " REFERENCES " << quote_table(fk.foreign_table)
+                    << " (" << quote_column(fk.foreign_column) << ")";
+            }
+
+            oss << "\n);"; 
+            queries.push_back(oss.str());
+        }
+
+        return queries;
+    }
 };
 }
 #endif

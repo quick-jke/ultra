@@ -5,11 +5,16 @@
 #include "column.hpp"
 #include "link.hpp"
 namespace quick::ultra::sqljke{
-    
-struct CreateTableIR{
+
+struct TableDefinition {
     std::string name;
     std::vector<Column> columns;
     std::vector<Link> foreign_keys;
+};
+    
+struct CreateTableIR{
+    std::vector<TableDefinition> tables;
+    bool if_not_exists_;
 };
 }
 
