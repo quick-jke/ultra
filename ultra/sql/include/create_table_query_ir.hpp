@@ -15,6 +15,11 @@ struct TableDefinition {
 struct CreateTableIR{
     std::vector<TableDefinition> tables;
     bool if_not_exists_;
+    CreateTableIR() {reset();}
+    void reset() {
+        tables.clear();
+        if_not_exists_ = false;
+    }
 };
 }
 
