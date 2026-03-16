@@ -35,30 +35,28 @@ public:
     Status destroy(){
         return FAIL;
     }
-    Status drop_table(const sqljke::Table& table){
-        return FAIL;
-    }
+    Status drop_table(const sqljke::Table& table);
 
     template <typename TBL>
     Status save(const std::shared_ptr<TBL>& obj) {
         static_assert(std::is_base_of_v<sqljke::SQLTable, TBL>, "TBL must derive from SQLTable");
         if (!obj) return FAIL;
 
-        for (const auto& dep : obj->get_dependent_objects()) {
-            if (dep) {
-                save(dep); 
-            }else{
-                std::cout << "unknown" << std::endl;
-            }
+        // Если объект уже имеет ID — он уже в БД, делаем UPDATE или пропускаем
+        if (obj->id() > 0) {
+            do_update(obj);
+            return OK;
         }
 
-        // if (obj->id() != 0) {
-        //     do_update(obj);
-        // } else {
-        //     do_insert(obj);
-        // }
-
-        do_insert(obj);
+        // Сначала сохраняем зависимости (только если они ещё не в БД)
+        for (const auto& dep : obj->get_dependent_objects()) {
+            if (dep && dep->id() <= 0) {
+                save(dep);  // Рекурсия: зависимость получит ID
+            }
+        }
+        
+        // Теперь вставляем сам объект
+        do_insert(obj);  // После этого obj->id() > 0
         return OK;
     }
     sqljke::InsertQueryBuilder& insert_into(const std::string& table_name);
@@ -129,16 +127,18 @@ private:
                 update_builder.set(cols[i], vals[i]);
             }
 
-            // std::string sql = update_builder.where("id = " + std::to_string(obj->id())).build();
-            std::string sql = update_builder.where(sqljke::Expression(obj->id()).equal(std::to_string(obj->id()))).build();
+            // 🎯 FIX: Создаём Column("id") и передаём в Expression
+            sqljke::Column id_col("id");  // или TYPE::INT, если нужно
+            std::string sql = update_builder
+                .where(sqljke::Expression(id_col).equal(std::to_string(obj->id())))
+                .build();
 
             std::cout << "Executing SQL: " << sql << std::endl;
-
             execute(sql);
 
-#ifdef DEBUG
+    #ifdef DEBUG
             std::cout << "Updated " << obj->table_name() << " with id=" << obj->id() << std::endl;
-#endif
+    #endif
 
         } catch (const std::exception& e) {
             std::cerr << "Exception during UPDATE: " << e.what() << std::endl;

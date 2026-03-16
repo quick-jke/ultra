@@ -14,7 +14,6 @@ public:
     explicit CreateTableQueryBuilder(const ISQLDialect* dialect) {
         dialect_ = dialect;
         ir_ = new CreateTableIR();
-        ir_->if_not_exists_ = false;
     }
 
     void set_table_name(const std::string& table_name);

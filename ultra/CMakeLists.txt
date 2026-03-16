@@ -3,6 +3,7 @@ add_library(ultra INTERFACE)
 add_subdirectory(core)
 add_subdirectory(drivers)
 add_subdirectory(sql)
+add_subdirectory(utils)
 
 target_link_libraries(ultra
     INTERFACE

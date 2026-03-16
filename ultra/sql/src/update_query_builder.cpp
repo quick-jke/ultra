@@ -20,7 +20,7 @@ UpdateQueryBuilder& UpdateQueryBuilder::set(const std::vector<Column>& columns, 
     return *this;
 }
 
-UpdateQueryBuilder& UpdateQueryBuilder::set(const Column& column, const std::string& value) {
+UpdateQueryBuilder& UpdateQueryBuilder::set(const Column& column, std::variant<std::string, int, double, bool> value) {
     ir_->column_value_map[&column] = value;
     return *this;
 }

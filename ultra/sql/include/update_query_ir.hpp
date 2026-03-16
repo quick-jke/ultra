@@ -8,7 +8,7 @@
 namespace quick::ultra::sqljke{
 struct UpdateQueryIR {
     const Table* table = nullptr;
-    std::map<const Column*, std::string> column_value_map;
+    std::map<const Column*, std::variant<std::string, int, double, bool>> column_value_map;
     std::vector<Expression> where_clauses;
     UpdateQueryIR(){reset();}
     void reset() {

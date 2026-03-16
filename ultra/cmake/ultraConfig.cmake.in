@@ -1,0 +1,9 @@
+# ultra/cmake/ultraConfig.cmake.in
+
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/ultraTargets.cmake")
+
+check_required_components(ultra)
+
+find_package(mysqlcppconn REQUIRED)

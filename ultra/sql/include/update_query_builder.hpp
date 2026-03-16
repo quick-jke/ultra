@@ -22,7 +22,7 @@ public:
 
     UpdateQueryBuilder& set(const std::vector<Column>& columns, const std::vector<std::string>& values);
     
-    UpdateQueryBuilder& set(const Column& column, const std::string& value);
+    UpdateQueryBuilder& set(const Column& column, std::variant<std::string, int, double, bool> value);
     
     UpdateQueryBuilder& where(const Expression& expression);
 

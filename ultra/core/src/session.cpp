@@ -91,5 +91,9 @@ sqljke::DeleteQueryBuilder& Session::delete_from(const sqljke::Table& table) {
     return delete_;
 }
 
+Status Session::drop_table(const sqljke::Table& table){
+    return FAIL;
+}
+
 
 }} // namespace quick::ultra

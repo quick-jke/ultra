@@ -56,9 +56,15 @@ public:
     }
 
     template<typename T>
-    Expression& equal(T value){
-        sign_ = SIGN::EQUAL;
-        value_ = std::to_string(value);
+    Expression& equal(T value) {
+        if constexpr (std::is_same_v<T, std::string> || 
+                    std::is_same_v<T, const char*> ||
+                    std::is_same_v<T, const std::string&>) {
+            value_ = std::string(value);
+        } else {
+            value_ = std::to_string(value);
+        }
+        sign_ = SIGN::EQUAL;  
         return *this;
     }
 

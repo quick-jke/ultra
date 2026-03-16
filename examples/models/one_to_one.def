@@ -11,6 +11,6 @@ table User{
 
 table Passport{
     PRIMARY int id;
-    UNIQUE int num;
+    int num;
 }
 
